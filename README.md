@@ -21,7 +21,7 @@ modifications matérielle:
 
 Modifications logicielles:
 ==========================
-* La résolution verticale est passé de 64 à 88 pixels.
+* La résolution verticale est passé de 64 à 88 pixels.<br>
 * la machine virtuelle n'est plus compatible avec SCHIP. De toute façon puisque le clavier a été remplacé par un joystick,
   il n'est n'étais plus possible d'assuré cette compatibilité. 
 * L'espace adressable passe de 4096 à 8192. 
