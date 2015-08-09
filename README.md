@@ -5,14 +5,14 @@ console de jeux rétro conçue avec un Atmega328P
 
 caractéristiques:
 =================
-sortie vidéo monochrome NTSC
-résolution vidéo: 128x88
-sortie son tonalité.
-contrôle de jeux: joystick Atari 2600
-jeux sur carte SD.
-quelques jeux en mémoire flash
-possède un émulateur/débogueur sur plateforme windows 
-Version modifiée de la console CHIPCON
+* sortie vidéo monochrome NTSC
+* résolution vidéo: 128x88
+* sortie son tonalité.
+* contrôle de jeux: joystick Atari 2600
+* jeux sur carte SD.
+* quelques jeux en mémoire flash
+* possède un émulateur/débogueur sur plateforme windows 
+  Version modifiée de la console CHIPCON
 
 modifications matérielle:
 =========================
