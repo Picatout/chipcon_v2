@@ -1,0 +1,42 @@
+eeschema (2013-07-07 BZR 4022)-stable  >> Creation date: 2014-10-30 16:11:20
+#Cmp ( ordre = Référence )
+| C1         100µF/16V  
+| C2         18pF        
+| C3         100nF       
+| C4         18pF        
+| C5         10µF/16V   
+| C6         1µF        
+| C7         100nF       
+| C8         100nF       
+| C9         100nF       
+| C10        100nF       
+| C11        1µF        
+| CON1       BARREL_JACK 
+| D1         1N4148      
+| D2         LED         
+| J1         audio_out   
+| J2         video out   
+| k1         KEYPAD      
+| P1         SD card     
+| P2         ICSP        
+| R1         10K         
+| R2         150R        
+| R3         620R        
+| R4         470R        
+| R5         10K         
+| R6         10K         
+| R7         100R        
+| R8         10K         
+| R9         10K         
+| R10        10R         
+| RV1        10K         
+| SW1        reset       
+| SW2        power       
+| U1         ATMEGA328-PU
+| U2         23LC512     
+| U3         LT1117-3,3  
+| X1         16Mhz       
+| Z1         audio out   
+#End Cmp
+
+#End List

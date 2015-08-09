@@ -1,0 +1,63 @@
+﻿/*
+* Copyright 2014, Jacques Deschênes
+* This file is part of CHIPcon.
+*
+*     CHIPcon is free software: you can redistribute it and/or modify
+*     it under the terms of the GNU General Public License as published by
+*     the Free Software Foundation, either version 3 of the License, or
+*     (at your option) any later version.
+*
+*     CHIPcon is distributed in the hope that it will be useful,
+*     but WITHOUT ANY WARRANTY; without even the implied warranty of
+*     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+*     GNU General Public License for more details.
+*
+*     You should have received a copy of the GNU General Public License
+*     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+; ccasm formal syntax
+; character set ASCII
+; '*' 0 or more
+; '+' 1 or more
+; '[]' grouping
+; '()' optional
+; '|' alternative
+
+source_code ::= instruction_line*
+insttruction_line ::= mnemonic_instruction|directive_instruction|label
+mnemonic_instruction ::=(label) mnemonic (mneno_arg_list) 
+mnemonic_arg_list ::= mnemo_arg|mmeno_arg [','mnemo_arg]*
+mnemo_arg ::= register|expression
+directive_instruction ::= directive dir_arg_list*
+dir_arg_list ::= dir_arg|dir_arg [','dir_arg]*
+dir_arg ::= string|expression
+expression ::= term|expression['+'|'-']term
+term ::= factor|term['*'|'/'|'%']factor
+factor ::= ('+'|'-')constant|('+'|'-')'('expression')'
+constant ::= number|constant_symbol
+contant_symbol ::= identifier defined by EQU directive, constant_symbol must be defined before being referenced
+number ::=  decimal|hexadecimal|binary
+identifier ::=letter[letter|digit|'_']*
+label ::= identifier':'
+string ::= '"'ascii'"'
+decimal ::= digit+
+hexadecimal ::= '#'hex_digit+
+binary ::= '$'['1'|'0'|'.']+
+digit ::= ['0'..'9']
+hex_digit ::=  ['0'..'9''A'..'F']
+letter ::= ['A'..'Z']
+sep ::= ' '|'\t'
+ascii ::= ASCII set between [32-127]
+register ::= 'V[hex_digit]'|'R'|'DT'|'ST'|'I'|'[''I'']'
+comment ::= ';' text to end of line
+
+mnemonic ::= 'SCD'|'CLS'|'RET'|'SCR'|'SCL'|'EXIT'|'LOW'|'HIGH'|'JP'|'CALL'|
+			 'SE'|'SNE'|'LD'|'ADD'|'OR'|'AND'|'XOR'|'SUB'|'SHR'|'SUBN'|'SHL'|
+			 'RND'|'DRW'|'TONE'|'PRT'|'SKP'|'SKNP'
+
+directive ::= 'DB'|'DW'|'ASCII'|'EQU'
+
+
+			
+			
