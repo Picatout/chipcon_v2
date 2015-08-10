@@ -1,71 +1,276 @@
-61		HIGH 
-62		CLS 
-63		LD V9    , 0 
-64		LD V8      , 0 
-65	NEXT_SET: 
-66		ADD V8      , 1 
-69		SCRX VE	 
-70		LD V0      , 16 
-71		SUB VE	 , V0      
-72		SHR VE	 
-73		LD VD     , 0 
-75		LD VC   , 0 
-76		LD VB   , 0 
-78		LD VA     , 100 
-80		CALL MOONSCAPE 
-82		CALL DRW_LEM 
-83		CALL PRT_FUEL_LEVEL 
-85	MAIN: 
-86		SNE VA     , 0 
-87		JP MOVE_LEM 
-89		LD V0      , 8 
-90		SKNP V0      
-91		JP RIGHT_JET 
-92		LD V0      , 16 
-93		SKNP V0      
-94		JP LEFT_JET 
-95		LD V0      , 32 
-96		SKNP V0      
-97		JP UP_JET 
-98		JP MOVE_LEM 
-99	RIGHT_JET: 
-100		CALL PRT_FUEL_LEVEL 
-101		ADD VC   , -1 
-102		ADD VA     , -1 
-103		JP UPDATE_FUEL 
-105	LEFT_JET: 
-106		CALL PRT_FUEL_LEVEL 
-107		ADD VC   , 1 
-108		ADD VA     , -1 
-109		JP UPDATE_FUEL 
-111	UP_JET: 
-112		CALL PRT_FUEL_LEVEL 
-113		ADD VB   , -2 
-114		SE VA     , 1 
-115		ADD VA     , -1 
-116		ADD VA     , -1 
-117	UPDATE_FUEL: 
-118		NOISE 4 
-119		CALL PRT_FUEL_LEVEL 
-121	MOVE_LEM: 
-122		CALL PRT_FUEL_LEVEL 
-123		CALL DRW_LEM 
-125		ADD VE	 , VC   
-126		LD V0      , 127 
-127		AND VE	 , V0      
-128		ADD VD     , VB   
-129		ADD VB   , 1 
-130		CALL DRW_LEM 
-131		SNE VF    , 1 
-132		JP COLLISION 
-134		CALL PRT_FUEL_LEVEL 
-135		SNE VA     , 0 
-136		JP FUEL_EMPTY 
-138		LD V0      , 20 
-139		CALL DELAY 
-140		JP MAIN 
-142	FUEL_EMPTY: 
-143		CALL PRT_FUEL_LEVEL 
-144		LD V0      , 10 
-145		LD V1 , 4 
-146		TONE V0      , V1 
+59		CLS 
+60		CALL SHOW_CREDIT 
+61		LD V9    , 0 
+62		LD V8      , 0 
+63	NEXT_SET: 
+64		ADD V8      , 1 
+67		SCRX VE	 
+68		LD V0      , 16 
+69		SUB VE	 , V0      
+70		SHR VE	 
+71		LD VD     , 0 
+73		LD VC   , 0 
+74		LD VB   , 0 
+76		LD VA     , 100 
+78		CALL MOONSCAPE 
+80		CALL DRW_LEM 
+81		CALL PRT_FUEL_LEVEL 
+83	MAIN: 
+84		SNE VA     , 0 
+85		JP MOVE_LEM 
+87		LD V0      , 8 
+88		SKNP V0      
+89		JP RIGHT_JET 
+90		LD V0      , 16 
+91		SKNP V0      
+92		JP LEFT_JET 
+93		LD V0      , 32 
+94		SKNP V0      
+95		JP UP_JET 
+96		JP MOVE_LEM 
+97	RIGHT_JET: 
+98		CALL PRT_FUEL_LEVEL 
+99		ADD VC   , -1 
+100		ADD VA     , -1 
+101		JP UPDATE_FUEL 
+103	LEFT_JET: 
+104		CALL PRT_FUEL_LEVEL 
+105		ADD VC   , 1 
+106		ADD VA     , -1 
+107		JP UPDATE_FUEL 
+109	UP_JET: 
+110		CALL PRT_FUEL_LEVEL 
+111		ADD VB   , -2 
+112		SE VA     , 1 
+113		ADD VA     , -1 
+114		ADD VA     , -1 
+115	UPDATE_FUEL: 
+116		NOISE 4 
+117		CALL PRT_FUEL_LEVEL 
+119	MOVE_LEM: 
+120		CALL PRT_FUEL_LEVEL 
+121		CALL DRW_LEM 
+123		ADD VE	 , VC   
+124		LD V0      , 127 
+125		AND VE	 , V0      
+126		ADD VD     , VB   
+127		ADD VB   , 1 
+128		CALL DRW_LEM 
+129		SNE VF    , 1 
+130		JP COLLISION 
+132		CALL PRT_FUEL_LEVEL 
+133		SNE VA     , 0 
+134		JP FUEL_EMPTY 
+136		LD V0      , 20 
+137		CALL DELAY 
+138		JP MAIN 
+140	FUEL_EMPTY: 
+141		CALL PRT_FUEL_LEVEL 
+142		LD V0      , 10 
+143		LD V1 , 4 
+144		TONE V0      , V1 
+145		LD V0      , 4 
+146		CALL DELAY 
+147		CALL PRT_FUEL_LEVEL 
+148		LD V0      , 4 
+149		TONE V0      , V1 
+150		CALL DELAY 
+151		JP MAIN 
+156	DELAY: 
+157		LD DT , V0      
+158		LD V0      , DT 
+159		SE V0      , 0 
+160		JP . -2 
+161		RET 
+167	COLLISION: 
+168		CALL PRT_FUEL_LEVEL 
+169		LD V0      , 2 
+170		SUB V0      , VB   
+171		SE VF    , 1 
+172		JP CRASH 
+173		LD V0      , 2 
+174		SUB V0      , VC   
+175		SE VF    , 1 
+176		JP CRASH 
+177		LD V0      , VE	 
+178		SUB V0      , V7     
+179		SE VF    , 1 
+180		JP CRASH 
+181		LD V0      , V7     
+182		ADD V0      , 16 
+183		SUBN V0      , VE	 
+184		SE VF    , 0 
+185		JP CRASH 
+187		ADD V9    , 1 
+188		LD I , SUCCESS_MSG 
+189		LD V1 , 0 
+190		LD V2 , 16 
+191		PRT V1 , V2 
+192		JP WAIT_NEXT_SET 
+193	CRASH: 
+194		LD I , CRASH_MSG 
+195		LD V1 , 0 
+196		LD V2 , 16 
+197		PRT V1 , V2 
+198	WAIT_NEXT_SET: 
+199		CALL DISPLAY_SCORE 
+200		LD V0      , 60 
+201		CALL DELAY 
+202		LD V0      , 32 
+203		SKP V0      
+204		JP . -1 
+205		LD V1 , 1 
+206		LD V2 , 10 
+207		TONE V1 , V2 
+208		SKNP V0      
+209		JP . -1 
+210		CLS 
+211		JP NEXT_SET 
+216	DRW_LEM: 
+217		LD I , LEM 
+218		DRW VE	 , VD     , 0 
+219		RET 
+225	DISPLAY_SCORE: 
+226		LD V1 , 0 
+227		LD V2 , 10 
+228		LD I , BCD 
+229		LD B , V9    
+230		CALL DISPLAY_BCD 
+231		LD I , SLASH 
+232		DRW V1 , V2 , 5 
+233		ADD V1 , 4 
+234		LD I , BCD 
+235		LD B , V8      
+236		CALL DISPLAY_BCD 
+237		RET 
+247	DISPLAY_BCD: 
+248		LD V3 , 0 
+249		LD I , BCD 
+250		ADD I , V3 
+251		LD V0      , [ I ] 
+252		LD F , V0      
+253		DRW V1 , V2 , 5 
+254		ADD V1 , 4 
+255		ADD V3 , 1 
+256		SE V3 , 3 
+257		JP . -8 
+258		RET 
+266	MOONSCAPE: 
+267		LD V5 , 0 
+269		RND V7     , #FF 
+270		SCRX V0      
+271		LD V3 , 16 
+272		SUB V0      , V3 
+273		PUSH V0      
+274		SUB V0      , V7     
+275		POP V0      
+276		SE VF    , 1 
+277		LD V7     , V0      
+278		LD V4 , V7     
+279		ADD V4 , 16 
+280		RND V1 , #0F 
+281		SCRY V0      
+282		SUBN V1 , V0      
+283	SCAPE_LOOP: 
+284		LD V3 , V5 
+285		SUB V3 , V7     
+286		SE VF    , 1 
+287		JP RAND_Y 
+288		LD V3 , V5 
+289		SUB V3 , V4 
+290		SE VF    , 1 
+291		JP PUT_PIXEL 
+292	RAND_Y: 
+293		SCRY V0      
+294		SHR V0      
+295		SUB V0      , V1 
+296		SE VF    , 0 
+297		ADD V1 , 1 
+298		SCRY V0      
+299		ADD V0      , -1 
+300		SUBN V0      , V1 
+301		SE VF    , 0 
+302		ADD V1 , -1 
+303		RND V3 , 3 
+304		SHR V3 
+305		SE V3 , 0 
+306		ADD V1 , 254 
+307		ADD V1 , 1 
+308	PUT_PIXEL: 
+309		PIXI V5 , V1 
+310		ADD V5 , 1 
+311		SCRX V0      
+312		SE V5 , V0      
+313		JP SCAPE_LOOP 
+314		RET 
+323	PRT_FUEL_LEVEL: 
+324		LD V1 , 0 
+325		LD V2 , 0 
+326		LD V3 , 0 
+327		LD I , BCD 
+328		LD B , VA     
+329	PRT_FUEL_LOOP: 
+330		LD I , BCD 
+331		ADD I , V3 
+332		LD V0      , [ I ] 
+333		LD LF , V0      
+334		DRW V1 , V2 , 10 
+335		ADD V1 , 8 
+336		ADD V3 , 1 
+337		SE V3 , 3 
+338		JP PRT_FUEL_LOOP 
+339		RET 
+341	SHOW_CREDIT: 
+342		LD I , CREDIT 
+343		LD V1 , 0 
+344		SCRY V2 
+345		SHR V2 
+346		PRT V1 , V2 
+347		SCRY V1 
+348	SCROLL_LOOP: 
+349		SCU 1 
+350		LD V0      , 3 
+351		CALL DELAY 
+352		ADD V1 , -1 
+353		SE V1 , 0 
+354		JP SCROLL_LOOP 
+355		RET 
+362	LEM: 
+363		DW $......1111...... 
+364		DW $.....11..11..... 
+365		DW $...1111111111... 
+366		DW $..111111111111.. 
+367		DW $..1..........1.. 
+368		DW $1.1.11111111.1.1 
+369		DW $.11.11....11.11. 
+370		DW $..1.11....11.1.. 
+371		DW $.11.11111111.11. 
+372		DW $1.1..........1.1 
+373		DW $..111111111111.. 
+374		DW $..111111111111.. 
+375		DW $...1..1.1..1.... 
+376		DW $..1..1...1..1... 
+377		DW $.11.........11.. 
+378		DW $11...........11. 
+380	SLASH: 
+381		DB $..1..... 
+382		DB $.1...... 
+383		DB $.1...... 
+384		DB $1....... 
+385		DB $1....... 
+387	CRASH_MSG: 
+388		ASCII "you crashed"
+389	SUCCESS_MSG: 
+390		ASCII "congratulation!"
+391	CREDIT: 
+392		ASCII "LEM
+Jacques Deschenes
+Copyright 2014,2015
+licence GPLv3"
+395	BCD: 
+396		DB 0 , 0 , 0 
+398	PARTICLES: 
+399		DB 0 , 0 , 0 , 0 
+400		DB 0 , 0 , 0 , 0 
+401		DB 0 , 0 , 0 , 0 
+402		DB 0 , 0 , 0 , 0 

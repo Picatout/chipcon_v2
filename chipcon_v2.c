@@ -60,6 +60,7 @@ extern vm_state_t vms;
 
 void load_flash_game(const uint8_t *addr,uint16_t size){
 	uint16_t i;
+	
 	for (i=0;i<size;i++){
 		sram_write_byte(CODE_BASE_ADDR+i,pgm_read_byte(&addr[i]));
 	}
@@ -235,22 +236,22 @@ void games_in_flash(){
 	switch(selected){
 	case 0:
 		load_flash_game((const uint8_t*)lem,LEM_SIZE);
-		text_scroller((const uint8_t*)lem_info,4);
+//		text_scroller((const uint8_t*)lem_info,4);
 		break;
 		
 	case 1:
 		load_flash_game((const uint8_t*)car,CAR_SIZE);
-		text_scroller((const uint8_t*)car_info,4);
+//		text_scroller((const uint8_t*)car_info,4);
 		break;
 
 	case 2:
 		load_flash_game(worm,WORM_SIZE);
-		text_scroller(worm_info,4);
+//		text_scroller(worm_info,4);
 		break;
 
 	case 3:
 		load_flash_game(alien,ALIEN_SIZE);
-		text_scroller(alien_info,4);
+//		text_scroller(alien_info,4);
 		break;
 /*
 	case 4:

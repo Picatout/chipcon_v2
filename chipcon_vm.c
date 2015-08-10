@@ -40,7 +40,7 @@
 #include "joystick.h"
 #include "tone.h"
 
-#define caddr(b1,b2) ((((b1&0xf)<<8)+b2)<<0)
+#define caddr(b1,b2) ((((b1&0xf)<<8)+b2)<<1)
 #define rx(b1)  (b1&0xf)
 #define ry(b2)  ((b2&0xf0)>>4)
 
@@ -153,7 +153,11 @@ uint8_t schip(uint8_t flags){
 		code=(vms.b1&0xf0)<<4;
 		switch (code){
 			case 0x000:
-				if ((vms.b2&0xf0)==0xc0) code=0xc0; else code=vms.b2;
+				if ((vms.b2&0xf0)==0xc0){
+					 code=0xc0;
+			    }else if ((vms.b2&0xf0)==0xd0){
+					 code=0xd0;
+			    } else code=vms.b2;
 				break;
 			case 0xe00:
 			case 0xf00:
@@ -169,6 +173,9 @@ uint8_t schip(uint8_t flags){
 			case 0xc0: // 00CN, glisse l'affichage N lignes vers le bas
 				scroll_down(vms.b2&0xf);
 				break;
+			case 0xd0:
+			    scroll_up(vms.b2&0xf);
+				break;	
 			case 0xe0: // 00E0, efface l'écran
 				cls();
 				break;
@@ -286,8 +293,8 @@ uint8_t schip(uint8_t flags){
 				vms.ix=caddr(vms.b1,vms.b2);  // adressse de 13 bits toujours paire
 				vms.src_mem=RAM_MEM;
 				break;
-			case 0xb00: // BNNN     saut à NNN+V0
-				vms.pc=(vms.var[0]&0xfe)+caddr(vms.b1,vms.b2);
+			case 0xb00: // BNNN     saut à 2*(NNN+V0)
+				vms.pc=(vms.var[0]<<1)+caddr(vms.b1,vms.b2);
 				break;
 			case 0xc00: //CXKK VX=random_number&KK
 				vms.var[x]=rand()&vms.b2;

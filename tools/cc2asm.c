@@ -25,7 +25,9 @@
 *				assembly begin at 0 instead of 512
 *   2015-08-10 adapté pour CHIPcon v2
 *              renommé cc2asm.exe
-*              ajouté opcodes PUSH, POP, SNWT, SNHT
+*              ajouté opcodes PUSH, POP, SCRX, SCRY, SCU
+*              doublé espace d'adressage en divisant NNN/2 avant encodage
+*              supprimé directive ORG et ajoute directive END
 */
 
 #include <stdlib.h>
@@ -74,25 +76,28 @@ FILE *bin=NULL,  // fichier binaire généré par l'assembleur
 
 int pc; // compteur ordinal
 int line_no; //no de ligne en cours d'analyse
+int code_size=0; 
+bool file_done=false;
 
-#define MEM_SIZE (4096)   
+#define MEM_SIZE (8192)   
 unsigned char binary[MEM_SIZE];
 
 
 int inp; // pointeur d'analyse ligne d'entrée
 char line[256]; // contient la ligne à analyser
 
-#define KW_COUNT (33)
+#define KW_COUNT (34)
 
 const char *mnemonics[KW_COUNT]={"CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
 						 "SHR","SHL","SKP","SKNP","SE","SNE","ADD","SUB","SUBN","OR","AND","XOR",
-						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY"};
+						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY","SCU"};
 
 typedef enum Mnemo {eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
-                    eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP,eSCRX,eSCRY} mnemo_t;
+                    eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP,eSCRX,eSCRY,
+					eSCU} mnemo_t;
 						 
 #define DIR_COUNT (6)						 
-const char *directives[]={"DB","DW","ASCII","EQU","DEFN","ORG"};
+const char *directives[]={"DB","DW","ASCII","EQU","DEFN","END"};
 
 // search word in a list 
 int search_word(char *target, const char *list[], int list_count){
@@ -142,18 +147,7 @@ bool match_vx(char *w){
 
 void memory_overflow(){
 	printf("CHIPcon program memory overflow at line %d\n", line_no);
-	exit(EXIT_FAILURE);
 }
-
-void store_code(unsigned char b1, unsigned char b2){
-	if (pc<4095){
-		binary[pc++]=b1&0xff;
-		binary[pc++]=b2&0xff;
-	}else{
-		memory_overflow();
-	}
-}
-
 
 
 
@@ -163,10 +157,35 @@ unsigned get_number();
 unsigned expression();
 
 
-void error(){
+typedef enum ERROR_CODE {eSYNTAX, eALIGN, eMEMORY,eUNKNOWN,eEXPRESSION,eBADARG,
+    eRANGE,eBADMNEMO,eNOTREF, eERRNONE} error_code_t;
+
+const char *error_msg[eERRNONE]={
+"syntax error",
+"alignement error",
+"memory overflow",
+"unknown symbol",
+"bad expression",
+"bad argument",
+"out of range",
+"bad mnemonic",
+"undefined reference"
+};
+
+void error(error_code_t error_code){
 	puts(line);
-	printf("Syntax error at line %d, position %d\n",line_no,inp-strlen(tok_value));
+	printf("%s at line %d, position %d\n",error_msg[error_code],line_no,inp-strlen(tok_value));
 	exit(EXIT_FAILURE);
+}
+
+void store_code(unsigned char b1, unsigned char b2){
+	if (pc<(MEM_SIZE-1)){
+		binary[pc++]=b1&0xff;
+		binary[pc++]=b2&0xff;
+		code_size+=2;
+	}else{
+		error(eMEMORY);
+	}
 }
 
 //convertie une chaine hexadécimale
@@ -231,7 +250,7 @@ node_t *search_list(char *name, node_t *list){
 
 int parse_vx(){
 	next_token();
-	if (!(tok_id==eSYMBOL && tok_value[0]=='V' && hex(tok_value[1]))) error();
+	if (!(tok_id==eSYMBOL && tok_value[0]=='V' && hex(tok_value[1]))) error(eBADARG);
 	return tok_value[1]<='9'?tok_value[1]-'0':tok_value[1]-'A'+10;
 }
 
@@ -268,37 +287,42 @@ void op0(mnemo_t code){
 }
 
 // codes avec 1 arguments
-//"SCD","JP","CALL","SHR","SHL","SKP","SKNP", NOISE, PUSH, POP, SCRX,SCRY
+//"SCD","JP","CALL","SHR","SHL","SKP","SKNP", NOISE, PUSH, POP, SCRX,SCRY, SCU
 void op1(mnemo_t code){
 	unsigned b1,b2;
 	node_t *n;
 	char c;
-	
+  
+ 	
 	switch (code){
 	case eSCD: // SCD
 		b2=expression();
 		b1=0;
 		b2=0xc0|(b2&0xf);
 		break;
-	case eJP: // JP
+	case eSCU: // SCU
+        b2=expression();
+        b1=0;
+        b2=0xd0|(b2&0xf);
+        break;		
+	case eJP: // JP NNN| JP .-n| JP .+n| JP .
+		b1=0x10;
 		b2=0;
 		next_token();
-		if (!(tok_id==eSYMBOL || tok_id==eDOT || tok_id==eNUMBER)) error();
-		if (tok_id==eNUMBER){
+		if (!(tok_id==eSYMBOL || tok_id==eDOT || tok_id==eNUMBER)) error(eSYNTAX);
+		if (tok_id==eNUMBER){ // JP NNN
 			b2=token_to_i();
 			if (b2>MEM_SIZE-2){
-				puts("JP target out of range");
-				error();
+				error(eRANGE);
 			}
-			b1=0x10+((b2&0xf00)>>8);
-			b2&=0xff;
-		}else if (tok_id==eDOT){ // JP .-n|.+n|.n|.
-			b1=0x10;
+			b1=(((b2>>1)&0xf00)>>8);
+			b2=(b2>>1)&0xff;
+		}else if (tok_id==eDOT){ // JP .-n|.+n|.
 			c='+';
 			next_token();
 			if (tok_id==eNONE){
-				b1|=(pc&0xf00)>>8;
-				b2=pc&0xff;
+				b1|=(pc>>9)&0xf;
+				b2=(pc>>1)&0xff;
 			}else{
 				if (tok_id==eADDOP){
 					c=tok_value[0];
@@ -315,54 +339,52 @@ void op1(mnemo_t code){
 						
 					}
 					if (b2>MEM_SIZE-2){
-						puts("JP target out of range");
-						error();
+					    error(eMEMORY);
 					}
-					b1|=b2>>8;
-					b2&=0xff;
-				}else error();
+					b1|=(b2>>9)&0xf;
+					b2= (b2>>1)&0xff;
+				}else error(eBADARG);
 			}
-		}else if (!strcmp(tok_value,"V0")){
+		}else if (!strcmp(tok_value,"V0")){ // JP V0, NNN
 			b1=0xB0;
 			next_token();
-			if (tok_id!=eCOMMA) error();
+			if (tok_id!=eCOMMA) error(eSYNTAX);
 			next_token();
-			if (tok_id!=eSYMBOL) error();
+			if (tok_id!=eSYMBOL) error(eBADARG);
 			n=search_label(tok_value);
 			if (n){
-				b1|=(n->addr&0xf00)>>8;
-				b2=n->addr&0xff;
+				b1|=(n->addr>>9)&0xf;
+				b2=(n->addr>>1)&0xff;
 			}else{
 				forward_list=add_forward_ref(tok_value,pc);
 			}
 		}else{
-			b1=0x10;
 			n=search_label(tok_value);
 			if (n){
-				b1|=(n->addr&0xf00)>>8;
-				b2=n->addr&0xff;
+				b1|=(n->addr>>9)&0xf;
+				b2=(n->addr>>1)&0xff;
 			}else{
+			    b2=0;
 				forward_list=add_forward_ref(tok_value,pc);
 			}
 		}
 		break;
-	case eCALL: // CALL
+	case eCALL: // CALL LABEL
 		b1=0x20;
 		next_token();
-		if (!((tok_id==eSYMBOL)||(tok_id==eNUMBER))) error();
+		if (!((tok_id==eSYMBOL)||(tok_id==eNUMBER))) error(eBADARG);
 		if (tok_id==eNUMBER){
 			b2=token_to_i();
 			if (b2>MEM_SIZE-2){
-				puts("CALL target out of range");
-				error();
+				error(eRANGE);
 			}
-			b1|=(b2&0xf00)>>8;
-			b2&=0xff;
+			b1|=(b2>>9)&0xf;
+			b2=(b2>>1)&0xff;
 		}else{
 			n=search_label(tok_value);
 			if (n){
-				b1|=(n->addr&0xf00)>>8;
-				b2=n->addr&0xff;
+				b1|=(n->addr>>9)&0xf;
+				b2=(n->addr>>1)&0xff;
 			}else{
 				b2=0;
 				forward_list=add_forward_ref(tok_value,pc);
@@ -418,19 +440,19 @@ void op2(unsigned code){
 	bool reg2;
 	
 	next_token();
-	if (tok_id!=eSYMBOL) error();
+	if (tok_id!=eSYMBOL) error(eSYNTAX);
 	if (strlen(tok_value)==1 && tok_value[0]=='I'){
 		// ADD I,VX  FX1E
 		b2=0x1E;
 		next_token();
-		if (tok_id!=eCOMMA) error();
+		if (tok_id!=eCOMMA) error(eSYNTAX);
 		b1=0xF0|parse_vx();
 		goto op2_done;
 	}else if (strlen(tok_value)==2 && tok_value[0]=='V' && hex(tok_value[1])){
 		b1=(tok_value[1]<='9'?tok_value[1]-'0':tok_value[1]-'A'+10);
-	}else error();
+	}else error(eSYNTAX);
 	next_token();
-	if (tok_id!=eCOMMA) error();
+	if (tok_id!=eCOMMA) error(eSYNTAX);
 	mark=inp;
 	next_token();
 	if ((tok_id==eSYMBOL) && strlen(tok_value)==2 && tok_value[0]=='V' && hex(tok_value[1])){
@@ -442,75 +464,75 @@ void op2(unsigned code){
 		b2=expression()&0xff;
 	}
 	switch (code){
-	case eSE: // SE
-		if (reg2){ // 5XY0
+	case eSE: 
+		if (reg2){ // SE VX,VY 5XY0
 			b1|=0x50;
-		}else{ // 3XKK
+		}else{ // SE VX,KK 3XKK
 			b1|=0x30;
 		}
 		break;
 	case eSNE: // SNE
-		if (reg2){ // 9XY0
+		if (reg2){ // SNE VX,VY 9XY0
 			b1|=0x90;
-		}else{ // 4XKK
+		}else{ // SNE VX,KK 4XKK
 			b1|=0x40;
 		}
 		break;
-	case eADD: // ADD
-		if (reg2){ // 8XY4
+	case eADD: 
+		if (reg2){ // ADD VX,VY 8XY4 
 			b1|=0x80;
 			b2|=4;
-		}else{
+		}else{ // ADD VX,KK 7XKK
 			b1|=0x70;
 		}		
 		break;
-	case eSUB: // SUB  8XY5
-		if (reg2){
+	case eSUB: 
+		if (reg2){ // SUB VX,VY  8XY5
 			b1|=0x80;
 			b2|=5;
-		}else error();
+		}else error(eSYNTAX);
 		break;
-	case eSUBN: // SUBN  8XY7
-		if (reg2){
+	case eSUBN: 
+		if (reg2){ // SUBN VX, VY 8XY7
 			b1|=0x80;
 			b2|=7;
-		} else error();
+		} else error(eSYNTAX);
 		break;
-	case eOR: // OR 8XY1
+	case eOR: // OR VX,VY  8XY1
 		if (reg2){
 			b1|=0x80;
 			b2|=1;
-		}else error();
+		}else error(eSYNTAX);
 		break; 
-	case eAND: // AND 8XY2
+	case eAND: // AND VX,VY  8XY2
 		if (reg2){
 			b1|=0x80;
 			b2|=2;
-		}else error();
+		}else error(eSYNTAX);
 		break;
-	case eXOR: // XOR  8XY3
+	case eXOR: // XOR VX,VY  8XY3
 		if (reg2){
 			b1|=0x80;
 			b2|=3;
-		}else error();
+		}else error(eSYNTAX);
 		break;
-	case eRND: // RND CXKK
+	case eRND: // RND VX,KK  CXKK
 		if (!reg2)
 			b1|=0xC0;
 		else 
-			error();	
+			error(eSYNTAX);	
 		break;
-	case ePRT: // PRT  9XY2
+	case ePRT: // PRT VX,VY  9XY2
 		if (reg2){
 			b1|=0x90;
 			b2|=2;
-		}else error();
+		}else error(eSYNTAX);
 		break;
-	case ePIXI:
-		if (reg2){
+	case ePIXI: //PIXI VX,VY  9XY3
+		if (reg2){ 
 			b1|=0x90;
 			b2|=3;
-		}else error();
+		}else error(eSYNTAX);
 		break;
 	}
 op2_done:	
@@ -521,59 +543,49 @@ op2_done:
 void tone(){
 	unsigned b1,b2,i;
 
-	b1=0x90;
+	b1=0x90+parse_vx();
 	next_token();
-	if (!((tok_id==eSYMBOL) && (tok_value[0]=='V') && hex(tok_value[1]))) error();
-	b1+=(tok_value[1]-'0')<=9?tok_value[1]-'0':tok_value[1]-'A'+10;
-	next_token();
-	if (tok_id!=eCOMMA) error();
+	if (tok_id!=eCOMMA) error(eSYNTAX);
 	b2=parse_vx()<<4;
 	next_token();
 	if (tok_id==eNONE){
 		b2|=1;
 	}else{
-		if (tok_id!=eCOMMA) error();
+		if (tok_id!=eCOMMA) error(eSYNTAX);
 		next_token();
-		switch(tok_id){
-		case eSYMBOL:
-			if (strcmp(tok_value,"WAIT")) error();
+		if ((tok_id==eSYMBOL) && !strcmp(tok_value,"WAIT")){
 			b2|=5;
-			break;
-		case eNONE:
-			b2 |= 1;
-			break;
-		default:
-			error();
+		}else{
+			error(eBADARG);
 		}
 	}
-    	
 	store_code(b1,b2);
 }//f()
 
-// DRW DXYN
+// DRW VX,VY  DXYN
 void draw(){
 	unsigned b1,b2,n;
 	b1=0xD0|parse_vx();
 	next_token();
-	if (tok_id!=eCOMMA) error();
+	if (tok_id!=eCOMMA) error(eSYNTAX);
 	b2=parse_vx()<<4;
 	next_token();
-	if (tok_id!=eCOMMA) error();
+	if (tok_id!=eCOMMA) error(eSYNTAX);
 	n=expression();
 	b2|=n&0xf;
 	store_code(b1,b2);
 }
 
-// LD [I],VX FX55  
+// LD [I],VX  FX55  
 void load_indirect(){
 	unsigned b1,b2;
 	
 	next_token();
-	if (!(tok_id==eSYMBOL && strlen(tok_value)==1 && tok_value[0]=='I')) error();
+	if (!(tok_id==eSYMBOL && strlen(tok_value)==1 && tok_value[0]=='I')) error(eSYNTAX);
 	next_token();
-	if (tok_id!=eRBRACKET) error();
+	if (tok_id!=eRBRACKET) error(eSYNTAX);
 	next_token();
-	if (tok_id!=eCOMMA) error();
+	if (tok_id!=eCOMMA) error(eSYNTAX);
 	b1=0xF0|parse_vx();
 	b2=0x55;
 	store_code(b1,b2);
@@ -603,31 +615,31 @@ void load(){
 		load_indirect();
 		return;
 	}
-	if (!((tok_id==eSYMBOL) && ((strlen(tok_value)==1)||(strlen(tok_value)==2)))) error();
+	if (!((tok_id==eSYMBOL) && ((strlen(tok_value)==1)||(strlen(tok_value)==2)))) error(eSYNTAX);
 	if (strlen(tok_value)==1){ // LD I|R|B|F, ...
 		c=tok_value[0];
 		next_token();
-		if (tok_id!=eCOMMA) error();
+		if (tok_id!=eCOMMA) error(eSYNTAX);
 		switch (c){ // 2ième argument
 		case 'I': // LD I,label  ANNN
 			b1=0xa0;
 			b2=0;
 			next_token();
-			if (!((tok_id==eSYMBOL)||(tok_id==eNUMBER))) error();
+			if (!((tok_id==eSYMBOL)||(tok_id==eNUMBER))) error(eBADARG);
 			if (tok_id==eNUMBER){
 				b2=token_to_i();
 				if (b2>MEM_SIZE-2){
-					puts("JP target out of range");
-					error();
+					error(eRANGE);
 				}
-				b1|=(b2&0xf00)>>8;
-				b2&=0xff;
+				b1|=(b2>>9)&0xf;
+				b2=(b2>>1)&0xff;
 			}else{
 				n=search_label(tok_value);
 				if (n){
-					b1|=(n->addr&0xf00)>>8;
-					b2=n->addr&0xff;
+					b1|=(n->addr>>9)&0xf;
+					b2=(n->addr>>1)&0xff;
 				}else{
+				    b2=0;
 					forward_list=add_forward_ref(tok_value,pc);
 				}
 			}
@@ -645,7 +657,7 @@ void load(){
 			b2=0x33;
 			break;
 		default:
-			error();
+			error(eSYNTAX);
 		}
 		goto load_done;
 	}
@@ -655,7 +667,7 @@ void load(){
 			c=tok_value[1];
 			b1=c<='9'?c-'0':c-'A'+10;
 			next_token();
-			if (tok_id!=eCOMMA) error();
+			if (tok_id!=eCOMMA) error(eSYNTAX);
 			mark=inp;
 			next_token();
 			if (tok_id==eLPAREN || tok_id==eNUMBER||tok_id==eADDOP){
@@ -677,14 +689,14 @@ void load(){
 					break;
 				case '[':  // LD VX,[I] FX65
 					next_token();
-					if (!(tok_id==eSYMBOL && strlen(tok_value)==1 && tok_value[0]=='I')) error();
+					if (!(tok_id==eSYMBOL && strlen(tok_value)==1 && tok_value[0]=='I')) error(eSYNTAX);
 					next_token();
-					if (tok_id!=eRBRACKET) error();
+					if (tok_id!=eRBRACKET) error(eSYNTAX);
 					b1|=0xf0;
 					b2=0x65;
 					break;
 				default:
-					error();
+					error(eSYNTAX);
 				}
 				goto load_done;
 			}
@@ -696,31 +708,31 @@ void load(){
 					b1|=0x80;
 					c=tok_value[1];
 					b2=(c<='9'?c-'0':c-'A'+10)<<4;
-				}else error();
+				}else error(eSYNTAX);
 				goto load_done;
 			}
-			error();
+			error(eSYNTAX);
 		}else{
 			c=tok_value[0];
 			c1=tok_value[1];
 			next_token();
-			if (tok_id!=eCOMMA) error();
+			if (tok_id!=eCOMMA) error(eSYNTAX);
 			b1=0xf0|parse_vx();
 			switch(c){
 			case 'D':  // LD DT,VX   FX15
-				if (c1!='T') error();
+				if (c1!='T') error(eBADARG);
 				b2=0x15;
 				break;
 			case 'L': // LD LF,VX   FX30
-				if (c1!='F') error();
+				if (c1!='F') error(eBADARG);
 				b2=0x30;
 				break;
 			case 'S': // LD ST, VX  FX18
-			    if (c1!='T') error();
+			    if (c1!='T') error(eBADARG);
 				b2=0x18;
 				break;
 			default:
-				error();
+				error(eSYNTAX);
 			}
 		}
 	}
@@ -731,11 +743,11 @@ load_done:
 void usage(){
 	puts("PICVisionPortable assembler");
 	puts("USAGE: pvpasm source binary [-p pp_file] [-s labels_file]");
-	puts("'source' is PVP assembly source file.");
-	puts("'binary' is generated binary file to be executed on PVP console.");
+	puts("'source' is CHIPcon(V2) assembly source file.");
+	puts("'binary' is generated binary file to be executed on CHIPcon(V2) console.");
 	puts("'-p' generate a pre-processing 'pp_file'.");
 	puts("'-s' generate a list of labels file.");
-    puts("\t'labels_file' this file can be loaded in pvpemul");
+    puts("\t'labels_file' this file can be loaded in cc2emul");
     puts("\tto add breakpoints at corresponding addresses.");
 	exit (EXIT_FAILURE);
 }
@@ -766,12 +778,13 @@ unsigned parse_string(){
 			if (!escape) quote=true;else{tok_value[i++]=line[inp];escape=false;} 
 			break;
 		default:
-			if ((line[inp]<32)||line[inp]>127) error();else{tok_value[i++]=line[inp];} 
+			//if ((line[inp]<32)||line[inp]>127) error();else{tok_value[i++]=line[inp];}
+            tok_value[i++]=line[inp];			
 			break;
 		}//switch
 		inp++;
 	}//while
-	if (quote){tok_value[i]=0;inp--;} else error();
+	if (quote){tok_value[i]=0;inp--;} else error(eSYNTAX);
 	return i;
 }
 
@@ -869,7 +882,7 @@ void next_token(){
 				inp--;
 				state=5;
 			}else{
-				error();
+				error(eSYNTAX);
 			}
 			break;
 		case 2: // nombre binaire
@@ -879,7 +892,7 @@ void next_token(){
 				inp--;
 				state=5;
 			}else{
-				error();
+				error(eSYNTAX);
 			}
 			break;
 		case 3: // nombre décimal
@@ -889,7 +902,7 @@ void next_token(){
 				inp--;
 				state=5;
 			}else{
-				error();
+				error(eSYNTAX);
 			}
 			break;
 		case 4: // symbole alphanumérique
@@ -903,7 +916,7 @@ void next_token(){
 				inp--;
 				state=5;
 			}else{
-				error();
+				error(eSYNTAX);
 			}
 			break;
 
@@ -919,9 +932,11 @@ void data_byte(){
 	do{
 	   n=expression();
 	   binary[pc++]=n&0xff;
+	   code_size++;
 	   next_token();
-	   if (tok_id && tok_id!=eCOMMA) error();	
+	   if (tok_id && tok_id!=eCOMMA) error(eSYNTAX);	
    }while((pc<MEM_SIZE) && tok_id);
+   if (pc&1) {binary[pc++]=0;code_size++;} //aligne le compteur ordinateur sur adresse paire.
 }
 
 void data_word(){
@@ -931,8 +946,9 @@ void data_word(){
 		n = expression();
 		binary[pc++]=(n>>8)&0xff;
 		binary[pc++]=n&0xff;
+		code_size+=2;
 		next_token();
-		if (tok_id && tok_id!=eCOMMA) error();
+		if (tok_id && tok_id!=eCOMMA) error(eSYNTAX);
 	}while((pc<MEM_SIZE-1) && tok_id);
 }
 
@@ -941,9 +957,13 @@ void data_ascii(){
 	unsigned i=0;
 	
 	next_token();
-	if (tok_id!=eSTRING) error();
-	while ((pc<MEM_SIZE-1) && tok_value[i]) binary[pc++]=tok_value[i++];
-	if (pc<MEM_SIZE) binary[pc++]=0; else {puts("memory overflow");error();}
+	if (tok_id!=eSTRING) error(eSYNTAX);
+	while ((pc<MEM_SIZE-1) && tok_value[i]){
+		binary[pc++]=tok_value[i++];
+		code_size++;
+    }
+	if (pc<MEM_SIZE){binary[pc++]=0;code_size++;}else {error(eMEMORY);}
+	if (pc&1){binary[pc++]=0;code_size++;} //aligne le compteur ordinateur sur adresse paire.
 }
 
 
@@ -957,7 +977,7 @@ void equate(){
 		symbol->value=expression();
 		symbol_list=symbol;
 	}else{
-		error();
+		error(eSYNTAX);
 	}
 }
 
@@ -965,7 +985,7 @@ void define(){
 	char *defn_str;
 	unsigned i, start;
 	next_token();
-	if (tok_id!=eSYMBOL) error();
+	if (tok_id!=eSYMBOL) error(eSYNTAX);
 	skip_white();
 	start=inp;
 	while (line[inp] && line[inp]!= ';') inp++;
@@ -978,18 +998,23 @@ void define(){
 	}
 }
 
-void setPC(){
+/*
+void setPC(){ // ORG directive
 	unsigned n,mark;
 	mark=inp;
 	next_token();
 	if (tok_id!=eNUMBER){
 		inp=mark;
-		error();
+		error(eBADARG);
 	}else{
-		pc=token_to_i()&0xfff;
+		pc=token_to_i()&0x1fff;
+		inp=mark;
+		if (pc&1){ 
+		    error(eALIGN);
+	    }
 	}
 }//f()
-
+*/
 
 unsigned factor(){
 	unsigned n;
@@ -1006,7 +1031,7 @@ unsigned factor(){
 	case eSYMBOL:
 		node=search_symbol(tok_value);
 		if (node) n=node->value; 
-		else error();
+		else error(eEXPRESSION);
 		break;
 	case eNUMBER:
 		n=token_to_i();
@@ -1014,10 +1039,10 @@ unsigned factor(){
 	case eLPAREN:
 		n=expression();
 		next_token();
-		if (tok_id!=eRPAREN) error();
+		if (tok_id!=eRPAREN) error(eEXPRESSION);
 		break;
 	default:
-		error();
+		error(eEXPRESSION);
 	}
 	return n;
 }
@@ -1040,7 +1065,7 @@ unsigned term(){
 			n%=factor();
 			break;
 		default:
-			error();
+			error(eEXPRESSION);
 		}//switch
 		mark=inp;
 		next_token();
@@ -1078,7 +1103,7 @@ void assemble_line(){
 
 		next_token();
 		while (tok_id){
-			if (!(tok_id==eSYMBOL || tok_id==eLABEL)) error();
+			if (!(tok_id==eSYMBOL || tok_id==eLABEL)) error(eSYNTAX);
 			if ((i=search_word(tok_value,mnemonics,KW_COUNT))<KW_COUNT){
 				//operation code
 				switch(i){
@@ -1103,6 +1128,7 @@ void assemble_line(){
 				case ePOP:
 				case eSCRX:
 				case eSCRY:
+				case eSCU:
 					op1(i);
 					break;
 				case eSE:
@@ -1130,7 +1156,7 @@ void assemble_line(){
 				}
 			}else if ((i=search_word(tok_value,directives,DIR_COUNT))<DIR_COUNT){
 				// directive d'assembleur
-				// les directives 'EQU','DEFN' et 'ORG' sont traité par preprocess() 
+				// les directives 'EQU','DEFN'  sont traité par preprocess() 
 				switch(i){
 				case 0: // DB
 					data_byte();
@@ -1141,6 +1167,8 @@ void assemble_line(){
 				case 2:  // ASCII
 					data_ascii();
 					break;
+			    case 5: // END
+					file_done=true;
 				}//switch 
 			}else if (tok_id==eLABEL){
 				// label
@@ -1148,7 +1176,7 @@ void assemble_line(){
 				label_list=add_label(tok_value,pc);
 			}else{
 				//unknown code
-				error();
+				error(eBADMNEMO);
 			}
 			next_token();
 		}//while
@@ -1163,11 +1191,10 @@ void fix_forward_ref(){
 	while (fwd){
 		lbl=search_label(fwd->name);
 		if (lbl){
-			binary[fwd->pc] |= (lbl->addr&0xf00)>>8;
-			binary[fwd->pc+1] = lbl->addr&0xff;
+			binary[fwd->pc] |= (lbl->addr>>9)&0xf;
+			binary[fwd->pc+1] = (lbl->addr>>1)&0xff;
 		}else{
-			printf("undefined reference: %s\n", fwd->name);
-			exit(EXIT_FAILURE);
+			error(eNOTREF);
 		}
 		fwd=fwd->next;
 #if defined DEBUG
@@ -1190,7 +1217,7 @@ bool preprocess(){
 	if (strlen(line)){
 		next_token();
 		if (tok_id==eNONE) return true;
-		if (!(tok_id==eSYMBOL || tok_id==eLABEL)) error();
+		if (!(tok_id==eSYMBOL || tok_id==eLABEL)) error(eSYNTAX);
 		i=search_word(tok_value,directives,DIR_COUNT);
 		if ((i<DIR_COUNT) && (i>1)){
 			switch(i){
@@ -1198,7 +1225,7 @@ bool preprocess(){
 				strcpy(ppline,"ASCII \"");
 				pos=strlen(ppline);
 				next_token();
-				if (tok_id!=eSTRING) error();
+				if (tok_id!=eSTRING) error(eSYNTAX);
 				tok_value[strlen(tok_value)+1]=0;
 				tok_value[strlen(tok_value)]='"';
 				strcpy(&ppline[pos],tok_value);
@@ -1213,9 +1240,6 @@ bool preprocess(){
 				define();
 				completed=true;
 				break;
-			case 5: // ORG
-				setPC();
-				completed=true;
 			}//switch
 		}else{
 			if (ppf) fprintf(ppf,"%d",line_no);
@@ -1304,7 +1328,7 @@ int main(int argc, char **argv){
 	pc=0;
 	memset(line,0,256);
 	line_no=0;
-	while (pc<MEM_SIZE && fgets(line,256,src)){
+	while (!file_done && (pc<(MEM_SIZE-1)) && fgets(line,256,src)){
 		line_no++;
 		if (line[strlen(line)-1]<32) line[strlen(line)-1]=0;
 		inp=0;
@@ -1314,18 +1338,13 @@ int main(int argc, char **argv){
 		}
 		memset(line,0,256);
 	}
-	if (pc>MEM_SIZE-1 && !feof(src)) memory_overflow();
+	if (pc>MEM_SIZE-2 && !feof(src)) error(eMEMORY);
 	fclose(src);
 	fix_forward_ref();
 	fwrite(binary,1,pc,bin);
-/*	
-	for (i=0;i<pc;i++){
-		fputc(binary[i],bin);
-	}
-*/	
 	fclose(bin);
 	if (ppf) fclose(ppf);
-	if (lbl){ //génère le fichier des étiquettes
+	if (lbl){ //labels file 
 		while (label_list){
 			fprintf(lbl,"%s\t%d\n",label_list->name,label_list->addr);
 			label_list=label_list->next;

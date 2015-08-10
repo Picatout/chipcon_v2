@@ -1,5 +1,5 @@
 ;---------------------------------------------------------------------------
-; Copyright 2014, Jacques Deschênes
+; Copyright 2014, 2015 Jacques Deschênes
 ; This file is part of CHIPcon.
 ;
 ;     CHIPcon is free software: you can redistribute it and/or modify
@@ -21,7 +21,7 @@
 ; NOM: LEM
 ; DESCRIPION: Jeux qui consiste à faire alunir le LEM.
 ;             clone d'un jeux datant des années 197x
-;             contrôle:  UP vers le haut
+;             contrôle:  FIRE vers le haut
 ;                       LEFT vers la gauche
 ;                       RIGHT vers la droite
 ;
@@ -56,8 +56,8 @@ equ K_UP_JET    32   ; touche de contrôle du jet vertical
 ;;;;;;;;;;;;;;;;;;;;
 ;;  code segment  ;;
 ;;;;;;;;;;;;;;;;;;;;
-	high
 	cls
+	call show_credit
 	ld score, 0
 	ld set, 0
 next_set:
@@ -338,6 +338,22 @@ prt_fuel_loop:
 	jp prt_fuel_loop
 	ret
 
+show_credit:
+    ld i, credit
+    ld v1, 0
+	scry v2
+    shr v2
+    prt v1,v2
+	scry v1
+scroll_loop:
+    scu 1
+	ld w,3
+	call delay
+	add v1,-1
+	se v1, 0
+	jp scroll_loop
+	ret
+	
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;;     data  segment    ;;
 ;;;;;;;;;;;;;;;;;;;;;;;;;;	
@@ -372,6 +388,8 @@ crash_msg:
 	ascii "you crashed"
 success_msg:
 	ascii "congratulation!"
+credit:
+    ascii "LEM\nJacques Deschenes\nCopyright 2014,2015\nlicence GPLv3"
 	
 ; espace variable BCD
 BCD:
@@ -382,4 +400,5 @@ particles:
 		db 0,0,0,0
 		db 0,0,0,0
 		db 0,0,0,0
-		
+	
+end	

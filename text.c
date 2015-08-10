@@ -317,13 +317,13 @@ void text_scroller(const uint8_t *text, uint8_t speed){
 		while (c && c!='\n'){
 			put_char(c);
 			c=pgm_read_byte(text++);
-			if (joystick_btn_down(BTN_DOWN)) {goto break_out;}
+			if (joystick_break()) {goto break_out;}
 		}
 		for (j=0;j<CHAR_HEIGHT;j++){
 			frame_delay=speed;
 			while(frame_delay);
 			scroll_up(1);
-			if (joystick_btn_down(BTN_DOWN)) {goto break_out;}
+			if (joystick_break()) {goto break_out;}
 		}
 		c=pgm_read_byte(text++);
 	}//while
@@ -331,7 +331,7 @@ void text_scroller(const uint8_t *text, uint8_t speed){
 		frame_delay=speed;
 		while(frame_delay);
 		scroll_up(1);
-		if (joystick_btn_down(BTN_DOWN)) { break;}
+		if (joystick_break()) { break;}
 	}//for
 break_out:	
 	cls();
