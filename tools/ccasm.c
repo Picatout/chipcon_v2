@@ -27,7 +27,7 @@
 #include <string.h>
 #include <stdbool.h>
 
-#define ORG (512)
+#define ORG (0)
 
 typedef struct data_node{
 	char *name;
@@ -77,14 +77,14 @@ unsigned char binary[MEM_SIZE];
 int inp; // pointeur d'analyse ligne d'entrée
 char line[256]; // contient la ligne à analyser
 
-#define KW_COUNT (28)
+#define KW_COUNT (31)
 
 const char *mnemonics[KW_COUNT]={"CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
 						 "SHR","SHL","SKP","SKNP","SE","SNE","ADD","SUB","SUBN","OR","AND","XOR",
-						 "RND","TONE","PRT","PIXI","LD","DRW"};
+						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP"};
 
 typedef enum Mnemo {eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
-                    eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW} mnemo_t;
+                    eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP} mnemo_t;
 						 
 #define DIR_COUNT (5)						 
 const char *directives[]={"DB","DW","ASCII","EQU","DEFN"};
@@ -275,7 +275,7 @@ void op0(mnemo_t code){
 }
 
 // codes avec 1 arguments
-//"SCD","JP","CALL","SHR","SHL","SKP","SKNP" 
+//"SCD","JP","CALL","SHR","SHL","SKP","SKNP","NOISE","PUSH","POP" 
 void op1(mnemo_t code){
 	unsigned b1,b2;
 	node_t *n;
@@ -368,6 +368,20 @@ void op1(mnemo_t code){
 	case eSKNP: // SKNP
 		b1=0xe0|parse_vx();
 		b2=0xa1;
+		break;
+	case eNOISE: // NOISE duration
+		b1=0x90;
+		b2=expression();
+		b1|=(b2&0xf0)>>4;
+		b2 = ((b2&0xf)<<4)+4;
+		break;
+	case ePUSH: // PUSH VX
+		b1=0x90|parse_vx();
+		b2=0x06;
+		break;
+	case ePOP: // POP VX
+	    b1=0x90|parse_vx();
+		b2=0x07;
 		break;
 	}
 	store_code(b1,b2);
@@ -1025,6 +1039,7 @@ void assemble_line(){
 				case eSHL:
 				case eSKP:
 				case eSKNP:
+				case eNOISE:
 					op1(i);
 					break;
 				case eSE:

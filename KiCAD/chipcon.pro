@@ -1,4 +1,4 @@
-update=2014-10-30 16:11:45
+update=2015-08-08 21:12:29
 last_client=eeschema
 [eeschema]
 version=1
@@ -7,7 +7,7 @@ NetFmtName=
 RptD_X=0
 RptD_Y=100
 RptLab=1
-LabSize=59
+LabSize=39
 [eeschema/libraries]
 LibName1=power
 LibName2=device

@@ -1,0 +1,240 @@
+; CAR by Klaus von Sengbusch
+; adapted and modified for CHIPcon V2
+; by Jacques Deschênes, 2015
+;
+
+EQU UP 2
+EQU DOWN 4
+EQU LEFT 8      
+EQU RIGHT 16  
+EQU SELECT 32   
+EQU NO_KEY 255
+
+DEFN SPEED VC
+
+	JP init
+	DB #31, #2E, #30, #30, #20, #4B, #2E, #76
+	DB #2E, #53, #65, #6E, #67, #62, #75, #73
+	DB #63, #68, #20, #32, #34, #2F, #34, #2D
+	DB #27, #39, #34, #00
+init:
+    HIGH
+	LD SPEED, 4  ; added variable speed
+code_01E:
+	CALL set_speed
+	LD V5, 50
+	LD V6, 50
+	LD V7, 40
+	LD V3, V5
+	LD V4, V6
+	LD V2, 100
+	LD V9, 0
+	LD VA, 1
+	LD VB, 0
+code_032:
+	SCD 1
+	CALL code_0B0
+	LD V0, 1
+	SUB V2, V0
+	LD V0, 40
+	SE V2, V0
+	JP code_032
+	LD I, data_138
+	DRW V3, V4, 8
+code_044:
+	LD I, data_138
+	DRW V3, V4, 8
+	SCD 1
+	DRW V5, V6, 8
+	SE VF, 0
+	JP code_078
+	CALL code_0B0
+	LD V0, 1
+	SE V2, 0
+	SUB V2, V0
+	CALL code_0EC
+	LD V3, V5
+	LD V4, V6
+	LD V0, LEFT
+	SKNP V0
+	CALL code_094
+	LD V0, RIGHT
+	SKNP V0
+	CALL code_08C
+	RND V0, #03
+	SNE V0, 0
+	CALL code_09E
+	RND V0, #03
+	SNE V0, 0
+	CALL code_0A6
+;	added variable speed delay
+	LD V0, SPEED
+	CALL delay
+	JP code_044
+code_078:
+	LD V0, VB
+	ADD V0, 3
+	SHR V0
+	SHR V0
+	LD LF, V0
+	LD V0, V7
+	ADD V0, 17
+	LD V1, 27
+	DRW V0, V1, 10
+code_08A: ; collision, game end
+; added code to restart game, J.D. 2015
+	LD V0, 100
+	CALL delay
+	SCD 8
+	LD V0, 0
+	LD V1, 0
+	LD I, prompt
+	PRT V0, V1
+	LD V0, K
+	SNE V0, NO_KEY
+	JP .-2
+	JP code_01E
+code_08C:
+	ADD V5, 1
+	SNE V5, 110
+	LD V5, 109
+	RET
+code_094:
+	LD V0, 1
+	SUB V5, V0
+	SNE VF, 0
+	LD V5, 0
+	RET
+code_09E:
+	ADD V7, 1
+	SNE V7, 70
+	LD V7, 69
+	RET
+code_0A6:
+	LD V0, 1
+	SUB V7, V0
+	SNE V7, 20
+	LD V7, 21
+	RET
+code_0B0:
+	LD V0, V9
+	LD V1, 45
+	SUB V1, V0
+	LD V8, V1
+	LD V1, 0
+	LD V0, V7
+	LD I, data_12C
+	DRW V0, V1, 1
+	ADD V0, V8
+	LD V1, 0
+	DRW V0, V1, 1
+	ADD VA, 1
+	SNE VA, 4
+	LD VA, 1
+	SNE VA, 1
+	LD I, data_12E
+	SNE VA, 2
+	LD I, data_130
+	SNE VA, 3
+	LD I, data_132
+	LD V1, 0
+	LD V0, 0
+	DRW V0, V1, 1
+	LD V0, 8
+	DRW V0, V1, 1
+	LD V0, 112
+	DRW V0, V1, 1
+	LD V0, 120
+	DRW V0, V1, 1
+	RET
+code_0EC:
+	SE V2, 0
+	RET
+	RND V0, #0F
+	ADD V0, V7
+	ADD V0, 8
+	LD V1, 0
+	LD I, data_138
+	LD V2, 45
+	SNE VB, 30
+	CALL code_110
+	SE VB, 33
+	DRW V0, V1, 8
+	ADD VB, 1
+	LD V0, V9
+	SUB V2, V0
+	SE V9, 11
+	ADD V9, 1
+	RET
+code_110:
+	ADD VB, 3
+	LD I, data_134
+	LD V0, V7
+	ADD V0, 5
+	DRW V0, V1, 1
+	ADD V0, 8
+	DRW V0, V1, 1
+	ADD V0, 8
+	DRW V0, V1, 1
+	ADD V0, 8
+	LD I, data_136
+	DRW V0, V1, 1
+	LD V2, 100
+	RET
+; added by J.D. 2015
+set_speed:
+	CLS
+	LD V0, 0
+	LD V1, 0
+	LD I, speed_prompt
+	PRT V0,V1
+	LD V2, 8
+	SUB V2, VC
+	LD F, V2
+	LD V0, 42
+    DRW V0,V1, 5
+	LD V0, K
+	SNE V0, UP
+	CALL incr_speed
+	SNE V0, DOWN
+	CALL decr_speed
+	SE V0, SELECT
+	JP set_speed
+	CLS
+	RET
+decr_speed:
+    SE SPEED, 7 
+	ADD SPEED, 1
+	JP .+3
+incr_speed:
+	SE SPEED, 1
+	ADD SPEED, 255
+	LD V0, 15
+delay:
+	LD DT, V0
+	LD V0, DT
+	SE V0, 0
+	JP .-2
+	RET
+	
+;****************
+	
+data_12C:
+	DB #88, #00
+data_12E:
+	DB #88, #00
+data_130:
+	DB #55, #00
+data_132:
+	DB #22, #00
+data_134:
+	DB #FF, #00
+data_136:
+	DB #F8, #00
+data_138:
+	DB #DB, #FF, #DB, #18, #24, #E7, #E7, #DB
+prompt:
+	ASCII "any key..."
+speed_prompt:
+	ASCII "speed: "
+	

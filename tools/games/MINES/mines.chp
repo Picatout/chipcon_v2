@@ -1,0 +1,545 @@
+; Mines hunter
+; David Winter
+; copyright 1997
+; adapted to PICVisionPortable by Jacques Deschênes
+
+EQU UP 2
+EQU DOWN 4
+EQU LEFT 8
+EQU SELECT 32
+EQU RIGHT 16
+
+	JP code_01D
+	DB #4D, #49, #4E, #45, #53, #21, #20, #31
+	DB #2E, #30, #30, #20, #42, #79, #20, #44
+	DB #61, #76, #69, #64, #20, #57, #49, #4E
+	DB #54, #45, #52
+code_01D:
+	HIGH
+	CLS
+	LD V0, 0
+	LD V1, 0
+	LD V2, 32
+	LD I, data_326
+code_029:
+	DRW V0, V1, 0
+	ADD I, V2
+	ADD V1, 16
+	SE V1, 64
+	JP code_029
+	LD V1, 0
+	ADD V0, 16
+	SE V0, 128
+	JP code_029
+	LD VC, 1
+	CALL code_26F
+code_03F:
+	LD V0, 10
+	CALL delay
+	LD V3, K
+	SE V3, LEFT
+	JP code_04F
+	CALL code_26F
+	ADD VC, 255
+	SNE VC, 0
+	LD VC, 5
+	CALL code_26F
+code_04F:
+	SE V3, RIGHT
+	JP code_05D
+	CALL code_26F
+	ADD VC, 1
+	SNE VC, 6
+	LD VC, 1
+	CALL code_26F
+code_05D:
+	SE V3, SELECT
+	JP code_03F
+	LD V0, VC
+	ADD VC, VC
+	ADD VC, VC
+	ADD VC, VC
+	ADD VC, V0
+	ADD VC, V0
+	LD VA, 162
+	SUB VA, VC
+	CLS
+	LD V0, 42
+	LD V1, 29
+	LD V2, 5
+	LD I, data_308
+code_07B:
+	DRW V0, V1, 5
+	ADD I, V2
+	ADD V0, 8
+	SE V0, 90
+	JP code_07B
+	LD I, data_753
+	LD V0, 0
+	LD V1, 1
+	LD V2, 0
+code_08D:
+	LD [I], V0
+	ADD I, V1
+	ADD V2, 1
+	SE V2, 162
+	JP code_08D
+	LD V3, 0
+code_099:
+	LD I, data_753
+	RND V1, #FF
+	LD V2, 161
+	SUB V2, V1
+	SE VF, 1
+	JP code_099
+	ADD I, V1
+	LD V0, [I]
+	SE V0, 0
+	JP code_099
+	LD V0, 1
+	LD [I], V0
+	ADD V3, 1
+	SE V3, VC
+	JP code_099
+	CLS
+	LD V0, 0
+	LD V1, 0
+	LD I, data_287
+code_0BF:
+	DRW V0, V1, 0
+	ADD V1, 14
+	SE V1, 56
+	JP code_0BF
+	DRW V0, V1, 0
+	LD V1, 0
+	ADD V0, 14
+	SE V0, 126
+	JP code_0BF
+	LD I, data_2A7
+code_0D3:
+	DRW V0, V1, 8
+	ADD V1, 8
+	SE V1, 64
+	JP code_0D3
+	LD VD, 0
+	LD VE, 0
+	CALL code_255
+code_0E1:
+	LD V0, 10
+	CALL delay
+	LD V2, K
+	SE V2, UP
+	JP code_0F1
+	CALL code_255
+	ADD VE, 255
+	SNE VE, 255
+	LD VE, 8
+	CALL code_255
+code_0F1:
+	SE V2, LEFT
+	JP code_0FF
+	CALL code_255
+	ADD VD, 255
+	SNE VD, 255
+	LD VD, 17
+	CALL code_255
+code_0FF:
+	SE V2, RIGHT
+	JP code_10D
+	CALL code_255
+	ADD VD, 1
+	SNE VD, 18
+	LD VD, 0
+	CALL code_255
+code_10D:
+	SE V2, DOWN
+	JP code_11B
+	CALL code_255
+	ADD VE, 1
+	SNE VE, 9
+	LD VE, 0
+	CALL code_255
+code_11B:
+	SE V2, S_RIGHT
+	JP code_135
+	CALL code_22D
+	LD V1, V0
+	LD V2, 2
+	AND V1, V2
+	SNE V1, 2
+	JP code_135
+	LD V1, 4
+	XOR V0, V1
+	LD [I], V0
+	CALL code_251
+	CALL code_24D
+code_135:
+	SE V2, SELECT
+	JP code_0E1
+	CALL code_22D
+	LD V3, V0
+	LD V2, 2
+	AND V3, V2
+	SNE V3, 2
+	JP code_0E1
+	OR V0, V2
+	LD [I], V0
+	CALL code_255
+	CALL code_22D
+	LD V3, V0
+	LD V2, 1
+	AND V3, V2
+	SNE V3, 1
+	JP code_1FB
+	CALL code_22D
+	LD V3, V0
+	LD V2, 4
+	AND V3, V2
+	SNE V3, 4
+	CALL code_24D
+	SNE V3, 0
+	CALL code_251
+	LD VB, 0
+	SNE VD, 0
+	JP code_17B
+	SNE VE, 0
+	JP code_17B
+	ADD VD, 255
+	ADD VE, 255
+	CALL code_22D
+	ADD VD, 1
+	ADD VE, 1
+code_17B:
+	SNE VE, 0
+	JP code_185
+	ADD VE, 255
+	CALL code_22D
+	ADD VE, 1
+code_185:
+	SNE VD, 17
+	JP code_197
+	SNE VE, 0
+	JP code_197
+	ADD VD, 1
+	ADD VE, 255
+	CALL code_22D
+	ADD VD, 255
+	ADD VE, 1
+code_197:
+	SNE VD, 0
+	JP code_1A1
+	ADD VD, 255
+	CALL code_22D
+	ADD VD, 1
+code_1A1:
+	SNE VD, 17
+	JP code_1AB
+	ADD VD, 1
+	CALL code_22D
+	ADD VD, 255
+code_1AB:
+	SNE VD, 0
+	JP code_1BD
+	SNE VE, 8
+	JP code_1BD
+	ADD VD, 255
+	ADD VE, 1
+	CALL code_22D
+	ADD VD, 1
+	ADD VE, 255
+code_1BD:
+	SNE VE, 8
+	JP code_1C7
+	ADD VE, 1
+	CALL code_22D
+	ADD VE, 255
+code_1C7:
+	SNE VD, 17
+	JP code_1D9
+	SNE VE, 8
+	JP code_1D9
+	ADD VD, 1
+	ADD VE, 1
+	CALL code_22D
+	ADD VD, 255
+	ADD VE, 255
+code_1D9:
+	SNE VB, 0
+	JP code_1EF
+	ADD VB, 255
+	LD I, data_2CF
+	LD V0, VB
+	ADD V0, V0
+	ADD V0, V0
+	ADD V0, V0
+	SUB V0, VB
+	ADD I, V0
+	CALL code_257
+code_1EF:
+	CALL code_255
+	ADD VA, 255
+	SE VA, 0
+	JP code_0E1
+	CALL code_255
+	JP code_22B
+code_1FB:
+	LD VD, 0
+	LD VE, 0
+code_1FF:
+	CALL code_22D
+	LD V1, 1
+	AND V0, V1
+	SE V0, 1
+	JP code_21D
+	CALL code_22D
+	LD V1, 4
+	AND V0, V1
+	LD V3, V0
+	SNE V0, 4
+	CALL code_24D
+	SE V3, 4
+	CALL code_251
+	LD I, data_2BF
+	CALL code_257
+code_21D:
+	ADD VD, 1
+	SE VD, 18
+	JP code_1FF
+	LD VD, 0
+	ADD VE, 1
+	SE VE, 9
+	JP code_1FF
+code_22B:
+	JP code_22B
+code_22D:
+	LD I, data_753
+	LD V0, VE
+	ADD V0, V0
+	ADD V0, V0
+	ADD V0, V0
+	ADD V0, V0
+	ADD V0, VE
+	ADD V0, VE
+	ADD V0, VD
+	ADD I, V0
+	LD V0, [I]
+	LD V1, V0
+	LD V4, 1
+	AND V1, V4
+	ADD VB, V1
+	RET
+code_24D:
+	LD I, data_2B7
+	JP code_257
+code_251:
+	LD I, data_2C7
+	JP code_257
+code_255:
+	LD I, data_2AF
+code_257:
+	LD V0, VD
+	LD V1, VE
+	ADD V0, V0
+	ADD V0, V0
+	ADD V0, V0
+	SUB V0, VD
+	ADD V1, V1
+	ADD V1, V1
+	ADD V1, V1
+	SUB V1, VE
+	DRW V0, V1, 8
+	RET
+code_26F:
+	LD V0, 86
+	LD V1, 47
+	LD I, data_726
+	LD V2, VC
+	ADD V2, V2
+	ADD V2, V2
+	ADD V2, V2
+	ADD V2, VC
+	ADD V2, 247
+	ADD I, V2
+	DRW V0, V1, 9
+	RET
+delay:
+	LD DT, V0
+	LD V0, DT
+	SE V0, 0
+	JP .-2
+	RET
+	
+data_287:
+	DB #FF, #FC, #D5, #A8, #AB, #54, #D5, #A8
+	DB #AB, #54, #D5, #A8, #AB, #54, #FF, #FC
+	DB #D5, #A8, #AB, #54, #D5, #A8, #AB, #54
+	DB #D5, #A8, #AB, #54, #00, #00, #00, #00
+
+data_2A7:
+	DB #80, #80, #80, #80, #80, #80, #80, #80
+
+data_2AF:
+	DB #FF, #FF, #FF, #FF, #FF, #FF, #FF, #FF
+
+data_2B7:
+	DB #00, #00, #18, #3C, #3C, #18, #00, #00
+
+data_2BF:
+	DB #00, #18, #3C, #7E, #7E, #3C, #18, #00
+
+data_2C7:
+	DB #00, #54, #2A, #54, #2A, #54, #2A, #00
+
+data_2CF:
+	DB #00, #76, #66, #56, #76, #76, #42, #00
+	DB #66, #5A, #7A, #66, #5E, #42, #00, #46
+	DB #7A, #7A, #46, #7A, #46, #00, #5A, #5A
+	DB #5A, #62, #7A, #7A, #00, #42, #5E, #46
+	DB #7A, #7A, #46, #00, #62, #5E, #46, #5A
+	DB #5A, #66, #00, #42, #7A, #72, #66, #6E
+	DB #6E, #00, #66, #5A, #5A, #66, #5A, #66
+	DB #00
+data_308:
+	DB #E8, #A8, #E8, #88, #8E, #EE, #8A, #CE
+	DB #8A, #EA, #EE, #88, #EC, #28, #EE, #11
+	DB #11, #15, #1B, #11, #77, #52, #72, #52
+	DB #57, #70, #20, #20, #20, #20
+data_326:
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #FE, #00, #3E, #00, #1E, #00, #1F
+	DB #00, #17, #00, #17, #00, #13, #00, #13
+	DB #00, #13, #00, #11, #00, #11, #00, #10
+	DB #00, #10, #00, #10, #00, #10, #00, #10
+	DB #00, #10, #00, #10, #00, #10, #00, #10
+	DB #00, #38, #00, #FE, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #7E, #00, #18
+	DB #00, #18, #00, #18, #00, #18, #00, #18
+	DB #00, #18, #00, #18, #00, #18, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #0F, #00, #0F, #00, #1E, #00, #1E
+	DB #00, #1E, #80, #3E, #80, #3E, #80, #4E
+	DB #C0, #4E, #C0, #4E, #E0, #8E, #E0, #8E
+	DB #E1, #0E, #F1, #0E, #71, #0E, #7A, #0E
+	DB #3A, #0E, #3C, #0E, #1C, #0E, #1C, #0E
+	DB #08, #1F, #08, #7F, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #60, #00, #60, #00
+	DB #7C, #3C, #66, #66, #66, #66, #66, #7E
+	DB #66, #60, #66, #60, #66, #3C, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #1F, #00, #10, #00, #10, #00, #17
+	DB #00, #11, #00, #11, #00, #11, #00, #11
+	DB #00, #11, #00, #11, #00, #11, #00, #17
+	DB #00, #10, #00, #10, #00, #1F, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #CF, #F9, #03, #E0, #01, #C0, #01, #C0
+	DB #01, #C0, #01, #C0, #01, #C0, #01, #C0
+	DB #01, #C0, #01, #C0, #01, #C0, #01, #C0
+	DB #01, #C0, #01, #C0, #01, #C0, #01, #C0
+	DB #01, #C0, #01, #C0, #01, #C0, #01, #C0
+	DB #03, #E0, #CF, #F9, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #7E, #00, #6B, #00, #6B, #00, #6B
+	DB #00, #6B, #00, #6B, #00, #63, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #FF, #FF, #00, #00, #00, #00, #C7, #F7
+	DB #02, #12, #02, #02, #02, #42, #03, #C1
+	DB #02, #41, #02, #01, #12, #10, #F7, #F0
+	DB #00, #00, #00, #00, #FF, #FF, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #F0, #07, #78, #01, #3C, #00, #3C, #00
+	DB #3E, #00, #2F, #00, #27, #80, #27, #80
+	DB #23, #C0, #21, #E0, #20, #F0, #20, #F0
+	DB #20, #78, #20, #3C, #20, #1E, #20, #1E
+	DB #20, #0F, #20, #07, #20, #03, #20, #03
+	DB #70, #01, #FC, #00, #00, #00, #00, #00
+	DB #00, #00, #18, #00, #18, #00, #00, #00
+	DB #78, #7C, #18, #66, #18, #66, #18, #66
+	DB #18, #66, #18, #66, #7E, #66, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #FF, #FF, #00, #00, #00, #00, #77, #F7
+	DB #22, #11, #22, #01, #22, #41, #43, #C1
+	DB #42, #41, #42, #01, #82, #11, #87, #F7
+	DB #00, #00, #00, #00, #FF, #FF, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #F3, #FF, #C0, #F8, #80, #70, #80, #70
+	DB #80, #70, #80, #70, #80, #70, #80, #70
+	DB #80, #70, #80, #70, #80, #7F, #80, #70
+	DB #80, #70, #80, #70, #80, #70, #80, #70
+	DB #80, #70, #80, #70, #80, #70, #80, #70
+	DB #80, #F8, #83, #FF, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #60, #00, #60
+	DB #3C, #7C, #66, #66, #66, #66, #7E, #66
+	DB #60, #66, #60, #66, #3C, #66, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #FF, #FF, #00, #00, #00, #00, #C0, #00
+	DB #00, #00, #00, #00, #00, #80, #00, #00
+	DB #00, #00, #00, #00, #10, #00, #F0, #80
+	DB #00, #00, #00, #00, #FF, #FF, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #FC, #01, #0C, #07, #04, #0E, #04, #0E
+	DB #00, #1E, #00, #1E, #00, #1E, #10, #0F
+	DB #10, #0F, #30, #07, #F0, #03, #30, #00
+	DB #10, #00, #10, #00, #00, #00, #00, #00
+	DB #00, #10, #00, #10, #01, #18, #03, #1C
+	DB #0E, #1E, #FE, #13, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #66, #7C, #66, #66, #66, #66, #66, #66
+	DB #66, #66, #66, #66, #3E, #66, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #FF, #FF, #00, #00, #00, #00, #00, #01
+	DB #00, #02, #00, #02, #00, #02, #00, #02
+	DB #00, #02, #00, #02, #00, #02, #00, #01
+	DB #00, #00, #00, #00, #FF, #FF, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #F9, #00, #0F, #00, #03, #00, #01, #00
+	DB #01, #00, #00, #00, #00, #00, #00, #00
+	DB #C0, #00, #F0, #00, #F8, #00, #FE, #00
+	DB #7F, #00, #1F, #00, #0F, #80, #07, #80
+	DB #07, #80, #07, #80, #07, #00, #07, #00
+	DB #0E, #00, #F8, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #30, #00, #30, #00
+	DB #7E, #3C, #30, #66, #30, #66, #30, #7E
+	DB #30, #60, #30, #60, #1E, #3C, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #F8, #00, #08, #00, #08, #00, #C8, #00
+	DB #28, #00, #28, #00, #28, #00, #28, #00
+	DB #28, #00, #28, #00, #28, #00, #C8, #00
+	DB #08, #00, #08, #00, #F8, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #02, #00
+	DB #07, #00, #07, #00, #07, #00, #07, #00
+	DB #07, #00, #07, #00, #07, #00, #07, #00
+	DB #07, #00, #02, #00, #02, #00, #02, #00
+	DB #02, #00, #02, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #02, #00, #07, #00
+	DB #07, #00, #02, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #66, #00, #6E, #00, #70, #00, #60, #00
+	DB #60, #00, #60, #00, #60, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00, #00, #00, #00
+
+data_726:
+	DB #20, #E0, #20, #20, #20, #20, #20, #20
+	DB #F8, #70, #88, #08, #08, #10, #20, #40
+	DB #80, #F8, #70, #88, #08, #08, #30, #08
+	DB #08, #88, #70, #10, #30, #30, #50, #50
+	DB #90, #F8, #10, #38, #F8, #80, #80, #80
+	DB #F0, #08, #08, #88, #70
+data_753:
+

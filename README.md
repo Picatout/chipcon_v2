@@ -5,7 +5,7 @@ console de jeux rétro conçue avec un Atmega328P
 
 caractéristiques:
 =================
-* Version modifiée de la console CHIPCON https://github.com/picatout/chipcon
+* Version modifiée de la console CHIPCON (https://github.com/picatout/chipcon)
 * sortie vidéo monochrome NTSC
 * résolution vidéo: 128x88
 * sortie son tonalité.

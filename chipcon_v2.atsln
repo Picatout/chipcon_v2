@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "chipcon_v2", "chipcon_v2.cproj", "{E81C2249-8910-44EC-8151-06575424948F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{E81C2249-8910-44EC-8151-06575424948F}.Debug|AVR.ActiveCfg = Debug|AVR
+		{E81C2249-8910-44EC-8151-06575424948F}.Debug|AVR.Build.0 = Debug|AVR
+		{E81C2249-8910-44EC-8151-06575424948F}.Release|AVR.ActiveCfg = Release|AVR
+		{E81C2249-8910-44EC-8151-06575424948F}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
