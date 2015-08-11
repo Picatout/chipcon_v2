@@ -1,30 +1,70 @@
 ﻿<!doctype html>
 <html>
 <header>
-<title>CHIPcon Virtual machine opcodes</title>
+<title>SCHIP+ Virtual machine opcodes</title>
 </header>
 <body>
+<h2> codes machines SCHIP+</h4>
+<h4>Présentation</h4>
+<p>
+   SCHIP+ est une machine virtuelle inspirée de SCHIP elle-même étant une extension de <a href="https://fr.wikipedia.org/wiki/CHIP-8">CHIP-8.</a>
+   Cette machine virtuelle fait partie du projet <a href="https://github.com/Picatout/chipcon_v2">CHIPcon V2</a>.
+   Ce document présente les codes opérationnels de cette machine virtuelle. Bien qu'elle soit une version modifiée de SCHIP
+    elle n'est pas compatible avec celle-ci pour les raisons suivantes:
+	<ul>
+	<li>Les programmes sont chargée à l'adresse 0 plutôt que 512.</li>
+	<li>Certaines instructions de SCHIP sont ignorées</li>
+	<li>Les instructions qui modifient le contenu des registres <b>PC</b> et <b>I</b> ont été modifiées pour doubler l'espace d'adressage.</li>
+	<li>De nouvelles instructions ont étées ajoutées.</li>
+	</ul>
+</p>
+<h4>Modèle de programmation de la VM</h4>
+<p>
+<div style="border:solid;margin:auto;width:320px;">
+   <img src="SCHIP+VM.PNG" alt="machine virtuelle SCHIP+" width="300" height="300">
+</div>
+  Le registres de cette machine sont les même que SCHIP. Les registres <b>SP</b>, <b>VX</b> et <b>RX</b> ont 8 bits.
+Les registres <b>I</b> et <b>PC</b> sont de 16 bits. Les instructions sont encodées sur 16 bits et les adresses 
+litérales encodées dans les instrucitons sont de 12 bits. Ce qui pour les machines
+ <b>CHIP-8</b> et <b>SCHIP</b> limitait l'espace d'adressage à 4096 octets. Cependant comme les instructions sont encodées 
+sur 16 bits le compteur ordinal <b>PC</b> est incrémenté de 2 à chaque instruction. Donc ont peut doubler l'espace d'adressage 
+simplement en multipliant les adresses par 2 avant de les charger dans les registres <b>PC</b> ou <b>I</b>. De cette façon 
+avec une petite modification de la mécanine interne de la VM et de l'assembleur il est possible d'addresser 8192 octets.
+Le registre <b>I</b> peut cependant encore adresser des octets aux adresses impaires puisqu'il peut être incrémenter de 1 par 
+ par l'instruction <b>ADD I, VX</b>. L'assembleur s'assure tant qu'à lui  que les adresses contenu dans le <b>PC</b> sont toujours paires.
+Donc toutes les étiquettes définies dans le programme source sont alignées sur des adresses paires. Donc lorsqu'on définies plusieurs variables
+comme ceci:
+<pre><code>
+acceleration: db 1
+vitesse: db 34
+</code></pre>
+La variable <b>vitesse</b> est à une adresse paire même si la variable qui la précède occupe seulement 1 octet.
+L'octet libre est mis à zéro par l'assembleur.
+  
+</p>
+<h4>Description du jeux d'instructions</h4>
 <p>
 Dans la table ci-bas  <b>NNN</b> représente un nombre de 12 bits en hexadécimal (000-FFF).<br>
 <b>KK</b> représente une constante de 8 bits en hexadécimal (00-FF).<br>
 <b>X et Y</b> représentent un registre V en hexadécimal (0-F).<br>
-Les instructions suivies d'un <b>*</b> sont spécifiques à SCHIP.<br>
-Les instructions suivies de <b>**</b> sont spécifiques à CHIPcon.<br>
+Les instructions suivies d'un <b>*</b> sont des instructions SCHIP ignorées par cette machine virtuelle.<br>
+Les instructions suivies de <b>**</b> sont spécifiques à cette machine virtuelle.<br>
+Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 et SCHIP<br>
 </p> 
 <p>
 <table border="single"> 
 <tr><th>OPCODE</th><th>Mnémonique</th><th>Description</th></tr>
-<tr><td>00CN*</td><td>SCD N</td><td>défile l'affichage vers le bas de N lignes.</td></tr>
+<tr><td>00CN</td><td>SCD N</td><td>défile l'affichage vers le bas de N lignes.</td></tr>
 <tr><td>00DN**</td><td>SCU N</td><td>défile l'affichage vers le haut de N lignes.</td></tr>
 <tr><td>00E0</td><td>CLS</td><td>Efface l'affichage.</td></tr>
 <tr><td>00EE</td><td>RET</td><td>Quitte une sous-routine.</td></tr>
-<tr><td>00FB*</td><td>SCR</td><td>Défile l'écran vers la droite de 4 pixels.</td></tr>
-<tr><td>00FC*</td><td>SCL</td><td>Défile l'écran vers la gauche de 4 pixels.</td></tr>
-<tr><td>00FD*</td><td>EXIT</td><td>Fin de programme, quitte la machine virtuelle.</td></tr>
-<tr><td>00FE*</td><td>LOW</td><td>Désactive le mode SCHIP, retour au mode CHIP-8 de 64x32 pixels. <b>Instruction ignorée par CHIPcon.</b></td></tr>
-<tr><td>00FF*</td><td>HIGH</td><td>Active le mode étendu, 128x64 pixels. <b>Instruction ignorée par CHIPcon qui demeure toujours dans ce mode.</b></td></tr>
-<tr><td>1NNN</td><td>JP NNN</td><td>Saute à l'adresse NNN.</td></tr>
-<tr><td>2NNN</td><td>CALL NNN</td><td>Exécute la sous-routine à l'adresse NNN.</td></tr>
+<tr><td>00FB</td><td>SCR</td><td>Défile l'écran vers la droite de 4 pixels.</td></tr>
+<tr><td>00FC</td><td>SCL</td><td>Défile l'écran vers la gauche de 4 pixels.</td></tr>
+<tr><td>00FD</td><td>EXIT</td><td>Fin de programme, quitte la machine virtuelle.</td></tr>
+<tr><td>00FE*</td><td>LOW</td><td>Désactive le mode SCHIP, retour au mode CHIP-8 de 64x32 pixels. <b>Instruction ignorée par CHIPcon V2.</b></td></tr>
+<tr><td>00FF*</td><td>HIGH</td><td>Active le mode étendu, 128x64 pixels. <b>Instruction ignorée par CHIPcon V2.</b></td></tr>
+<tr><td>1NNN***</td><td>JP NNN</td><td>Saute à l'adresse 2*NNN.</td></tr>
+<tr><td>2NNN***</td><td>CALL NNN</td><td>Exécute la sous-routine à l'adresse 2*NNN.</td></tr>
 <tr><td>3XKK</td><td>SE VX, KK</td><td>Saute l'instruction suivante si VX == KK </td></tr>
 <tr><td>4XKK</td><td>SNE VX, KK</td><td>Saute l'instruction suivante si VX <> KK </td></tr>
 <tr><td>5XY0</td><td>SE VX, VY</td><td>Saute l'instruction suivante si VX == VY </td></tr>
@@ -43,16 +83,16 @@ Les instructions suivies de <b>**</b> sont spécifiques à CHIPcon.<br>
 <tr><td>9XY1**</td><td>TONE VX, VY</td><td>Fais entendre une note de la gamme tempérée. VX note entre 0-F. 0=DO4, F=RÉ5#. VY durée.</td>
 <tr><td>9XY2**</td><td>PRT VX, VY</td><td>imprime une chaîne texte à l'écran. VX coordonnée X et VY coordonnée Y. Le texte est pointé par I. I est incrémenté.</td>
 <tr><td>9XY3**</td><td>PIXI VX, VY</td><td>Inverse le pixel aux coordonnées indiquées par VX,VY.</td>
-<tr><td>9NN4**</td><td>NOISE NN</td><td>bruit blanc d'une durée de NN*8msec. N'attend pas la fin.</td></tr>
+<tr><td>9NN4**</td><td>NOISE NN</td><td>bruit blanc d'une durée de NN*8msec.</td></tr>
 <tr><td>9XY5**</td><td>TONE VX, VY, WAIT</td><td>Fais entendre une note de la gamme tempérée. VX note entre 0-F. 0=DO4, F=RÉ5#. VY durée. Attend la fin de la note avant de poursuivre.</td>
-<tr><td>9X06</td><td>PUSH VX</td><td>empile la valeur du registre VX</td></tr>
-<tr><td>9X07</td><td>POP VX</td><td>dépile dans le registre VX</td></tr>
-<tr><td>9X08</td><td>SCRX VX</td><td>VX = pixels horizontaux.</td></tr>
-<tr><td>9X09</td><td>SCRY VX</td><td>VX = pixels verticaux.</td></tr>
-<tr><td>ANNN</td><td>LD I, NNN</td><td>I := NNN </td></tr>
-<tr><td>BNNN</td><td>JP V0, NNN</td><td>saute à l'adresse NNN+V0 </td></tr>
+<tr><td>9X06**</td><td>PUSH VX</td><td>empile la valeur du registre VX</td></tr>
+<tr><td>9X07**</td><td>POP VX</td><td>dépile dans le registre VX</td></tr>
+<tr><td>9X08**</td><td>SCRX VX</td><td>VX = pixels horizontaux.</td></tr>
+<tr><td>9X09**</td><td>SCRY VX</td><td>VX = pixels verticaux.</td></tr>
+<tr><td>ANNN***</td><td>LD I, NNN</td><td>I := 2*NNN </td></tr>
+<tr><td>BNNN***</td><td>JP V0, NNN</td><td>saute à l'adresse 2*(NNN+V0)</td></tr>
 <tr><td>CXKK</td><td>RND VX, KK</td><td>VX := nombre aléatoire and KK </td></tr>
-<tr><td>DXYN*</td><td>DRW VX, VY, N</td><td>Affiche un sprite de  N-octets aux coordonnées d'écran VX, VY.<br>
+<tr><td>DXYN</td><td>DRW VX, VY, N</td><td>Affiche un sprite de  N-octets aux coordonnées d'écran VX, VY.<br>
        Le contenu du sprite se trouve à l'adresse débutan M(I).<br>
        VF := 1 si il y a collision.<br>
        Si N==0 indique un sprite de 16x16 pixels.</td></tr>
@@ -64,12 +104,12 @@ Les instructions suivies de <b>**</b> sont spécifiques à CHIPcon.<br>
 <tr><td>FX18</td><td>LD ST, VX</td><td>minuterie son := VX, La minuterie est décrémentée, le son s'arrête lorsqu'elle atteint zéro. </td></tr>
 <tr><td>FX1E</td><td>ADD I, VX</td><td>I := I + VX </td></tr>
 <tr><td>FX29</td><td>LD F, VX</td><td>VX contient une valeur entre 0 et 15. La valeur du registre I est ajusté au début du sprite qui représente ce caractère dans la table  3x5.</td></tr>
-<tr><td>FX30*</td><td>LD LF, VX</td><td>VX contient une valeur entre 0 et 9. La valeur du registre I est ajusté au début du sprite qui représente ce caractère dans la table 8x10.</td></tr>
+<tr><td>FX30</td><td>LD LF, VX</td><td>VX contient une valeur entre 0 et 9. La valeur du registre I est ajusté au début du sprite qui représente ce caractère dans la table 8x10.</td></tr>
 <tr><td>FX33</td><td>LD B, VX</td><td>Met à l'adresse M(I)..M(I+2) la valeur BCD du nombre qui est dans VX.</td></tr>
 <tr><td>FX55</td><td>LD [I], VX</td><td>Enregistres les valeurs des registres V0..VX dans la mémoire RAM en débutant à l'adresse M(I).</td></tr>
 <tr><td>FX65</td><td>LD VX, [I]</td><td>Charge les V0..VX à partir de la mémoire RAM en débutant à l'adresse M(I).</td></tr>
-<tr><td>FX75*</td><td>LD R, VX</td><td>Sauvegarde les registres V0..VX dans la banque de registres RPL.</td></tr>
-<tr><td>FX85*</td><td>LD VX, R</td><td>Charge les registres V0..VX à partir des registres RPL.</td></tr>
+<tr><td>FX75</td><td>LD R, VX</td><td>Sauvegarde les registres V0..VX dans la banque de registres RPL.</td></tr>
+<tr><td>FX85</td><td>LD VX, R</td><td>Charge les registres V0..VX à partir des registres RPL.</td></tr>
 </table>
 </p>
 </body>

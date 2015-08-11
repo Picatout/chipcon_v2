@@ -54,6 +54,7 @@
 #include "car.h"
 #include "worm.h"
 #include "alien.h"
+#include "blinky.h"
 
 extern vm_state_t vms;
 
@@ -67,7 +68,7 @@ void load_flash_game(const uint8_t *addr,uint16_t size){
 }
 
 #define MAX_ENTRIES (2048)
-#define DISPLAY_LINES (8)
+#define DISPLAY_LINES (10)
 
 
 
@@ -157,7 +158,7 @@ int16_t select_file(int16_t fcount){
 		default:
 			break;
 		}//switch
-		while (_joystick_state()!=JSTK_IMASK)key_tone(key,2,false);
+		while (_joystick_state()!=JSTK_IMASK)key_tone(key,2,true);
 	}//while	
 }
 
@@ -194,7 +195,7 @@ void games_on_sdcard(){
 	if (fcount && ((selected=select_file(fcount))>-1)){
 		if (fs_load_file(selected)){
 			cls();
-			if (schip(F_RESET)==CHIP_BAD_OPCODE){
+			if (schipp(F_RESET)==CHIP_BAD_OPCODE){
 				print_vms(PSTR("CRASH! bad opcode\n"));
 			}
 		}
@@ -208,6 +209,7 @@ PROGMEM const uint8_t flash_games[]=
 "CAR\n"
 "WORM\n"
 "ALIEN\n"
+"BLINKY\n"
 "";
 
 
@@ -253,12 +255,12 @@ void games_in_flash(){
 		load_flash_game(alien,ALIEN_SIZE);
 //		text_scroller(alien_info,4);
 		break;
-/*
-	case 4:
-		load_flash_game(mines,MINES_SIZE);
-		text_scroller(mines_info,4);
-		break;
 
+	case 4:
+		load_flash_game(blinky,BLINKY_SIZE);
+//		text_scroller(mines_info,4);
+		break;
+/*
 	case 5:
 		load_flash_game(magic_square,SQUARE_SIZE);
 		text_scroller(magic_square_info,4);
@@ -277,9 +279,9 @@ void games_in_flash(){
 	}
 	cls();
 #if FW_DEBUG	
-	schip(F_DEBUG|F_RESET);
+	schipp(F_DEBUG|F_RESET);
 #else
-	if (schip(F_RESET)==CHIP_BAD_OPCODE){
+	if (schipp(F_RESET)==CHIP_BAD_OPCODE){
 		print_vms(PSTR("CRASH! bad opcode\n"));	
 	};
 #endif

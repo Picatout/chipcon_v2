@@ -174,15 +174,8 @@ collision:
 	sub w, hspeed
 	se carry, 1
 	jp crash  ; vitesse horizontale trop grande
-	ld w, xpos
-	sub w, pad
-	se carry, 1
-	jp crash   ; à gauche du pad
-	ld w, pad
-	add w, PAD_WIDTH
-	subn w, xpos
-	se carry, 0
-	jp crash    ; à droite du pad
+	se xpos, pad
+	jp crash    ; hors du pad
 ; alunissage réussi
 	add score,1
 	ld i, success_msg
@@ -378,10 +371,8 @@ LEM:
 	dw  $11...........11.
 
 slash:
-	db $..1.....
-	db $.1......
-	db $.1......
-	db $1.......
+	db $..1....., $.1......
+	db $.1......, $1....... 
 	db $1.......
 
 crash_msg:
@@ -395,10 +386,5 @@ credit:
 BCD:
 	db	0,0,0
 
-particles:
-		db 0,0,0,0
-		db 0,0,0,0
-		db 0,0,0,0
-		db 0,0,0,0
 	
 end	

@@ -32,7 +32,7 @@
 
 #define tone_on() TONE_DDR |= TONE_OUT
 #define tone_off() TONE_DDR &= ~TONE_OUT
-#define wait_tone_end()  while (TONE_DDR & TONE_OUT)
+#define wait_tone_end()  while (tone_length)
 
 void tone_init();
 void tone(uint16_t freq, uint8_t length);

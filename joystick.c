@@ -35,7 +35,7 @@ uint8_t joystick_wait_any(){
 }//f()
 
 inline void joystick_wait_release(){
-	while ((JSTK_PIN&JSTK_IMASK)!=JSTK_IMASK)tone(500,100);
+	while ((JSTK_PIN&JSTK_IMASK)!=JSTK_IMASK)tone(500,2);
 }//f()
 
 void prompt_btn(){

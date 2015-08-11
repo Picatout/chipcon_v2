@@ -44,7 +44,7 @@ void tone_init(){
 
 
 // fréquence en hertz
-// durée en  millisecondes
+// durée = 16.6msec * length
 void tone(uint16_t freq, uint8_t length){
 	TONE_OCRA = (F_CPU/128)/freq-1;
 	tone_on();
@@ -59,7 +59,7 @@ inline void key_tone(uint8_t key, uint8_t length,bool wait_end){
 }
 
 void noise(uint8_t length){
-	
+	TONE_TCCRA=0; // désactivation PWM
 	TONE_DDR |= TONE_OUT;
 	tone_length=length;
 	while (tone_length){
@@ -69,4 +69,5 @@ void noise(uint8_t length){
 		   TONE_PORT&=~TONE_OUT;   
 	}
 	TONE_DDR &= ~TONE_OUT;
+	TONE_TCCRA=(1<<6)| 2; // réactivation PWM
 }

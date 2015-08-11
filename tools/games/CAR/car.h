@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
-#define CAR_SIZE (427)
+#define CAR_SIZE (428)
 
 extern const uint8_t car[CAR_SIZE];
 

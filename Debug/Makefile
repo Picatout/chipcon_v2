@@ -37,6 +37,7 @@ SUBDIRS :=
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS +=  \
 ../alien.c \
+../blinky.c \
 ../byteordering.c \
 ../car.c \
 ../chipcon_v2.c \
@@ -64,6 +65,7 @@ ASM_SRCS +=
 
 OBJS +=  \
 alien.o \
+blinky.o \
 byteordering.o \
 car.o \
 chipcon_v2.o \
@@ -84,6 +86,7 @@ worm.o
 
 OBJS_AS_ARGS +=  \
 alien.o \
+blinky.o \
 byteordering.o \
 car.o \
 chipcon_v2.o \
@@ -104,6 +107,7 @@ worm.o
 
 C_DEPS +=  \
 alien.d \
+blinky.d \
 byteordering.d \
 car.d \
 chipcon_v2.d \
@@ -124,6 +128,7 @@ worm.d
 
 C_DEPS_AS_ARGS +=  \
 alien.d \
+blinky.d \
 byteordering.d \
 car.d \
 chipcon_v2.d \
@@ -153,6 +158,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

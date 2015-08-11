@@ -113,6 +113,12 @@
     <Compile Include="alien.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="blinky.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="blinky.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="byteordering.c">
       <SubType>compile</SubType>
     </Compile>

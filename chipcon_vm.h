@@ -61,7 +61,7 @@ typedef struct vm_state{
 
 void print_vms(const char *msg);
 	
-uint8_t schip(uint8_t flags);
+uint8_t schipp(uint8_t flags);
 #if FW_DEBUG
 void set_break_point(uint16_t addr);
 void clr_break_point(uint16_t addr);

@@ -4,6 +4,8 @@
 
 alien.c
 
+blinky.c
+
 byteordering.c
 
 car.c
