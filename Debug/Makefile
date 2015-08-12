@@ -48,6 +48,7 @@ C_SRCS +=  \
 ../lem.c \
 ../partition.c \
 ../sd_raw.c \
+../speed.c \
 ../splash.c \
 ../sram.c \
 ../text.c \
@@ -76,6 +77,7 @@ joystick.o \
 lem.o \
 partition.o \
 sd_raw.o \
+speed.o \
 splash.o \
 sram.o \
 text.o \
@@ -97,6 +99,7 @@ joystick.o \
 lem.o \
 partition.o \
 sd_raw.o \
+speed.o \
 splash.o \
 sram.o \
 text.o \
@@ -118,6 +121,7 @@ joystick.d \
 lem.d \
 partition.d \
 sd_raw.d \
+speed.d \
 splash.d \
 sram.d \
 text.d \
@@ -139,6 +143,7 @@ joystick.d \
 lem.d \
 partition.d \
 sd_raw.d \
+speed.d \
 splash.d \
 sram.d \
 text.d \
@@ -158,6 +163,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

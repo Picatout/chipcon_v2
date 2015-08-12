@@ -13,10 +13,23 @@ EQU BLINK_DELAY 6
 EQU COLL_DELAY  60
 EQU ANIM_DELAY  1
 
-	JP game_init	
+	JP splash	
 credits:
-	ASCII "blinky 2.00 C. Egeberg 18/8-'91"
-	ASCII "Jacques Deschenes, 2015"
+	ASCII "blinky 2.00 C. Egeberg 1991\nJacques Deschenes, 2015"
+splash:
+	cls
+	LD I, credits
+	ld v0, 0
+	scry v1
+	shr v1
+	prt v0,v1
+	scry v1
+	ld v0, 2
+	call delay
+	scu 1
+	add v1,-1
+	se v1, 0
+	jp .-5
 game_init:
 	XOR V0, V0
 	XOR V1, V1
@@ -46,15 +59,16 @@ code_034:	; glutton life loop
 	LD I, predator
 	DRW VA, VB, 8   ; draw predator 1
 	DRW VC, VD, 8   ; draw predator 2
-code_050: 
-	LD V0, 255
-	LD VE, 20
-	ADD V0, 255
-	SE V0, 0
-	JP .-2
-	ADD VE, 255
-	SE VE, 0
-	JP .-5
+code_050: ; delay loop
+	LD V0, 2
+	call delay
+;	LD VE, 5
+;	ADD V0, 255
+;	SE V0, 0
+;	JP .-2
+;	ADD VE, 255
+;	SE VE, 0
+;	JP .-5
 	CALL btns_check	
 	SE VE, 0
 	JP code_07E	
@@ -981,7 +995,13 @@ code_6CA:
 code_6DE:
 	LD VE, 1 ; return VE=1 when SELECT button pushed
 	RET
-
+delay:
+	ld dt, v0
+	ld v0, dt
+	se v0, 0
+	jp .-2
+	ret
+	
 score:
 	DB #00, #00
 max_score:

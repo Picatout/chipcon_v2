@@ -26,6 +26,8 @@ partition.c
 
 sd_raw.c
 
+speed.c
+
 splash.c
 
 sram.c

@@ -194,6 +194,12 @@
     <Compile Include="sd_raw_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="speed.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="speed.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="splash.c">
       <SubType>compile</SubType>
     </Compile>

@@ -94,6 +94,10 @@ Discarded input sections
                 0x00000000      0x1e4 sd_raw.o
  .progmem.gcc_sw_table.sd_raw_get_info
                 0x00000000       0x1e sd_raw.o
+ .text          0x00000000        0x0 speed.o
+ .bss           0x00000000        0x0 speed.o
+ .progmem.data.speed_info
+                0x00000000        0x1 speed.o
  .text          0x00000000        0x0 splash.o
  .bss           0x00000000        0x0 splash.o
  .text          0x00000000        0x0 sram.o
@@ -351,6 +355,7 @@ LOAD joystick.o
 LOAD lem.o
 LOAD partition.o
 LOAD sd_raw.o
+LOAD speed.o
 LOAD splash.o
 LOAD sram.o
 LOAD text.o
@@ -457,7 +462,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000     0x4b6e
+.text           0x00000000     0x4bfa
  *(.vectors)
  .vectors       0x00000000       0x68 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
                 0x00000000                __vector_default
@@ -477,92 +482,94 @@ END GROUP
                 0x000000ba      0x33e alien.o
                 0x000000ba                alien
  .progmem.data.blinky
-                0x000003f8      0xa10 blinky.o
+                0x000003f8      0xa24 blinky.o
                 0x000003f8                blinky
  .progmem.data.car
-                0x00000e08      0x1ac car.o
-                0x00000e08                car
- .progmem.data.__c.2477
-                0x00000fb4       0x12 chipcon_v2.o
- .progmem.data.__c.2458
-                0x00000fc6       0x13 chipcon_v2.o
- .progmem.data.__c.2428
-                0x00000fd9       0x13 chipcon_v2.o
+                0x00000e1c      0x1ac car.o
+                0x00000e1c                car
+ .progmem.data.__c.2480
+                0x00000fc8       0x12 chipcon_v2.o
+ .progmem.data.__c.2461
+                0x00000fda       0x13 chipcon_v2.o
+ .progmem.data.__c.2430
+                0x00000fed       0x13 chipcon_v2.o
  .progmem.data.credits
-                0x00000fec       0x2e chipcon_v2.o
-                0x00000fec                credits
+                0x00001000       0x2e chipcon_v2.o
+                0x00001000                credits
  .progmem.data.flash_games
-                0x0000101a       0x1b chipcon_v2.o
-                0x0000101a                flash_games
+                0x0000102e       0x26 chipcon_v2.o
+                0x0000102e                flash_games
  .progmem.data.__c.2028
-                0x00001035        0x7 chipcon_vm.o
+                0x00001054        0x7 chipcon_vm.o
  .progmem.data.__c.2026
-                0x0000103c        0x5 chipcon_vm.o
+                0x0000105b        0x5 chipcon_vm.o
  .progmem.data.__c.2024
-                0x00001041        0x3 chipcon_vm.o
+                0x00001060        0x3 chipcon_vm.o
  .progmem.data.__c.2022
-                0x00001044        0x4 chipcon_vm.o
+                0x00001063        0x4 chipcon_vm.o
  .progmem.data.__c.2074
-                0x00001048       0x15 filesys.o
+                0x00001067       0x15 filesys.o
  .progmem.data.__c.2062
-                0x0000105d       0x15 filesys.o
+                0x0000107c       0x15 filesys.o
  .progmem.data.__c.2054
-                0x00001072       0x16 filesys.o
+                0x00001091       0x16 filesys.o
  .progmem.data.__c.2052
-                0x00001088       0x17 filesys.o
+                0x000010a7       0x17 filesys.o
  .progmem.data.__c.1679
-                0x0000109f        0xa joystick.o
+                0x000010be        0xa joystick.o
  .progmem.data.lem
-                0x000010a9      0x21c lem.o
-                0x000010a9                lem
+                0x000010c8      0x21c lem.o
+                0x000010c8                lem
+ .progmem.data.speed
+                0x000012e4       0x62 speed.o
+                0x000012e4                speed
  .progmem.data.splash
-                0x000012c5      0x400 splash.o
-                0x000012c5                splash
+                0x00001346      0x400 splash.o
+                0x00001346                splash
  .progmem.data.font_6x8
-                0x000016c5      0x328 text.o
-                0x000016c5                font_6x8
+                0x00001746      0x328 text.o
+                0x00001746                font_6x8
  .progmem.data.font_hex_8x10
-                0x000019ed       0xa0 text.o
-                0x000019ed                font_hex_8x10
+                0x00001a6e       0xa0 text.o
+                0x00001a6e                font_hex_8x10
  .progmem.data.font_hex_4x6
-                0x00001a8d       0x60 text.o
-                0x00001a8d                font_hex_4x6
+                0x00001b0e       0x60 text.o
+                0x00001b0e                font_hex_4x6
  .progmem.data.SCALE
-                0x00001aed       0x20 tone.o
-                0x00001aed                SCALE
+                0x00001b6e       0x20 tone.o
+                0x00001b6e                SCALE
  .progmem.data.worm
-                0x00001b0d      0x298 worm.o
-                0x00001b0d                worm
-                0x00001da6                . = ALIGN (0x2)
- *fill*         0x00001da5        0x1 
+                0x00001b8e      0x298 worm.o
+                0x00001b8e                worm
+                0x00001e26                . = ALIGN (0x2)
  *(.jumptables)
  *(.jumptables*)
  *(.lowtext)
  *(.lowtext*)
-                0x00001da6                __ctors_start = .
+                0x00001e26                __ctors_start = .
  *(.ctors)
-                0x00001da6                __ctors_end = .
-                0x00001da6                __dtors_start = .
+                0x00001e26                __ctors_end = .
+                0x00001e26                __dtors_start = .
  *(.dtors)
-                0x00001da6                __dtors_end = .
+                0x00001e26                __dtors_end = .
  SORT(*)(.ctors)
  SORT(*)(.dtors)
  *(.init0)
- .init0         0x00001da6        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
-                0x00001da6                __init
+ .init0         0x00001e26        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
+                0x00001e26                __init
  *(.init0)
  *(.init1)
  *(.init1)
  *(.init2)
- .init2         0x00001da6        0xc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
+ .init2         0x00001e26        0xc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
  *(.init2)
  *(.init3)
  *(.init3)
  *(.init4)
- .init4         0x00001db2       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
-                0x00001db2                __do_copy_data
- .init4         0x00001dc8       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
-                0x00001dc8                __do_clear_bss
+ .init4         0x00001e32       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_copy_data.o)
+                0x00001e32                __do_copy_data
+ .init4         0x00001e48       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_clear_bss.o)
+                0x00001e48                __do_clear_bss
  *(.init4)
  *(.init5)
  *(.init5)
@@ -573,314 +580,314 @@ END GROUP
  *(.init8)
  *(.init8)
  *(.init9)
- .init9         0x00001dd8        0x8 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
+ .init9         0x00001e58        0x8 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
  *(.init9)
  *(.text)
- .text          0x00001de0        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
-                0x00001de0                __vector_22
-                0x00001de0                __vector_1
-                0x00001de0                __vector_24
-                0x00001de0                __bad_interrupt
-                0x00001de0                __vector_6
-                0x00001de0                __vector_3
-                0x00001de0                __vector_23
-                0x00001de0                __vector_25
-                0x00001de0                __vector_11
-                0x00001de0                __vector_13
-                0x00001de0                __vector_17
-                0x00001de0                __vector_19
-                0x00001de0                __vector_7
-                0x00001de0                __vector_5
-                0x00001de0                __vector_4
-                0x00001de0                __vector_9
-                0x00001de0                __vector_2
-                0x00001de0                __vector_21
-                0x00001de0                __vector_15
-                0x00001de0                __vector_8
-                0x00001de0                __vector_14
-                0x00001de0                __vector_10
-                0x00001de0                __vector_16
-                0x00001de0                __vector_18
-                0x00001de0                __vector_20
-                0x00001de4                . = ALIGN (0x2)
+ .text          0x00001e60        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
+                0x00001e60                __vector_22
+                0x00001e60                __vector_1
+                0x00001e60                __vector_24
+                0x00001e60                __bad_interrupt
+                0x00001e60                __vector_6
+                0x00001e60                __vector_3
+                0x00001e60                __vector_23
+                0x00001e60                __vector_25
+                0x00001e60                __vector_11
+                0x00001e60                __vector_13
+                0x00001e60                __vector_17
+                0x00001e60                __vector_19
+                0x00001e60                __vector_7
+                0x00001e60                __vector_5
+                0x00001e60                __vector_4
+                0x00001e60                __vector_9
+                0x00001e60                __vector_2
+                0x00001e60                __vector_21
+                0x00001e60                __vector_15
+                0x00001e60                __vector_8
+                0x00001e60                __vector_14
+                0x00001e60                __vector_10
+                0x00001e60                __vector_16
+                0x00001e60                __vector_18
+                0x00001e60                __vector_20
+                0x00001e64                . = ALIGN (0x2)
  *(.text.*)
- .text.read16   0x00001de4       0x10 byteordering.o
-                0x00001de4                read16
- .text.read32   0x00001df4       0x1e byteordering.o
-                0x00001df4                read32
+ .text.read16   0x00001e64       0x10 byteordering.o
+                0x00001e64                read16
+ .text.read32   0x00001e74       0x1e byteordering.o
+                0x00001e74                read32
  .text.load_flash_game
-                0x00001e12       0x3a chipcon_v2.o
-                0x00001e12                load_flash_game
+                0x00001e92       0x3a chipcon_v2.o
+                0x00001e92                load_flash_game
  .text.display_page
-                0x00001e4c       0x96 chipcon_v2.o
-                0x00001e4c                display_page
+                0x00001ecc       0x96 chipcon_v2.o
+                0x00001ecc                display_page
  .text.select_file
-                0x00001ee2      0x168 chipcon_v2.o
-                0x00001ee2                select_file
+                0x00001f62      0x168 chipcon_v2.o
+                0x00001f62                select_file
  .text.sdc_files
-                0x0000204a       0xa2 chipcon_v2.o
-                0x0000204a                sdc_files
+                0x000020ca       0xa2 chipcon_v2.o
+                0x000020ca                sdc_files
  .text.games_on_sdcard
-                0x000020ec       0x2e chipcon_v2.o
-                0x000020ec                games_on_sdcard
+                0x0000216c       0x2e chipcon_v2.o
+                0x0000216c                games_on_sdcard
  .text.games_in_flash
-                0x0000211a      0x142 chipcon_v2.o
-                0x0000211a                games_in_flash
+                0x0000219a      0x14e chipcon_v2.o
+                0x0000219a                games_in_flash
  .text.splash_screen
-                0x0000225c       0x52 chipcon_v2.o
-                0x0000225c                splash_screen
+                0x000022e8       0x52 chipcon_v2.o
+                0x000022e8                splash_screen
  .text.startup.main
-                0x000022ae       0x92 chipcon_v2.o
-                0x000022ae                main
+                0x0000233a       0x92 chipcon_v2.o
+                0x0000233a                main
  .text.print_vms
-                0x00002340       0xa2 chipcon_vm.o
-                0x00002340                print_vms
- .text.schipp   0x000023e2      0x6c0 chipcon_vm.o
-                0x000023e2                schipp
+                0x000023cc       0xa2 chipcon_vm.o
+                0x000023cc                print_vms
+ .text.schipp   0x0000246e      0x6c0 chipcon_vm.o
+                0x0000246e                schipp
  .text.fat_dir_entry_read_callback
-                0x00002aa2      0x128 fat.o
+                0x00002b2e      0x128 fat.o
  .text.fat_get_next_cluster
-                0x00002bca       0x72 fat.o
+                0x00002c56       0x72 fat.o
  .text.fat_open
-                0x00002c3c      0x2fa fat.o
-                0x00002c3c                fat_open
+                0x00002cc8      0x2fa fat.o
+                0x00002cc8                fat_open
  .text.fat_close
-                0x00002f36        0xc fat.o
-                0x00002f36                fat_close
+                0x00002fc2        0xc fat.o
+                0x00002fc2                fat_close
  .text.fat_open_file
-                0x00002f42       0x6c fat.o
-                0x00002f42                fat_open_file
+                0x00002fce       0x6c fat.o
+                0x00002fce                fat_open_file
  .text.fat_close_file
-                0x00002fae        0xc fat.o
-                0x00002fae                fat_close_file
+                0x0000303a        0xc fat.o
+                0x0000303a                fat_close_file
  .text.fat_read_file
-                0x00002fba      0x23e fat.o
-                0x00002fba                fat_read_file
+                0x00003046      0x23e fat.o
+                0x00003046                fat_read_file
  .text.fat_open_dir
-                0x000031f8       0x5c fat.o
-                0x000031f8                fat_open_dir
+                0x00003284       0x5c fat.o
+                0x00003284                fat_open_dir
  .text.fat_close_dir
-                0x00003254        0xc fat.o
-                0x00003254                fat_close_dir
+                0x000032e0        0xc fat.o
+                0x000032e0                fat_close_dir
  .text.fat_reset_dir
-                0x00003260       0x1a fat.o
-                0x00003260                fat_reset_dir
+                0x000032ec       0x1a fat.o
+                0x000032ec                fat_reset_dir
  .text.fat_read_dir
-                0x0000327a      0x1ba fat.o
-                0x0000327a                fat_read_dir
+                0x00003306      0x1ba fat.o
+                0x00003306                fat_read_dir
  .text.fat_get_dir_entry_of_path
-                0x00003434      0x114 fat.o
-                0x00003434                fat_get_dir_entry_of_path
+                0x000034c0      0x114 fat.o
+                0x000034c0                fat_get_dir_entry_of_path
  .text.bad_sdcard
-                0x00003548       0x1e filesys.o
-                0x00003548                bad_sdcard
+                0x000035d4       0x1e filesys.o
+                0x000035d4                bad_sdcard
  .text.fs_mount
-                0x00003566       0x8a filesys.o
-                0x00003566                fs_mount
+                0x000035f2       0x8a filesys.o
+                0x000035f2                fs_mount
  .text.fs_umount
-                0x000035f0       0x30 filesys.o
-                0x000035f0                fs_umount
+                0x0000367c       0x30 filesys.o
+                0x0000367c                fs_umount
  .text.fs_open_dir
-                0x00003620       0x6a filesys.o
-                0x00003620                fs_open_dir
+                0x000036ac       0x6a filesys.o
+                0x000036ac                fs_open_dir
  .text.fs_open_file
-                0x0000368a       0x8c filesys.o
-                0x0000368a                fs_open_file
+                0x00003716       0x8c filesys.o
+                0x00003716                fs_open_file
  .text.fs_close_file
-                0x00003716        0xc filesys.o
-                0x00003716                fs_close_file
+                0x000037a2        0xc filesys.o
+                0x000037a2                fs_close_file
  .text.fs_load_file
-                0x00003722       0x96 filesys.o
-                0x00003722                fs_load_file
+                0x000037ae       0x96 filesys.o
+                0x000037ae                fs_load_file
  .text.fs_read_dir
-                0x000037b8        0xe filesys.o
-                0x000037b8                fs_read_dir
+                0x00003844        0xe filesys.o
+                0x00003844                fs_read_dir
  .text.joystick_btn_down
-                0x000037c6        0xc joystick.o
-                0x000037c6                joystick_btn_down
+                0x00003852        0xc joystick.o
+                0x00003852                joystick_btn_down
  .text.joystick_wait_any
-                0x000037d2       0x10 joystick.o
-                0x000037d2                joystick_wait_any
+                0x0000385e       0x10 joystick.o
+                0x0000385e                joystick_wait_any
  .text.joystick_wait_release
-                0x000037e2       0x16 joystick.o
-                0x000037e2                joystick_wait_release
+                0x0000386e       0x16 joystick.o
+                0x0000386e                joystick_wait_release
  .text.prompt_btn
-                0x000037f8       0x10 joystick.o
-                0x000037f8                prompt_btn
+                0x00003884       0x10 joystick.o
+                0x00003884                prompt_btn
  .text.joystick_break
-                0x00003808       0x18 joystick.o
-                0x00003808                joystick_break
+                0x00003894       0x18 joystick.o
+                0x00003894                joystick_break
  .text.partition_open
-                0x00003820      0x116 partition.o
-                0x00003820                partition_open
+                0x000038ac      0x116 partition.o
+                0x000038ac                partition_open
  .text.partition_close
-                0x00003936       0x10 partition.o
-                0x00003936                partition_close
+                0x000039c2       0x10 partition.o
+                0x000039c2                partition_close
  .text.sd_raw_send_byte
-                0x00003946       0x10 sd_raw.o
+                0x000039d2       0x10 sd_raw.o
  .text.sd_raw_rec_byte
-                0x00003956       0x14 sd_raw.o
+                0x000039e2       0x14 sd_raw.o
  .text.sd_raw_send_command
-                0x0000396a       0x7a sd_raw.o
+                0x000039f6       0x7a sd_raw.o
  .text.sd_raw_available
-                0x000039e4        0x8 sd_raw.o
-                0x000039e4                sd_raw_available
+                0x00003a70        0x8 sd_raw.o
+                0x00003a70                sd_raw_available
  .text.sd_raw_init
-                0x000039ec       0xe0 sd_raw.o
-                0x000039ec                sd_raw_init
+                0x00003a78       0xe0 sd_raw.o
+                0x00003a78                sd_raw_init
  .text.sd_raw_read
-                0x00003acc       0xe8 sd_raw.o
-                0x00003acc                sd_raw_read
+                0x00003b58       0xe8 sd_raw.o
+                0x00003b58                sd_raw_read
  .text.sd_raw_read_interval
-                0x00003bb4      0x1a6 sd_raw.o
-                0x00003bb4                sd_raw_read_interval
+                0x00003c40      0x1a6 sd_raw.o
+                0x00003c40                sd_raw_read_interval
  .text.sram_wrmode
-                0x00003d5a       0x24 sram.o
-                0x00003d5a                sram_wrmode
+                0x00003de6       0x24 sram.o
+                0x00003de6                sram_wrmode
  .text.sram_clear
-                0x00003d7e       0x56 sram.o
-                0x00003d7e                sram_clear
+                0x00003e0a       0x56 sram.o
+                0x00003e0a                sram_clear
  .text.sram_init
-                0x00003dd4        0xe sram.o
-                0x00003dd4                sram_init
+                0x00003e60        0xe sram.o
+                0x00003e60                sram_init
  .text.sram_write_byte
-                0x00003de2       0x40 sram.o
-                0x00003de2                sram_write_byte
+                0x00003e6e       0x40 sram.o
+                0x00003e6e                sram_write_byte
  .text.sram_read_byte
-                0x00003e22       0x42 sram.o
-                0x00003e22                sram_read_byte
+                0x00003eae       0x42 sram.o
+                0x00003eae                sram_read_byte
  .text.sram_load_block
-                0x00003e64       0x52 sram.o
-                0x00003e64                sram_load_block
+                0x00003ef0       0x52 sram.o
+                0x00003ef0                sram_load_block
  .text.sram_store_block
-                0x00003eb6       0x50 sram.o
-                0x00003eb6                sram_store_block
+                0x00003f42       0x50 sram.o
+                0x00003f42                sram_store_block
  .text.select_font
-                0x00003f06        0x6 text.o
-                0x00003f06                select_font
+                0x00003f92        0x6 text.o
+                0x00003f92                select_font
  .text.new_line
-                0x00003f0c       0x5c text.o
-                0x00003f0c                new_line
+                0x00003f98       0x5c text.o
+                0x00003f98                new_line
  .text.put_char
-                0x00003f68       0xb2 text.o
-                0x00003f68                put_char
+                0x00003ff4       0xb2 text.o
+                0x00003ff4                put_char
  .text.set_cursor
-                0x0000401a        0xa text.o
-                0x0000401a                set_cursor
- .text.print    0x00004024       0x18 text.o
-                0x00004024                print
+                0x000040a6        0xa text.o
+                0x000040a6                set_cursor
+ .text.print    0x000040b0       0x18 text.o
+                0x000040b0                print
  .text.prt_pstr
-                0x0000403c       0x1e text.o
-                0x0000403c                prt_pstr
+                0x000040c8       0x1e text.o
+                0x000040c8                prt_pstr
  .text.print_hex
-                0x0000405a       0xaa text.o
-                0x0000405a                print_hex
+                0x000040e6       0xaa text.o
+                0x000040e6                print_hex
  .text.text_scroller
-                0x00004104       0xae text.o
-                0x00004104                text_scroller
+                0x00004190       0xae text.o
+                0x00004190                text_scroller
  .text.tone_init
-                0x000041b2        0xc tone.o
-                0x000041b2                tone_init
- .text.tone     0x000041be       0x24 tone.o
-                0x000041be                tone
+                0x0000423e        0xc tone.o
+                0x0000423e                tone_init
+ .text.tone     0x0000424a       0x24 tone.o
+                0x0000424a                tone
  .text.key_tone
-                0x000041e2       0x38 tone.o
-                0x000041e2                key_tone
- .text.noise    0x0000421a       0x28 tone.o
-                0x0000421a                noise
+                0x0000426e       0x38 tone.o
+                0x0000426e                key_tone
+ .text.noise    0x000042a6       0x28 tone.o
+                0x000042a6                noise
  .text.tvout_init
-                0x00004242       0x38 tvout.o
-                0x00004242                tvout_init
- .text.plot     0x0000427a       0x9a tvout.o
-                0x0000427a                plot
+                0x000042ce       0x38 tvout.o
+                0x000042ce                tvout_init
+ .text.plot     0x00004306       0x9a tvout.o
+                0x00004306                plot
  .text.put_sprite
-                0x00004314      0x13a tvout.o
-                0x00004314                put_sprite
+                0x000043a0      0x13a tvout.o
+                0x000043a0                put_sprite
  .text.put_big_sprite
-                0x0000444e      0x1f8 tvout.o
-                0x0000444e                put_big_sprite
- .text.cls      0x00004646       0x1c tvout.o
-                0x00004646                cls
+                0x000044da      0x1f8 tvout.o
+                0x000044da                put_big_sprite
+ .text.cls      0x000046d2       0x1c tvout.o
+                0x000046d2                cls
  .text.scroll_down
-                0x00004662       0x50 tvout.o
-                0x00004662                scroll_down
+                0x000046ee       0x50 tvout.o
+                0x000046ee                scroll_down
  .text.scroll_up
-                0x000046b2       0x6a tvout.o
-                0x000046b2                scroll_up
+                0x0000473e       0x6a tvout.o
+                0x0000473e                scroll_up
  .text.chip_scroll_right
-                0x0000471c       0x4e tvout.o
-                0x0000471c                chip_scroll_right
+                0x000047a8       0x4e tvout.o
+                0x000047a8                chip_scroll_right
  .text.chip_scroll_left
-                0x0000476a       0x38 tvout.o
-                0x0000476a                chip_scroll_left
+                0x000047f6       0x38 tvout.o
+                0x000047f6                chip_scroll_left
  .text.screen_restore
-                0x000047a2       0x10 tvout.o
-                0x000047a2                screen_restore
+                0x0000482e       0x10 tvout.o
+                0x0000482e                screen_restore
  .text.__vector_12
-                0x000047b2      0x134 tvout.o
-                0x000047b2                __vector_12
+                0x0000483e      0x134 tvout.o
+                0x0000483e                __vector_12
  .text.libgcc.mul
-                0x000048e6       0x20 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_mulsi3.o)
-                0x000048e6                __mulsi3
+                0x00004972       0x20 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_mulsi3.o)
+                0x00004972                __mulsi3
  .text.libgcc.div
-                0x00004906       0x18 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodqi4.o)
-                0x00004906                __udivmodqi4
+                0x00004992       0x18 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodqi4.o)
+                0x00004992                __udivmodqi4
  .text.libgcc.div
-                0x0000491e       0x28 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodhi4.o)
-                0x0000491e                __udivmodhi4
+                0x000049aa       0x28 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodhi4.o)
+                0x000049aa                __udivmodhi4
  .text.libgcc.div
-                0x00004946       0x44 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
-                0x00004946                __udivmodsi4
+                0x000049d2       0x44 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_udivmodsi4.o)
+                0x000049d2                __udivmodsi4
  .text.libgcc.div
-                0x0000498a       0x2e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
-                0x0000498a                __divmodsi4
+                0x00004a16       0x2e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_divmodsi4.o)
+                0x00004a16                __divmodsi4
  .text.libgcc.div
-                0x000049b8       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
-                0x000049b8                __negsi2
- .text.libgcc   0x000049c8        0xc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_tablejump.o)
-                0x000049c8                __tablejump2__
-                0x000049cc                __tablejump__
+                0x00004a44       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_negsi2.o)
+                0x00004a44                __negsi2
+ .text.libgcc   0x00004a54        0xc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_tablejump.o)
+                0x00004a54                __tablejump2__
+                0x00004a58                __tablejump__
  .text.libgcc.mul
-                0x000049d4       0x1e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_umulhisi3.o)
-                0x000049d4                __umulhisi3
+                0x00004a60       0x1e c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_umulhisi3.o)
+                0x00004a60                __umulhisi3
  .text.libgcc.mul
-                0x000049f2       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_muluhisi3.o)
-                0x000049f2                __muluhisi3
+                0x00004a7e       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_muluhisi3.o)
+                0x00004a7e                __muluhisi3
  .text.avr-libc
-                0x00004a08       0xbc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(rand.o)
-                0x00004a9e                rand_r
-                0x00004aa4                rand
-                0x00004aae                srand
+                0x00004a94       0xbc c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(rand.o)
+                0x00004b2a                rand_r
+                0x00004b30                rand
+                0x00004b3a                srand
  .text.avr-libc
-                0x00004ac4       0x24 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memmove.o)
-                0x00004ac4                memmove
+                0x00004b50       0x24 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memmove.o)
+                0x00004b50                memmove
  .text.avr-libc
-                0x00004ae8        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memset.o)
-                0x00004ae8                memset
+                0x00004b74        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memset.o)
+                0x00004b74                memset
  .text.avr-libc
-                0x00004af6       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strchr.o)
-                0x00004af6                strchr
+                0x00004b82       0x16 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strchr.o)
+                0x00004b82                strchr
  .text.avr-libc
-                0x00004b0c       0x12 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strcmp.o)
-                0x00004b0c                strcmp
+                0x00004b98       0x12 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strcmp.o)
+                0x00004b98                strcmp
  .text.avr-libc
-                0x00004b1e        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strcpy.o)
-                0x00004b1e                strcpy
+                0x00004baa        0xe c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strcpy.o)
+                0x00004baa                strcpy
  .text.avr-libc
-                0x00004b2c       0x1c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strncmp.o)
-                0x00004b2c                strncmp
+                0x00004bb8       0x1c c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(strncmp.o)
+                0x00004bb8                strncmp
  .text.avr-libc
-                0x00004b48       0x12 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memcpy.o)
-                0x00004b48                memcpy
+                0x00004bd4       0x12 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5\libc.a(memcpy.o)
+                0x00004bd4                memcpy
  .text.libgcc.mul
-                0x00004b5a       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_mulshisi3.o)
-                0x00004b5a                __mulshisi3
-                0x00004b60                __mulohisi3
-                0x00004b6a                . = ALIGN (0x2)
+                0x00004be6       0x10 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_mulshisi3.o)
+                0x00004be6                __mulshisi3
+                0x00004bec                __mulohisi3
+                0x00004bf6                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00004b6a        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
-                0x00004b6a                _exit
-                0x00004b6a                exit
+ .fini9         0x00004bf6        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+                0x00004bf6                _exit
+                0x00004bf6                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -899,11 +906,11 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00004b6a        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
+ .fini0         0x00004bf6        0x4 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/avr5\libgcc.a(_exit.o)
  *(.fini0)
-                0x00004b6e                _etext = .
+                0x00004bfa                _etext = .
 
-.data           0x00800100        0x8 load address 0x00004b6e
+.data           0x00800100        0x8 load address 0x00004bfa
                 0x00800100                PROVIDE (__data_start, .)
  *(.data)
  .data          0x00800100        0x0 c:/program files (x86)/atmel/atmel toolchain/avr8 gcc/native/3.4.1056/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.8.1/../../../../avr/lib/avr5/crtm328p.o
@@ -919,6 +926,7 @@ END GROUP
  .data          0x00800100        0x0 lem.o
  .data          0x00800100        0x0 partition.o
  .data          0x00800100        0x0 sd_raw.o
+ .data          0x00800100        0x0 speed.o
  .data          0x00800100        0x0 splash.o
  .data          0x00800100        0x0 sram.o
  .data          0x00800100        0x0 text.o
@@ -1001,8 +1009,8 @@ END GROUP
                 0x008002d0      0x580 tvout.o
  *(COMMON)
                 0x00800850                PROVIDE (__bss_end, .)
-                0x00004b6e                __data_load_start = LOADADDR (.data)
-                0x00004b76                __data_load_end = (__data_load_start + SIZEOF (.data))
+                0x00004bfa                __data_load_start = LOADADDR (.data)
+                0x00004c02                __data_load_end = (__data_load_start + SIZEOF (.data))
 
 .noinit         0x00800850        0x0
                 0x00800850                PROVIDE (__noinit_start, .)
@@ -1063,6 +1071,7 @@ END GROUP
  .comment       0x00000000       0x31 lem.o
  .comment       0x00000000       0x31 partition.o
  .comment       0x00000000       0x31 sd_raw.o
+ .comment       0x00000000       0x31 speed.o
  .comment       0x00000000       0x31 splash.o
  .comment       0x00000000       0x31 sram.o
  .comment       0x00000000       0x31 text.o
@@ -1087,7 +1096,7 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x4a8
+.debug_aranges  0x00000000      0x4c0
  *(.debug_aranges)
  .debug_aranges
                 0x00000000       0x18 alien.o
@@ -1114,46 +1123,49 @@ END GROUP
  .debug_aranges
                 0x00000278       0x58 sd_raw.o
  .debug_aranges
-                0x000002d0       0x18 splash.o
+                0x000002d0       0x18 speed.o
  .debug_aranges
-                0x000002e8       0x60 sram.o
+                0x000002e8       0x18 splash.o
  .debug_aranges
-                0x00000348       0x70 text.o
+                0x00000300       0x60 sram.o
  .debug_aranges
-                0x000003b8       0x38 tone.o
+                0x00000360       0x70 text.o
  .debug_aranges
-                0x000003f0       0x88 tvout.o
+                0x000003d0       0x38 tone.o
  .debug_aranges
-                0x00000478       0x18 vm_test.o
+                0x00000408       0x88 tvout.o
  .debug_aranges
-                0x00000490       0x18 worm.o
+                0x00000490       0x18 vm_test.o
+ .debug_aranges
+                0x000004a8       0x18 worm.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x5a1f
+.debug_info     0x00000000     0x5af7
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000       0xb7 alien.o
  .debug_info    0x000000b7       0xb7 blinky.o
  .debug_info    0x0000016e      0x164 byteordering.o
  .debug_info    0x000002d2       0xb7 car.o
- .debug_info    0x00000389      0xca0 chipcon_v2.o
- .debug_info    0x00001029      0x851 chipcon_vm.o
- .debug_info    0x0000187a     0x1174 fat.o
- .debug_info    0x000029ee      0x9aa filesys.o
- .debug_info    0x00003398      0x19a joystick.o
- .debug_info    0x00003532       0xb7 lem.o
- .debug_info    0x000035e9      0x3c3 partition.o
- .debug_info    0x000039ac      0x83c sd_raw.o
- .debug_info    0x000041e8       0x90 splash.o
- .debug_info    0x00004278      0x619 sram.o
- .debug_info    0x00004891      0x6b6 text.o
- .debug_info    0x00004f47      0x1d7 tone.o
- .debug_info    0x0000511e      0x794 tvout.o
- .debug_info    0x000058b2       0xb6 vm_test.o
- .debug_info    0x00005968       0xb7 worm.o
+ .debug_info    0x00000389      0xcc2 chipcon_v2.o
+ .debug_info    0x0000104b      0x851 chipcon_vm.o
+ .debug_info    0x0000189c     0x1174 fat.o
+ .debug_info    0x00002a10      0x9aa filesys.o
+ .debug_info    0x000033ba      0x19a joystick.o
+ .debug_info    0x00003554       0xb7 lem.o
+ .debug_info    0x0000360b      0x3c3 partition.o
+ .debug_info    0x000039ce      0x83c sd_raw.o
+ .debug_info    0x0000420a       0xb6 speed.o
+ .debug_info    0x000042c0       0x90 splash.o
+ .debug_info    0x00004350      0x619 sram.o
+ .debug_info    0x00004969      0x6b6 text.o
+ .debug_info    0x0000501f      0x1d7 tone.o
+ .debug_info    0x000051f6      0x794 tvout.o
+ .debug_info    0x0000598a       0xb6 vm_test.o
+ .debug_info    0x00005a40       0xb7 worm.o
 
-.debug_abbrev   0x00000000     0x1a6c
+.debug_abbrev   0x00000000     0x1ac9
  *(.debug_abbrev)
  .debug_abbrev  0x00000000       0x66 alien.o
  .debug_abbrev  0x00000066       0x66 blinky.o
@@ -1167,35 +1179,37 @@ END GROUP
  .debug_abbrev  0x00000d64       0x77 lem.o
  .debug_abbrev  0x00000ddb      0x14b partition.o
  .debug_abbrev  0x00000f26      0x1fa sd_raw.o
- .debug_abbrev  0x00001120       0x5d splash.o
- .debug_abbrev  0x0000117d      0x1b3 sram.o
- .debug_abbrev  0x00001330      0x28e text.o
- .debug_abbrev  0x000015be      0x141 tone.o
- .debug_abbrev  0x000016ff      0x2aa tvout.o
- .debug_abbrev  0x000019a9       0x5d vm_test.o
- .debug_abbrev  0x00001a06       0x66 worm.o
+ .debug_abbrev  0x00001120       0x5d speed.o
+ .debug_abbrev  0x0000117d       0x5d splash.o
+ .debug_abbrev  0x000011da      0x1b3 sram.o
+ .debug_abbrev  0x0000138d      0x28e text.o
+ .debug_abbrev  0x0000161b      0x141 tone.o
+ .debug_abbrev  0x0000175c      0x2aa tvout.o
+ .debug_abbrev  0x00001a06       0x5d vm_test.o
+ .debug_abbrev  0x00001a63       0x66 worm.o
 
-.debug_line     0x00000000     0x1e10
+.debug_line     0x00000000     0x1eb7
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000       0x9b alien.o
  .debug_line    0x0000009b       0x9c blinky.o
  .debug_line    0x00000137       0xf2 byteordering.o
  .debug_line    0x00000229       0x99 car.o
- .debug_line    0x000002c2      0x2fb chipcon_v2.o
- .debug_line    0x000005bd      0x206 chipcon_vm.o
- .debug_line    0x000007c3      0x465 fat.o
- .debug_line    0x00000c28      0x1e1 filesys.o
- .debug_line    0x00000e09      0x126 joystick.o
- .debug_line    0x00000f2f       0x99 lem.o
- .debug_line    0x00000fc8      0x11a partition.o
- .debug_line    0x000010e2      0x288 sd_raw.o
- .debug_line    0x0000136a       0x9c splash.o
- .debug_line    0x00001406      0x1dc sram.o
- .debug_line    0x000015e2      0x26f text.o
- .debug_line    0x00001851      0x104 tone.o
- .debug_line    0x00001955      0x384 tvout.o
- .debug_line    0x00001cd9       0x9d vm_test.o
- .debug_line    0x00001d76       0x9a worm.o
+ .debug_line    0x000002c2      0x307 chipcon_v2.o
+ .debug_line    0x000005c9      0x206 chipcon_vm.o
+ .debug_line    0x000007cf      0x465 fat.o
+ .debug_line    0x00000c34      0x1e1 filesys.o
+ .debug_line    0x00000e15      0x126 joystick.o
+ .debug_line    0x00000f3b       0x99 lem.o
+ .debug_line    0x00000fd4      0x11a partition.o
+ .debug_line    0x000010ee      0x288 sd_raw.o
+ .debug_line    0x00001376       0x9b speed.o
+ .debug_line    0x00001411       0x9c splash.o
+ .debug_line    0x000014ad      0x1dc sram.o
+ .debug_line    0x00001689      0x26f text.o
+ .debug_line    0x000018f8      0x104 tone.o
+ .debug_line    0x000019fc      0x384 tvout.o
+ .debug_line    0x00001d80       0x9d vm_test.o
+ .debug_line    0x00001e1d       0x9a worm.o
 
 .debug_frame    0x00000000      0xd5c
  *(.debug_frame)
@@ -1212,7 +1226,7 @@ END GROUP
  .debug_frame   0x00000b14       0x6c tone.o
  .debug_frame   0x00000b80      0x1dc tvout.o
 
-.debug_str      0x00000000      0xea5
+.debug_str      0x00000000      0xebd
  *(.debug_str)
  .debug_str     0x00000000      0x12a alien.o
                                 0x15e (size before relaxing)
@@ -1222,51 +1236,53 @@ END GROUP
                                 0x17b (size before relaxing)
  .debug_str     0x0000018f       0x14 car.o
                                 0x154 (size before relaxing)
- .debug_str     0x000001a3      0x29f chipcon_v2.o
-                                0x439 (size before relaxing)
- .debug_str     0x00000442      0x122 chipcon_vm.o
+ .debug_str     0x000001a3      0x2a5 chipcon_v2.o
+                                0x43f (size before relaxing)
+ .debug_str     0x00000448      0x122 chipcon_vm.o
                                 0x330 (size before relaxing)
- .debug_str     0x00000564      0x498 fat.o
+ .debug_str     0x0000056a      0x498 fat.o
                                 0x6db (size before relaxing)
- .debug_str     0x000009fc       0xa8 filesys.o
+ .debug_str     0x00000a02       0xa8 filesys.o
                                 0x4ab (size before relaxing)
- .debug_str     0x00000aa4       0x10 joystick.o
+ .debug_str     0x00000aaa       0x10 joystick.o
                                 0x1b7 (size before relaxing)
- .debug_str     0x00000ab4       0x14 lem.o
+ .debug_str     0x00000aba       0x14 lem.o
                                 0x154 (size before relaxing)
- .debug_str     0x00000ac8       0x37 partition.o
+ .debug_str     0x00000ace       0x37 partition.o
                                 0x2bd (size before relaxing)
- .debug_str     0x00000aff      0x1ce sd_raw.o
+ .debug_str     0x00000b05      0x1ce sd_raw.o
                                 0x37c (size before relaxing)
- .debug_str     0x00000ccd        0xe splash.o
-                                0x155 (size before relaxing)
- .debug_str     0x00000cdb       0x73 sram.o
-                                0x21b (size before relaxing)
- .debug_str     0x00000d4e       0x5f text.o
-                                0x26f (size before relaxing)
- .debug_str     0x00000dad       0x2c tone.o
-                                0x1b7 (size before relaxing)
- .debug_str     0x00000dd9       0x98 tvout.o
-                                0x304 (size before relaxing)
- .debug_str     0x00000e71       0x1e vm_test.o
+ .debug_str     0x00000cd3       0x18 speed.o
                                 0x15e (size before relaxing)
- .debug_str     0x00000e8f       0x16 worm.o
+ .debug_str     0x00000ceb        0xe splash.o
+                                0x155 (size before relaxing)
+ .debug_str     0x00000cf9       0x73 sram.o
+                                0x21b (size before relaxing)
+ .debug_str     0x00000d6c       0x59 text.o
+                                0x26f (size before relaxing)
+ .debug_str     0x00000dc5       0x2c tone.o
+                                0x1b7 (size before relaxing)
+ .debug_str     0x00000df1       0x98 tvout.o
+                                0x304 (size before relaxing)
+ .debug_str     0x00000e89       0x1e vm_test.o
+                                0x15e (size before relaxing)
+ .debug_str     0x00000ea7       0x16 worm.o
                                 0x15b (size before relaxing)
 
-.debug_loc      0x00000000     0x4937
+.debug_loc      0x00000000     0x4947
  *(.debug_loc)
  .debug_loc     0x00000000       0x50 byteordering.o
- .debug_loc     0x00000050      0x92c chipcon_v2.o
- .debug_loc     0x0000097c      0x2c6 chipcon_vm.o
- .debug_loc     0x00000c42     0x156d fat.o
- .debug_loc     0x000021af      0x2cf filesys.o
- .debug_loc     0x0000247e       0x21 joystick.o
- .debug_loc     0x0000249f      0x247 partition.o
- .debug_loc     0x000026e6      0xa82 sd_raw.o
- .debug_loc     0x00003168      0x35c sram.o
- .debug_loc     0x000034c4      0x6c2 text.o
- .debug_loc     0x00003b86      0x13c tone.o
- .debug_loc     0x00003cc2      0xc75 tvout.o
+ .debug_loc     0x00000050      0x93c chipcon_v2.o
+ .debug_loc     0x0000098c      0x2c6 chipcon_vm.o
+ .debug_loc     0x00000c52     0x156d fat.o
+ .debug_loc     0x000021bf      0x2cf filesys.o
+ .debug_loc     0x0000248e       0x21 joystick.o
+ .debug_loc     0x000024af      0x247 partition.o
+ .debug_loc     0x000026f6      0xa82 sd_raw.o
+ .debug_loc     0x00003178      0x35c sram.o
+ .debug_loc     0x000034d4      0x6c2 text.o
+ .debug_loc     0x00003b96      0x13c tone.o
+ .debug_loc     0x00003cd2      0xc75 tvout.o
 
 .debug_macinfo
  *(.debug_macinfo)

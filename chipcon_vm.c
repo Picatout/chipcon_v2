@@ -537,12 +537,12 @@ uint8_t schipp(){
 				vms.ix += vms.var[x];
 				break;
 			case 0xf29: // FX29  LD F,VX   ; fait pointé I vers le caractère indiqué par VX dans la police FONT_SHEX
-				vms.ix=(int16_t)font_hex_4x6+vms.var[x]*SHEX_HEIGHT;
+				vms.ix=(int16_t)font_hex_4x6+vms.var[x&0xf]*SHEX_HEIGHT;
 				select_font(FONT_SHEX);
 				vms.src_mem=FLASH_MEM;
 				break;
 			case 0xf30: // FX30 LD LF,VX  ;fait pointé I vers le caractère indiqué par VX dans la police FONT_LHEX
-				vms.ix=(int16_t)font_hex_8x10+vms.var[x]*LHEX_HEIGHT;
+				vms.ix=(int16_t)font_hex_8x10+vms.var[x&0xf]*LHEX_HEIGHT;
 				select_font(FONT_LHEX);
 				vms.src_mem=FLASH_MEM;
 				break;

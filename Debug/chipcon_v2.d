@@ -25,7 +25,8 @@ chipcon_v2.d chipcon_v2.o: .././chipcon_v2.c .././hardware.h \
  .././chipcon_vm.h .././splash.h .././filesys.h .././fat/fat.h \
  .././fat/fat_config.h .././fat/sd_raw_config.h .././fat/../hardware.h \
  .././fat/partition.h .././fat/partition_config.h .././fat/sd_raw.h \
- .././lem.h .././car.h .././worm.h .././alien.h .././blinky.h
+ .././lem.h .././car.h .././worm.h .././alien.h .././blinky.h \
+ .././speed.h
 
 .././hardware.h:
 
@@ -112,3 +113,5 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-g
 .././alien.h:
 
 .././blinky.h:
+
+.././speed.h:

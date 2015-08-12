@@ -55,6 +55,7 @@
 #include "worm.h"
 #include "alien.h"
 #include "blinky.h"
+#include "speed.h"
 
 extern vm_state_t vms;
 
@@ -210,6 +211,7 @@ PROGMEM const uint8_t flash_games[]=
 "WORM\n"
 "ALIEN\n"
 "BLINKY\n"
+"speed test\n"
 "";
 
 
@@ -260,12 +262,12 @@ void games_in_flash(){
 		load_flash_game(blinky,BLINKY_SIZE);
 //		text_scroller(mines_info,4);
 		break;
-/*
+		
 	case 5:
-		load_flash_game(magic_square,SQUARE_SIZE);
-		text_scroller(magic_square_info,4);
+		load_flash_game(speed,SPEED_SIZE);
+//		text_scroller(magic_square_info,4);
 		break;
-
+/*
 	case 6:
 		load_flash_game(field,FIELD_SIZE);
 		text_scroller(field_info,4);
