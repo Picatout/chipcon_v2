@@ -26,6 +26,7 @@ Modifications logicielles:
   il n'est n'étais plus possible d'assuré cette compatibilité. 
 * L'espace adressable passe de 4096 à 8192. 
 * certaines instructions de la VM ont étées suprimées et d'autres ajoutées.
+* ajout cache instructions pour accélérer la VM.
 
 licences:
 =========

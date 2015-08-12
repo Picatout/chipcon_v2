@@ -35,10 +35,6 @@
 #define CHIP_BAD_OPCODE (2)
 #define CHIP_BREAK (3)
 
-#define F_RESET (2)
-#define F_DEBUG (4)
-#define F_TRACE (8)
-
 typedef struct vm_state{
 	uint16_t pc;
 	uint16_t ix;
@@ -54,14 +50,12 @@ typedef struct vm_state{
 	};
 	uint16_t stack[32];
 	uint8_t  src_mem:1 ;
-	uint8_t  debug:1;
-	uint8_t  trace:1;
 	}vm_state_t;
 
 
 void print_vms(const char *msg);
 	
-uint8_t schipp(uint8_t flags);
+uint8_t schipp();
 #if FW_DEBUG
 void set_break_point(uint16_t addr);
 void clr_break_point(uint16_t addr);

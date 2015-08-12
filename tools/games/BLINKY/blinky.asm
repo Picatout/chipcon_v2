@@ -1,24 +1,23 @@
 ; packman clone
 ; blinky 2.00 Blinky [Hans Christian Egeberg, 1991]
-; Adapted for PICVisionPortable by Jacques Deschenes, 2015/02
+; Adapted for CHIPcon v2 by Jacques Deschenes, 2015/08
 ; 
 EQU UP 2
 EQU DOWN 4
 EQU LEFT 8
 EQU RIGHT 16
 EQU SELECT 32
-EQU SUSPEND 18
-EQU SCORE_DELAY 4
-EQU BLINK_DELAY 3
-EQU COLL_DELAY  9
+EQU SUSPEND 32
+EQU SCORE_DELAY 10
+EQU BLINK_DELAY 6
+EQU COLL_DELAY  60
 EQU ANIM_DELAY  1
 
 	JP game_init	
 credits:
-;	ASCII "blinky 2.00 C. Egeberg 18/8-'91"
-;	ASCII "Jacques Deschenes, 2015"
+	ASCII "blinky 2.00 C. Egeberg 18/8-'91"
+	ASCII "Jacques Deschenes, 2015"
 game_init:
-	HIGH
 	XOR V0, V0
 	XOR V1, V1
 	LD I, score
@@ -1084,19 +1083,19 @@ maze:	; maze data
 	DB #08, #08, #0F, #08, #08, #08, #08, #08
 	DB #08, #08, #08, #08, #08, #08, #08, #0F
 
-eyes_left:	; eyes left
+eyes_left:	; left eye
 	DB #01, #E0, #02, #10, #04, #C8, #09, #E4
 	DB #0B, #F4, #0B, #B4, #09, #E5, #04, #C9
 	DB #02, #13, #01, #E7, #00, #07, #01, #83
 	DB #03, #F0, #01, #FF, #00, #FF, #00, #3F
 
-eyes_right:	; eyes right
+eyes_right:	; right eye
 	DB #0F, #00, #10, #80, #26, #40, #4F, #20
 	DB #5F, #A0, #5D, #A0, #4F, #20, #26, #40
 	DB #90, #80, #CF, #00, #C0, #00, #83, #00
 	DB #1F, #80, #FF, #00, #FE, #00, #F8, #00
 
-eye_blink:	; eye right closed
+eye_blink:	; right eye closed
 	DB #0F, #00, #1F, #80, #3F, #C0, #7F, #E0
 	DB #7F, #E0, #5F, #E0, #47, #E0, #20, #C0
 	DB #90, #80, #CF, #00, #C0, #80, #83, #C0

@@ -195,7 +195,7 @@ void games_on_sdcard(){
 	if (fcount && ((selected=select_file(fcount))>-1)){
 		if (fs_load_file(selected)){
 			cls();
-			if (schipp(F_RESET)==CHIP_BAD_OPCODE){
+			if (schipp()==CHIP_BAD_OPCODE){
 				print_vms(PSTR("CRASH! bad opcode\n"));
 			}
 		}
@@ -278,13 +278,10 @@ void games_in_flash(){
 		return;	
 	}
 	cls();
-#if FW_DEBUG	
-	schipp(F_DEBUG|F_RESET);
-#else
-	if (schipp(F_RESET)==CHIP_BAD_OPCODE){
+	if (schipp()==CHIP_BAD_OPCODE){
 		print_vms(PSTR("CRASH! bad opcode\n"));	
 	};
-#endif
+
 }
 
  PROGMEM const uint8_t credits[]=

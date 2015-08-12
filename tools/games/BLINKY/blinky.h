@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
-#define BLINKY_SIZE (2522)
+#define BLINKY_SIZE (2576)
 
 extern const uint8_t blinky[BLINKY_SIZE];
 

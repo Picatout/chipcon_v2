@@ -40,7 +40,8 @@
 #include "joystick.h"
 #include "tone.h"
 
-#define caddr(b1,b2) ((((b1&0xf)<<8)+b2)<<1)
+//#define caddr(b1,b2) ((((b1&0xf)<<8)+b2)<<1)
+#define caddr(b1,b2)  ((((b1<<8)|b2)<<1)&0xfff)
 #define rx(b1)  (b1&0xf)
 #define ry(b2)  ((b2&0xf0)>>4)
 
@@ -50,9 +51,17 @@ static vm_state_t vms;
 // stockage temporaire sprite
 static uint8_t block[32];
 
+#define ICACHE 1
+#if ICACHE==1
+// cache instructions
+#define ICACHE_SIZE 8
+static uint8_t icache[ICACHE_SIZE];
+static uint16_t cache_base=0;
+
+#define load_cache() sram_load_block(cache_base,ICACHE_SIZE,icache);
+#endif
 
 void print_vms(const char *msg){
-	screen_save();
 	cls();
 	select_font(FONT_ASCII);
 	prt_pstr(msg);
@@ -77,78 +86,271 @@ void print_vms(const char *msg){
 		print_hex(vms.rpl[i++],2);
 	}
 */	
-	prt_pstr(PSTR("'F'ire trace or any"));
-	if (joystick_wait_any()!=BTN_FIRE) vms.trace=0;
-	while (_joystick_state()!=JSTK_IMASK);
-	screen_restore();
+	prompt_btn();
 }
 
-#if FW_DEBUG
-
-#define MAX_BREAK  (10)
-
-static uint16_t break_points[MAX_BREAK]={0,0,0,0,0,0,0,0,0,0};
-
-void set_break_point(uint16_t addr){
-	uint8_t i;
-	for (i=0;i<MAX_BREAK;i++)
-		if (!break_points[i]) break_points[i]=addr;
-}
-
-void clr_break_point(uint16_t addr){
-	uint8_t i;
-	for (i=0;i<MAX_BREAK;i++){ 
-		if (break_points[i]==addr){ 
-			break_points[i]=0;
-			break;
-		}
-	}
-}
-
-
-static uint8_t is_break_point(uint16_t addr){
-	uint8_t i;
-	for (i=0;i<MAX_BREAK;i++){
-		if (break_points[i]==addr){
-			return 1;
-		}
-	}
-	return 0;	
-}
-#endif //FW_DEBUG
-
+#define VM_DECODER 1
 // machine virtuelle SCHIP+
-uint8_t schipp(uint8_t flags){
+uint8_t schipp(){
 	uint8_t x,y,n;
 	uint16_t code;
 	
-    if (flags&F_RESET){	
-		vms.pc=CODE_BASE_ADDR;
-		vms.sp=0;
-		vms.ix=0;
-	}
-#if FW_DEBUG
-	if (flags&F_DEBUG) vms.debug=1;else vms.debug=0;
-	if (flags&F_TRACE) vms.trace=1;else vms.trace=0;
-#endif	//FW_DEBUG
+	vms.pc=CODE_BASE_ADDR;
+	vms.sp=0;
+	vms.ix=0;
+#if ICACHE==1
+	cache_base=0;
+	load_cache();
+#endif
  	while (1){
-#if FW_DEBUG
-		if (vms.debug && joystick_break()){
-			vms.trace^=1;
-		}
-#else		
 		if (joystick_break()) return CHIP_EXIT_OK;
-#endif //FW_DEBUG		
+#if ICACHE!=1		
 		vms.opcode=sram_read_word(vms.pc);
 		vms.pc+=2;
-#if FW_DEBUG		
-		if (vms.trace || (vms.debug && is_break_point(vms.pc-2))){ 
-			vms.trace=1;
-			print_vms(PSTR("Trace print\n"));
+#else
+/* cette cache d'instruction améliore la vitesse d'éxécution */	
+		if ((vms.pc<cache_base) || (vms.pc>=cache_base+ICACHE_SIZE)){
+			 cache_base=vms.pc;
+			 load_cache();
 		}
-#endif  //FW_DEBUG		
+		vms.b1=icache[vms.pc-cache_base];
+		vms.pc++;
+		vms.b2=icache[vms.pc-cache_base];
+		vms.pc++;
+#endif		
 		x=rx(vms.b1);
 		y=ry(vms.b2);
+#if VM_DECODER==1
+	    switch (vms.b1>>4){
+		case 0:
+			if ((vms.b2&0xf0)==0xc0){
+				scroll_down(vms.b2&0xf);
+			}else if ((vms.b2&0xf0)==0xd0){
+				scroll_up(vms.b2&0xf);				
+			}else switch(vms.b2){
+				case 0xe0: // 00E0, CLS   ;efface l'écran
+					cls();
+					break;
+				case 0xee: // 00EE, RET   ;sortie de sous-routine
+					vms.pc=vms.stack[vms.sp--];
+					break;
+				case 0xfb: // 00FB, SCR   ;glisse l'affichage vers la droite de 4 pixels
+					chip_scroll_right();
+					break;
+				case 0xfc: // 00FC, SCL   ;glisse l'affichage vers la gauche de 4 pixels
+					chip_scroll_left();
+					break;
+				case 0xfd:// 00FD, EXIT   ;sortie de l'interpréteur.
+					return CHIP_EXIT_OK;
+				case 0xfe: //00FE,  LOW  ; passe en mode graphique 64x32
+					break; // ignore ce code
+				case 0xff:  //00FF, HIGH  ; passe en mode graphique 128x64
+					break; // ignore ce code
+				default:
+					return CHIP_BAD_OPCODE;
+			}//switch(b2)
+			break;
+		case 0x1: // 1NNN JP label  ;saut vers 'label'  adresse=2*NNN
+			vms.pc=caddr(vms.b1,vms.b2);
+			break;
+		case 0x2: // 2NNN  CALL label  ; appelle la sous-routine 'label' adresse=2*NNN
+			vms.stack[++vms.sp]=vms.pc;
+			vms.pc=caddr(vms.b1,vms.b2);
+			break;
+		case 0x3: // 3XKK   SE VX, KK  ;saute l'instruction suivante si VX == KK
+			if (vms.var[x]==vms.b2) vms.pc+=2;
+			break;
+		case 0x4: // 4XKK  SNE VX,VY  ;Saute l'instruction suivante si VX <> KK
+			if (vms.var[x]!=vms.b2)vms.pc+=2;
+			break;
+		case 0x5: // 5XY0  SE VX,VY   ;Saute l'instruction suivante si VX == VY
+			if (vms.var[x]==vms.var[y]) vms.pc+=2;
+			break;
+		case 0x6: // 6XKK   LD VX,KK  ; VX := KK
+			vms.var[x]=vms.b2;
+			break;
+		case 0x7: // 7XKK   ADD VX,KK  ; VX := VX + KK
+			vms.var[x]+=vms.b2;
+			break;
+		case 0x8: // 8XY0   LD VX, VY  ; VX := VY
+			switch(vms.b2&0xf){
+			case 0:
+				vms.var[x]=vms.var[y];
+				break;
+			case 1: // 8XY1  OR VX, VY  ; VX := VX OR VY
+				vms.var[x]|=vms.var[y];
+				break;
+			case 0x2: // 8XY2  AND VX,VY  ; VX := VX AND VY
+				vms.var[x]&=vms.var[y];
+				break;
+			case 0x3: // 8XY3  XOR VX,VY  ; VX := VX XOR VY
+				vms.var[x]^=vms.var[y];
+				break;
+			case 0x4: // 8XY4  ADD VX,VY  ; VX := VX + VY, VF := carry
+				n=(vms.var[x]+vms.var[y])>255;
+				vms.var[x]+=vms.var[y];
+				vms.var[15]=n;
+				break;
+			case 0x5: // 8XY5  SUB VX,VY  ; VX := VX - VY, VF := not borrow
+				n=vms.var[x]>=vms.var[y];
+				vms.var[x]-=vms.var[y];
+				vms.var[15]=n;
+				break;
+			case 0x6: // 8XY6  SHR VX  ; VX := VX shr 1, VF := carry
+				n=(vms.var[x]&1u);
+				vms.var[x]>>=1;
+				vms.var[15]=n;
+				break;
+			case 0x7: // 8XY7  SUBN VX,VY  ; VX := VY - VX, VF := not borrow
+				n=vms.var[y]>=vms.var[x];
+				vms.var[x]=vms.var[y]-vms.var[x];
+				vms.var[15]=n;
+				break;
+			case 0xe: // 8XYE  SHL VX  ; VX := VX shl 1, VF := carry
+				n=(vms.var[x]&128)>>7;
+				vms.var[x]<<=1;
+				vms.var[15]=n;
+				break;
+			default:
+				return CHIP_BAD_OPCODE;
+			}//switch(vms.b2&0xf)
+			break;
+		case 0x9:
+			switch (vms.b2&0xf){
+			case 0x0: // 9XY0  SNE VX,VY  ; Saute l'instruction suivante si VX <> VY
+				if (vms.var[x]!=vms.var[y]) vms.pc+=2;
+				break;
+			case 0x1: // 9XY1  TONE VX, VY ; joue une note de la gamme tempérée. VX=note, VY=durée
+				key_tone(vms.var[x],vms.var[y],false);
+				break;
+			case 0x2: // 9XY2  PRT VX, VY ; imprime le texte pointé par I. I est incrémenté. position VX, VY
+				select_font(FONT_ASCII);
+				set_cursor(vms.var[x],vms.var[y]);
+				n=sram_read_byte(vms.ix++);
+				while (n){
+					put_char(n);
+					n=sram_read_byte(vms.ix++);
+				}
+				break;
+			case 0x3: // 9XY3 PIXI VX, VY  ; inverse le pixel à la position VX,VY
+				plot(vms.var[x],vms.var[y],INVERT);
+				break;
+			case 0x4: // 9NN4  NOISE NN ; bruit blanc durée NN*frame
+				noise((x<<4)+y);
+				break;
+			case 0x5: // 9XY5 TONE VX, VY, WAIT ; joue une note attend la fin avant de poursuivre. VX=note, VY=durée
+				key_tone(vms.var[x],vms.var[y],true);
+				break;
+			case 0x6: // 9X06, PUSH VX  ; empile le contenu de VX
+				vms.stack[++vms.sp]=vms.var[x];
+				break;
+			case 0x7: // 9X07, POP VX  ; transfert le sommet de la pile dans VX
+				vms.var[x]=vms.stack[vms.sp--];
+				break;
+			case 0x8: // 9X08, SCRX  ;  VX=HRES nombre de pixels en largeur d'écran.
+				vms.var[x]=HRES;
+				break;
+			case 0x9: // 9X09, SCRY  ; VX=VRES  nombre de pixels en hauteur d'écran.
+				vms.var[x]=VRES;
+				break;
+			default:
+				return CHIP_BAD_OPCODE;
+			}//switch(vms.b2&0xf)
+			break;
+		case 0xa: // ANNN    LD I, NNN  ; I := 2*NNN
+			vms.ix=caddr(vms.b1,vms.b2);  // adressse de 13 bits toujours paire
+			vms.src_mem=RAM_MEM;
+			break;
+		case 0xb: // BNNN     JP V0, NNN  ;  saut à 2*(NNN+V0)
+			vms.pc=(vms.var[0]<<1)+caddr(vms.b1,vms.b2);
+			break;
+		case 0xc: //CXKK  RND VX,KK  ; VX=random_number&KK
+			vms.var[x]=rand()&vms.b2;
+			break;
+		case 0xd: //DXYN DRW VX,VY   ; dessine un sprite à la position indiquée par vx,vy
+			n=vms.b2&0xf;
+			if (!n){
+				sram_load_block(vms.ix,32,block);
+				vms.var[15]=put_big_sprite((int8_t)vms.var[x],(int8_t)vms.var[y],(const uint8_t*)block);
+				}else{
+				if (vms.src_mem==FLASH_MEM){
+					vms.var[15]=put_sprite((int8_t)vms.var[x],(int8_t)vms.var[y],n,(const uint8_t *)vms.ix,FLASH_MEM);
+					}else{
+					sram_load_block(vms.ix,n,block);
+					vms.var[15]=put_sprite((int8_t)vms.var[x],(int8_t)vms.var[y],n,(const uint8_t*)block,RAM_MEM);
+				}
+			}
+			break;
+		case 0xe:
+				switch(vms.b2){
+				case 0x9e: //EX9E, SKP VX   ; saute l'instruction suivante si le bouton indiqué par VX est enfoncée
+					if (joystick_btn_down(vms.var[x])) vms.pc+=2;
+					break;
+				case 0xa1: //EXA1, SKNP VX  ; saute l'instruction suivante si la boutin indiqué par VX n'est pas enfoncée
+					if (!joystick_btn_down(vms.var[x])) vms.pc+=2;
+					break;
+				default:
+					return CHIP_BAD_OPCODE;
+				}//switch(vms.b2)
+				break;
+		case 0xf:
+			switch(vms.b2){
+			case 0x07: // FX07  LD VX, DT   VX := delay_cntr
+				vms.var[x]=frame_delay;
+				break;
+			case 0x0a: // FX0A  LD VX, K  ; attend qu'une touche soit enfoncée et met sa valeur dans VX
+				vms.var[x]=joystick_wait_any();
+				break;
+			case 0x15: // FX15  LD DT, VX  ; démarre la minuterie delay_cntr avec la valeur indiquée par VX
+				frame_delay=vms.var[x];
+				break;
+			case 0x18: // FX18  LD ST, VX  ; beep d'une durée VX (multiple de 16.7 msec)
+				tone(523,vms.var[x]);
+				break;
+			case 0x1e: // FX1E  ADD I, VX  ;  I := I + VX
+				vms.ix += vms.var[x];
+				break;
+			case 0x29: // FX29  LD F,VX   ; fait pointé I vers le caractère indiqué par VX dans la police FONT_SHEX
+				vms.ix=(int16_t)font_hex_4x6+vms.var[x]*SHEX_HEIGHT;
+				select_font(FONT_SHEX);
+				vms.src_mem=FLASH_MEM;
+				break;
+			case 0x30: // FX30 LD LF,VX  ;fait pointé I vers le caractère indiqué par VX dans la police FONT_LHEX
+				vms.ix=(int16_t)font_hex_8x10+vms.var[x]*LHEX_HEIGHT;
+				select_font(FONT_LHEX);
+				vms.src_mem=FLASH_MEM;
+				break;
+			case 0x33: // FX33 LD B, VX  ;  met la représentation BCD de VX dans M[I]..M[I+2]
+				n=vms.var[x];
+				block[2]=n%10;
+				n /=10;
+				block[1]=n%10;
+				block[0]=n/10;
+				sram_store_block(vms.ix,3,block);
+				break;
+			case 0x55: // FX55  LD [I], VX  ; Sauvegarde les registres V0..VX dans la mémoire SRAM à l'adresse M[I]...
+				sram_store_block(vms.ix,x+1,vms.var);
+				break;
+			case 0x65: // FX65 LD VX,[I]  ;charge les registres V0..VX à partir de la mémoire SRAM à l'adresse M[I]
+				sram_load_block(vms.ix,x+1,vms.var);
+				break;
+			case 0x75: // FX75 LD R,VX  ; sauvegarde les registres V0..VX dans la banque R
+				for (n=0;n<=x;n++){
+					vms.rpl[n]=vms.var[n];
+				}
+				break;
+			case 0x85: // FX85 LD VX, R  ;charge les registres V0..VX à partir de la banque R
+				for (n=0;n<=x;n++){
+					vms.var[n]=vms.rpl[n];
+				}
+				break;
+			default:
+				return CHIP_BAD_OPCODE;
+				
+			}//switch(vms.b2)
+			break;	
+		}//switch (vms.b1>>4)
+#else
 		// décodeur d'instruction
 		code=(vms.b1&0xf0)<<4;
 		switch (code){
@@ -369,10 +571,8 @@ uint8_t schipp(uint8_t flags){
 				}
 				break;
 			default:
-#if FW_DEBUG
-				print_vms(PSTR("BAD OPCODE\n"));
-#endif //FW_DEBUG
 				return CHIP_BAD_OPCODE;
 		}//switch
+#endif		
 	}//while(1)
 }//schipp()
