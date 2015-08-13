@@ -1,0 +1,66 @@
+﻿<!doctype html>
+<html>
+<header>
+<title>CHIPcon v2 project</title>
+<meta charset="UTF-8">
+<meta name="Author" content="Jacques Deschênes">
+<meta name="copiright" content="2015, Jacques Deschênes">
+<meta name="date created" content="2015-08-12">
+<meta name="licence" content="GPL v3">
+</header>
+<body>
+<h4>introduction</h4>
+<p>
+  Ce document fait partie du projet <a href="CHIPcon_v2.html">CHIPcon_v2</a> et décris l'ensemble du projet.
+ L'ensemble du projet logiciel ainsi que la documentation est sous licence <a href="http://www.gnu.org/licenses/gpl-3.0.fr.html">GPLv3</a>. La partie matériel est <a href="https://en.wikipedia.org/wiki/Open-source_hardware">OSH</a>.
+</p>
+<h2>CHIPcon version 2</h2>
+<h4>Présentation</h4>
+<p>
+  J'ai repris la console <a href="http://picatout-jd.blogspot.ca/2014/10/chipcon-partie-1.html">CHIPcon</a> car je trouvais qu'un clavier hexadécimal c'était loin d'être
+  optimum pour une console de jeux, même rétro. J'ai modifié le matériel pour remplacer ce clavier par un joystick Atari 2600. 
+  Puisque du coup il n'y avait plus de ocmpatibilité avec les jeux SCHIP aussi bien allé plus loin et faire des modifications à la machine virtuelle qui se 
+  nomme dorénavant SCHIP+ par l'ajout de nouvelles instructions machine et le doublement de l'espace d'adresssage.
+</p>
+<h4>Caractéristiques</h4>
+<p>
+<ul>
+<li>Version modifiée de la console <a href="https://github.com/picatout/chipcon">CHIPcon</a></li>
+<li>Sortie vidéo NTSC monochrome.</li>
+<li>Résolution vidéo: 128x88</li>
+<li>Rortie son tonalité.</li>
+<li>Contrôle de jeux: joystick Atari 2600</li>
+<li>Jeux sur carte SD.</li>
+<li>Quelques jeux en mémoire flash</li>
+<li>Assembleur <b>cc2asm.exe</b> sur plateforme windows</li>
+<li>Possède un émulateur/débogueur <b>cc2emul.exe</b> sur plateforme windows 
+</ul>
+</p>
+<h4>Modification matériel</h4>
+<p>
+  J'ai conservé le même montage et le même boitié en enlevant le clavier hexadécimal et en installant un connecteur DB-9 pour acceuillir le joystick Atari 2600.
+ Le bouton de contrôle de la vitesse a aussi été suprimé.
+  <div>
+  <img src="front.jpg" alt="boitier" width="400", height="300" style="margin:auto;"></div>
+</p>
+<h4>Modifications logicielles</h4>
+<p>
+  Bien sur ce changent en impliquait d'autres au niveau du firmware. Ainsi <b>keypad.h</b> et <b>keypad.c</b> ont étés remplacés par <b>joystick.h</b> et <b>joystick.c</b>.
+  Et puisque ce changement rendais la console incompatible avec les binaires des jeux SCHIP d'origine aussi bien aller un peut plus loin en ajoutant des codes opérationnels
+   à la machine virtuelle voir le fichier <a href="vm-opcodes.html">vm-opcdes.html</a> à ce sujet. 
+</p>
+<p>
+  La résolution vidéo passe de 128x64 à 128x88. L'espace d'adressage de la machine virtuelle est doublée passant de 4096 à 9192 octets. De plus les programmes 
+  commencent l'exécution à l'adresse 0 plutôt que 512. L'assembleur <b>ccasm.exe</b> a été modifié en conséquence et rebâptisé <b>cc2asm.exe</b>. L'émulateur-débogueur 
+  <b>ccemul.exe</b> a été adapté et renommé <b>cc2emul.exe</b>.
+</p>
+<h4>Autres documents</h4>
+<p>
+  Pour en savoir plus sur:
+  <ul>
+  <li>machine virtuelle <a href="vm-opcodes.html">SCHIP+</a></li>
+  <li>assembleur <a href="cc2asm.html">cc2asm.exe</a></li>
+  <li>émulateur/débogueur <a href="cc2emul.html">cc2emul.exe</a></li>
+  </ul>
+</p>
+</body>
