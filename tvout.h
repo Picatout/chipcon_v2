@@ -34,7 +34,11 @@
 #define VPULSE (HTIME-2*HPULSE)
 #define HRES (128)
 #define HBYTES (HRES/8)
+#if SPEED==1
+#define VRES (64)
+#else 
 #define VRES (88)
+#endif
 #define VLINES (VRES*2)
 #define FIRST_VISIBLE ((230-VLINES+30)>>1)
 #define LAST_VISIBLE  (VLINES+FIRST_VISIBLE-1)

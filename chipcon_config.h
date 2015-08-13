@@ -38,4 +38,11 @@
 // pour déboguage firware seulement
 #define FW_DEBUG  0
 
+// en diminiuant la résolution
+// verticale on augmente la vitesse
+// de la VM.
+// définir SPEED à 1 pour VRES=64
+// définir SPEED à 0 pour VRES=88
+#define SPEED 0
+
 #endif /* CHIPCON_CONFIG_H_ */

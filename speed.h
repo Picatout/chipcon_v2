@@ -4,7 +4,7 @@
 #include <avr/pgmspace.h>
 #include <stdint.h>
 
-#define SPEED_SIZE (98)
+#define SPEED_SIZE (100)
 
 extern const uint8_t speed[SPEED_SIZE];
 

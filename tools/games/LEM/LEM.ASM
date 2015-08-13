@@ -259,7 +259,7 @@ display_bcd:
 moonscape:
 	ld v5,0
 	;position du pad au hasard
-	rnd pad,#FF
+	rnd pad,#7F
 	scrx w
 	ld v3, PAD_WIDTH
 	sub w, v3

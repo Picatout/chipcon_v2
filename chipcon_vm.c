@@ -43,7 +43,7 @@
 //#define caddr(b1,b2) ((((b1&0xf)<<8)+b2)<<1)
 #define caddr(b1,b2)  ((((b1<<8)|b2)<<1)&0xfff)
 #define rx(b1)  (b1&0xf)
-#define ry(b2)  ((b2&0xf0)>>4)
+#define ry(b2)  (b2>>4)
 
 // état de la machine virtuelle
 static vm_state_t vms;
@@ -51,15 +51,6 @@ static vm_state_t vms;
 // stockage temporaire sprite
 static uint8_t block[32];
 
-#define ICACHE 1
-#if ICACHE==1
-// cache instructions
-#define ICACHE_SIZE 8
-static uint8_t icache[ICACHE_SIZE];
-static uint16_t cache_base=0;
-
-#define load_cache() sram_load_block(cache_base,ICACHE_SIZE,icache);
-#endif
 
 void print_vms(const char *msg){
 	cls();
@@ -93,35 +84,20 @@ void print_vms(const char *msg){
 // machine virtuelle SCHIP+
 uint8_t schipp(){
 	uint8_t x,y,n;
+#if VM_DECODER!=1
 	uint16_t code;
-	
+#endif	
 	vms.pc=CODE_BASE_ADDR;
 	vms.sp=0;
 	vms.ix=0;
-#if ICACHE==1
-	cache_base=0;
-	load_cache();
-#endif
  	while (1){
 		if (joystick_break()) return CHIP_EXIT_OK;
-#if ICACHE!=1		
 		vms.opcode=sram_read_word(vms.pc);
 		vms.pc+=2;
-#else
-/* cette cache d'instruction améliore la vitesse d'éxécution */	
-		if ((vms.pc<cache_base) || (vms.pc>=cache_base+ICACHE_SIZE)){
-			 cache_base=vms.pc;
-			 load_cache();
-		}
-		vms.b1=icache[vms.pc-cache_base];
-		vms.pc++;
-		vms.b2=icache[vms.pc-cache_base];
-		vms.pc++;
-#endif		
 		x=rx(vms.b1);
 		y=ry(vms.b2);
 #if VM_DECODER==1
-	    switch (vms.b1>>4){
+	    switch (vms.b1>>4){ //décodeur d'instruction modèle 1
 		case 0:
 			if ((vms.b2&0xf0)==0xc0){
 				scroll_down(vms.b2&0xf);
@@ -172,9 +148,9 @@ uint8_t schipp(){
 		case 0x7: // 7XKK   ADD VX,KK  ; VX := VX + KK
 			vms.var[x]+=vms.b2;
 			break;
-		case 0x8: // 8XY0   LD VX, VY  ; VX := VY
+		case 0x8: 
 			switch(vms.b2&0xf){
-			case 0:
+			case 0: // 8XY0   LD VX, VY  ; VX := VY
 				vms.var[x]=vms.var[y];
 				break;
 			case 1: // 8XY1  OR VX, VY  ; VX := VX OR VY
@@ -351,7 +327,7 @@ uint8_t schipp(){
 			break;	
 		}//switch (vms.b1>>4)
 #else
-		// décodeur d'instruction
+		// décodeur d'instruction modèle 2
 		code=(vms.b1&0xf0)<<4;
 		switch (code){
 			case 0x000:
