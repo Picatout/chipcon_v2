@@ -36,6 +36,12 @@
 #include "tone.h"
 #include "sram.h"
 
+#define HTIME  (1015)
+#define HALFLINE (HTIME>>1)
+#define HPULSE (74)
+#define SERATION (HPULSE>>1)
+#define VPULSE (HTIME-2*HPULSE)
+
 void tvout_init(){
 	// met broche sync en mode sortie
 	NTSC_SYNC_DDR |= NTSC_SYNC_OUT;
@@ -304,8 +310,9 @@ void screen_restore(){
 volatile uint8_t frame_delay=0;
 volatile uint8_t tone_length=0;
 
-static volatile uint16_t line_count=0;
+static volatile int16_t line_count=-1;
 static volatile uint8_t video=0;
+static volatile bool even=true;
 
 // interruption à la fin de
 // chaque pulse de synchronisation
@@ -315,28 +322,51 @@ ISR(TIMER1_COMPB_vect){
 
 	line_count++;
 	switch(line_count){
-		case 1:
+		case 0:
+			NTSC_SYNC_OCRA=HALFLINE; //period
+			NTSC_SYNC_OCRB=SERATION; //pulse width
+			break;
+		case 6:
+			NTSC_SYNC_OCRB=HALFLINE-SERATION;
+			break;
+		case 12:
+			NTSC_SYNC_OCRB=SERATION;
+			break;
+		case 18:
+			NTSC_SYNC_OCRA=HTIME;
+			NTSC_SYNC_OCRB=HPULSE;
+			break;				
+		case 19:
 			if (frame_delay) frame_delay--;
 			break;
-		case 2:
+		case 20:
 		if (tone_length){
 			tone_length--;
 			if (!tone_length) tone_off();
 		}
 		break;
+/*		
 		case 3:
 			NTSC_SYNC_OCRB=HPULSE;
 			break;
+*/			
 		case FIRST_VISIBLE:
 			video=1;
 			break;
 		case LAST_VISIBLE:
 			video=0;
 			break;
-		case 262:
-			line_count=0;
-			NTSC_SYNC_OCRB=VPULSE;
+		case 271:
+			if (even){
+			    line_count=-1;
+				even=false;
+			}
 			break;
+		case 272:
+		    if (!even){
+				line_count=-1;
+				even=true;
+			}
 		default:
 			if (video){
 				buff=video_buffer+(((line_count-FIRST_VISIBLE)>>1)*HBYTES);

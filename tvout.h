@@ -29,9 +29,7 @@
 
 #include <avr/pgmspace.h>
 
-#define HTIME  (1015)
-#define HPULSE (74)
-#define VPULSE (HTIME-2*HPULSE)
+
 #define HRES (128)
 #define HBYTES (HRES/8)
 #if SPEED==1
