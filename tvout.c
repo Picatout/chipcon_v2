@@ -57,7 +57,11 @@ void tvout_init(){
 	
 }
 
-static uint8_t video_buffer[HBYTES*VRES];
+static uint8_t video_buffer[VIDEO_BUFF_SIZE];
+
+void video_write_byte(uint16_t addr, uint8_t b){
+	video_buffer[addr]=b;	
+}//f()
 
 // dessine un point à l'écran
 void plot(int8_t x, int8_t y, optype op){
@@ -345,11 +349,6 @@ ISR(TIMER1_COMPB_vect){
 			if (!tone_length) tone_off();
 		}
 		break;
-/*		
-		case 3:
-			NTSC_SYNC_OCRB=HPULSE;
-			break;
-*/			
 		case FIRST_VISIBLE:
 			video=1;
 			break;

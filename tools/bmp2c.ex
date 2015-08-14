@@ -1,14 +1,18 @@
 -- euphoria script
 -- convert splash bitmap to c file
-integer fh,fo, j, c, r
-sequence bits=repeat(repeat(0,16),64)
-r=64
+constant VRES=88
+constant HRES=128
+constant BPR=HRES/8
+constant SPLASH_SIZE=VRES*BPR
+integer fh,fo, j, c, r=VRES
+sequence bits=repeat(repeat(0,BPR),VRES)
+
 fo=open("splash.h","wb")
 printf(fo,"#ifndef SPLASH_\n")
 printf(fo,"#define SPLASH_\n\n")
 printf(fo,"#include <stdint.h>\n")
 printf(fo,"#include <avr/pgmspace.h>\n\n")
-printf(fo,"#define SPLASH_SIZE (1024)\n\n")
+printf(fo,"#define SPLASH_SIZE (%d)\n\n",SPLASH_SIZE)
 printf(fo,"extern const uint8_t splash[SPLASH_SIZE];\n\n")
 printf(fo,"#endif\n")
 close(fo)
@@ -28,8 +32,8 @@ while  c!=-1 do
 		j=1
 	end if
 end while
-for i=1 to 64 do
-	for k=1 to 16 do
+for i=1 to VRES do
+	for k=1 to BPR do
 		printf(fo,"0x%02x, ",bits[i][k])
 	end for
 	puts(fo,'\n')

@@ -162,6 +162,8 @@ int16_t select_file(int16_t fcount){
 		while (_joystick_state()!=JSTK_IMASK)key_tone(key,2,true);
 	}//while	
 }
+char ext[]=".bin";
+char extu[]=".BIN";
 
 #if SDC_SUPPORT
 // copie la liste des fichiers
@@ -177,7 +179,7 @@ int16_t sdc_files(){
 		fname[ENTRY_SIZE-1]=0;
         while((entry_nbr<MAX_ENTRIES) && fs_read_dir(&dir_entry))
         {
-	        if (!(dir_entry.attributes & FAT_ATTRIB_DIR)){
+	        if (!(dir_entry.attributes & FAT_ATTRIB_DIR) && ((strstr(dir_entry.long_name,ext))||(strstr(dir_entry.long_name,extu)))){
 				strcpy((char*)fname,dir_entry.long_name);
 				sram_store_block(entry_nbr*ENTRY_SIZE,ENTRY_SIZE,fname);
 				entry_nbr++;
@@ -220,7 +222,7 @@ PROGMEM const uint8_t flash_games[]=
 // mémoire flash
 void games_in_flash(){
 	uint16_t i=0,j,entry=0,selected;
-	uint8_t c, name[32];
+	uint8_t c,  name[32];
 
 	memset(name,0,ENTRY_SIZE);
 	while ((c=pgm_read_byte(&flash_games[i++]))){
@@ -295,9 +297,8 @@ void games_in_flash(){
 void splash_screen(){
 	uint16_t i;
 	
-	for (i=0;i<SPLASH_SIZE;i++) sram_write_byte(SAVE_SCREEN_ADDR+i,pgm_read_byte((splash+i)));
-	screen_restore();
-	frame_delay=120;
+	for (i=0;i<VIDEO_BUFF_SIZE;i++) video_write_byte(i,pgm_read_byte((splash+i)));
+	frame_delay=60;
 	while (frame_delay){
 		if (_joystick_state()!=JSTK_IMASK){
 			 tone(1000,2);
@@ -305,6 +306,7 @@ void splash_screen(){
 		}
 	}
 	joystick_wait_release(); 
+	cls();
 }
 
 int main(void){
@@ -313,6 +315,7 @@ int main(void){
 	CLKPR= (1<<7);
 	CLKPR = 0 ; // désactivation du diviseur
 	tvout_init();
+	select_font(FONT_ASCII);
 	//initialisation SPI
 	SPI_DDR |= SPI_CLK+SPI_MOSI;
 	SPI_CR = (1<<SPE)|(1<<MSTR);
@@ -325,39 +328,30 @@ int main(void){
 	sram_init();
 	sei();// activation des interruptions
 	srand(TCNT1);
+	splash_screen();
 #if SDC_SUPPORT
 	//initialisation carte SD
-	sd_raw_init();
-	if (fs_mount()) sdc_ok=fs_open_dir("/");
+	if (sd_raw_init() && fs_mount()){
+		 sdc_ok=fs_open_dir("/");
+	}
 #endif
 #if !FW_DEBUG
-	splash_screen();
 	text_scroller(credits,4);
 #endif	
 	while (1){
 		//sram_clear();
 		cls();
 		select_font(FONT_ASCII);
-#if SDC_SUPPORT
-/*
-select_font(FONT_ASCII);
-set_cursor(0,0);
-prt_pstr((PSTR("first line")));
-set_cursor(0,VRES-CHAR_HEIGHT);
-prt_pstr(PSTR("last line"));
-while(1);
-*/
-		if (!sdc_ok){
-			prt_pstr(PSTR("carte SD absente!"));
-			new_line();
-			prompt_btn();
-#endif
-			games_in_flash();
-#if SDC_SUPPORT 
-		}else{
+#if SDC_SUPPORT==1
+		if (sdc_ok){
 			games_on_sdcard();
+		}else{
+			prt_pstr(PSTR("carte SD?\n"));
+			prompt_btn();
+			games_in_flash();
 		}
-		
+#else		
+		games_in_flash();
 #endif		
 	}//while(1)
 	return EXIT_SUCCESS;

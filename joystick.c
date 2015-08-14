@@ -39,7 +39,7 @@ inline void joystick_wait_release(){
 }//f()
 
 void prompt_btn(){
-	prt_pstr(PSTR("bouton..."));
+	prt_pstr(PSTR("\nbouton..."));
 	while (JSTK_PIN&BTN_FIRE);
     joystick_wait_release();
 }//f()

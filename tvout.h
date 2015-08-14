@@ -32,11 +32,12 @@
 
 #define HRES (128)
 #define HBYTES (HRES/8)
-#if SPEED==1
+#if LOWVRES==1
 #define VRES (64)
 #else 
 #define VRES (88)
 #endif
+#define VIDEO_BUFF_SIZE (HBYTES*VRES)
 #define VLINES (VRES*2)
 #define FIRST_VISIBLE ((230-VLINES+30)>>1)
 #define LAST_VISIBLE  (VLINES+FIRST_VISIBLE-1)
@@ -66,5 +67,5 @@ void scroll_left(uint8_t pixels);
 void chip_scroll_left();
 void screen_save();
 void screen_restore();
-
+void video_write_byte(uint16_t addr, uint8_t b);
 #endif /* TVOUT_H_ */

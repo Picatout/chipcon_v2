@@ -25,6 +25,8 @@ static struct fat_dir_struct *dd;
 static struct fat_file_struct *fd;
 static struct partition_struct *partition;
 
+static struct fat_dir_entry_struct dir_entry;
+
 
 void bad_sdcard(const char *msg){
 	cls();
@@ -63,7 +65,6 @@ uint8_t fs_mount(){
 			partition_close(partition);
 			return 0;
 		}
-
 		return 1;
 }
 
@@ -77,15 +78,14 @@ void fs_umount(){
 
 uint8_t  fs_open_dir(char *dir_name){
         /* ouvre le répertoire dir_name */
-        struct fat_dir_entry_struct directory;
-        fat_get_dir_entry_of_path(fs, dir_name, &directory);
-        dd = fat_open_dir(fs, &directory);
+        fat_get_dir_entry_of_path(fs, dir_name, &dir_entry);
+        dd = fat_open_dir(fs, &dir_entry);
         if(!dd)
         {
 	        bad_sdcard(PSTR("Echec acces repert.\n"));
-			fs_umount();
+			fs_umount(); 
 	        return 0;
-        }
+        } 
         return 1;
 }
 
@@ -95,7 +95,7 @@ void fs_close_dir(){
 
 uint8_t fs_open_file(char *file_name){
 	uint8_t found=0;
-	struct fat_dir_entry_struct dir_entry;
+	static struct fat_dir_entry_struct dir_entry;
 	while(fat_read_dir(dd, &dir_entry))
 	{
 		if(strcmp(dir_entry.long_name, file_name) == 0)
@@ -121,17 +121,17 @@ void fs_close_file(){
 	fat_close_file(fd);
 }
 
-#define BUFF_SIZE (256)
+#define BUFF_SIZE (32)
 // charge le fichier CHIP-8 dans la SRAM
 // retourne nombres d'octets
 uint8_t fs_load_file(uint16_t file_no){
 	uint16_t byte_count=0;
 	intptr_t count;
-	uint8_t buffer[256];
+	uint8_t buffer[BUFF_SIZE];
 	sram_load_block(ENTRY_SIZE*file_no,ENTRY_SIZE,buffer);
 	if (fs_open_file((char*)buffer)){
 		//print(fd->dir_entry.long_name);new_line();
-		while((byte_count<SRAM_SIZE) && ((count = fat_read_file(fd, buffer, 256)) > 0)){
+		while((byte_count<SRAM_SIZE) && ((count = fat_read_file(fd, buffer, BUFF_SIZE)) > 0)){
 			sram_store_block(CODE_BASE_ADDR+byte_count,(uint16_t)count,buffer);
 			byte_count+=(uint16_t)count;
 		}
