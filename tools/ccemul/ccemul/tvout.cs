@@ -1,6 +1,6 @@
 ﻿/*---------------------------------------------------------------------------
-* Copyright 2014, Jacques Deschênes
-* This file is part of CHIPcon.
+* Copyright 2014, 2015 Jacques Deschênes
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -40,7 +40,8 @@ namespace ccemul
 	{
 		
 		internal const int PIXEL_SIZE=4;
-		internal const byte VRES=64;
+		internal static byte VRES=72;
+		internal static byte MAX_VRES=96;
 		internal const byte HRES=128;		
 			
 		Graphics g;
@@ -49,8 +50,13 @@ namespace ccemul
 		
 		internal TVout()
 		{
-			display=new Bitmap(128*PIXEL_SIZE,64*PIXEL_SIZE);
+			display=new Bitmap(HRES*PIXEL_SIZE,MAX_VRES*PIXEL_SIZE);
 			g= Graphics.FromImage(display);
+		}
+		
+		internal void resizeDisplay(byte newVRES){
+			VRES=newVRES;
+			cls();
 		}
 		
 		internal void cls()

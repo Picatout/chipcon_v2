@@ -1,6 +1,6 @@
 -- euphoria script
 -- convert splash bitmap to c file
-constant VRES=88
+constant VRES=96
 constant HRES=128
 constant BPR=HRES/8
 constant SPLASH_SIZE=VRES*BPR
@@ -23,7 +23,7 @@ j=1
 fh=open("splash.bmp","rb")
 for i=0 to 0x3d do c=getc(fh) end for
 c=getc(fh)
-while  c!=-1 do
+while  r and c!=-1 do
 	bits[r][j]=c
     c=getc(fh)
 	j+=1

@@ -84,6 +84,9 @@ namespace ccemul
 			conState=eCSTATE.IDLE;
 			SetMenuState();
 			BreaksForm = new FormBreakPoints(this);
+			VRESCombo.SelectedItem=0;
+			VRESCombo.Text="72";
+			//VRESCombo.BeginUpdate();
 		}
 		
 		//états de la console
@@ -191,7 +194,7 @@ namespace ccemul
             string lbl_file=gameName+".lbl";
             BreaksForm.LoadLabels(lbl_file);
             string[] pathSplit= gameName.Split(new char[]{'\\'});
-            this.Text=String.Format("CHIPcon emulator ( {0:S} )", pathSplit[pathSplit.Length-1]);
+            this.Text=String.Format("CHIPcon V2 emulator ( {0:S} )", pathSplit[pathSplit.Length-1]);
 		}
 		
 		void OpenFileDialog1FileOk(object sender, System.ComponentModel.CancelEventArgs e)
@@ -302,7 +305,9 @@ namespace ccemul
 		void TrackBar1KeyDown(object sender, KeyEventArgs e)
 		{
 			if (conState==eCSTATE.RUNNING ||
-			    conState==eCSTATE.PAUSED) vm.kpad.hexKeyDown((byte)e.KeyValue);
+			    conState==eCSTATE.PAUSED){
+				vm.kpad.hexKeyDown((byte)e.KeyValue);
+			}
 		}
 
 		void StepMenuItemClick(object sender, EventArgs e)
@@ -314,7 +319,9 @@ namespace ccemul
 		void TrackBar1KeyUp(object sender, KeyEventArgs e)
 		{
 			if (conState==eCSTATE.RUNNING ||
-			      conState==eCSTATE.PAUSED) vm.kpad.hexKeyUp((byte)e.KeyValue);
+			    conState==eCSTATE.PAUSED){
+				vm.kpad.hexKeyUp((byte)e.KeyValue);
+			}
 		}
 
 		void AboutMenuItemClick(object sender, EventArgs e)
@@ -395,8 +402,17 @@ namespace ccemul
             BreaksForm.LoadLabels(lbl_file);
 
 		}
-
-
+		void VRESComboSelectedIndexChanged(object sender, EventArgs e)
+		{
+			if (conState==eCSTATE.STOPPED){
+				vm.tv.resizeDisplay((byte)(64+8*(int)VRESCombo.SelectedIndex));
+			}
+		}
+		
+		void keyhelpMenuItemClick(object sender, EventArgs e){
+			FormKeyHelp frmKeys=new FormKeyHelp();
+			frmKeys.Show();
+		}
 	}
 	
 

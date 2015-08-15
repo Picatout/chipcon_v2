@@ -32,14 +32,22 @@
 
 #define HRES (128)
 #define HBYTES (HRES/8)
-#if LOWVRES==1
+#if !SDC_SUPPORT
+//lorsque pas de support carte SD
+//résolution maximale
+#define VRES (96)
+#else
+#if DEFVRES==1
 #define VRES (64)
-#else 
+#elif DEFVRES==2 
+#define VRES (72)
+#else
 #define VRES (88)
+#endif
 #endif
 #define VIDEO_BUFF_SIZE (HBYTES*VRES)
 #define VLINES (VRES*2)
-#define FIRST_VISIBLE ((230-VLINES+30)>>1)
+#define FIRST_VISIBLE (((240-VLINES)>>1)+24)
 #define LAST_VISIBLE  (VLINES+FIRST_VISIBLE-1)
 
 #define SAVE_SCREEN_ADDR (32768)

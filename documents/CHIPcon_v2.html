@@ -27,8 +27,8 @@
 <ul>
 <li>Version modifiée de la console <a href="https://github.com/picatout/chipcon">CHIPcon</a></li>
 <li>Sortie vidéo NTSC monochrome.</li>
-<li>Résolution vidéo: 128x88</li>
-<li>Rortie son tonalité.</li>
+<li>Résolution vidéo: minimum 128x64, maximum 128x96, voir plus bas dans ce document.</li>
+<li>Sortie son tonalité.</li>
 <li>Contrôle de jeux: joystick Atari 2600</li>
 <li>Jeux sur carte SD.</li>
 <li>Quelques jeux en mémoire flash</li>
@@ -47,13 +47,40 @@
 <h4>Modifications logicielles</h4>
 <p>
   Bien sur ce changent en impliquait d'autres au niveau du firmware. Ainsi <b>keypad.h</b> et <b>keypad.c</b> ont étés remplacés par <b>joystick.h</b> et <b>joystick.c</b>.
-  Et puisque ce changement rendais la console incompatible avec les binaires des jeux SCHIP d'origine aussi bien aller un peut plus loin en ajoutant des codes opérationnels
-   à la machine virtuelle voir le fichier <a href="vm-opcodes.html">vm-opcdes.html</a> à ce sujet. 
+  Et puisque ce changement rendais la console incompatible avec les binaires des jeux SCHIP d'origine aussi bien aller un peu plus loin en ajoutant des codes opérationnels
+   à la machine virtuelle. Voir le fichier <a href="vm-opcodes.html">vm-opcdes.html</a> à ce sujet. 
 </p>
 <p>
-  La résolution vidéo passe de 128x64 à 128x88. L'espace d'adressage de la machine virtuelle est doublée passant de 4096 à 9192 octets. De plus les programmes 
+  La résolution vidéo passe de 128x64 à 128x96. L'espace d'adressage de la machine virtuelle est doublée passant de 4096 à 8192 octets. De plus les programmes 
   commencent l'exécution à l'adresse 0 plutôt que 512. L'assembleur <b>ccasm.exe</b> a été modifié en conséquence et rebâptisé <b>cc2asm.exe</b>. L'émulateur-débogueur 
   <b>ccemul.exe</b> a été adapté et renommé <b>cc2emul.exe</b>.
+</p>
+<h4>Résolution verticale</h4>
+<p>
+  Le MCU ATmega328P ne disposant que de 2Ko de RAM ça limite la dimension du <b>video_buffer</b>. Mais il faut aussi limiter cette résolution pour des raisons 
+  de performance. En effet le temps que la routine vidéo prend pour rafraichir l'image est du temps en moins pour la machine virtuelle. Donc plus la résolution 
+  verticale est grande moins il ne reste de temps pour la machine virtuelle. Lorsque la console est utilisée sans support pour carte SD on peut 
+  utiliser la résolution 128x96. Évidemment celà limite les jeux à ceux disponible en mémoire flash. Par contre lorsqu'on utilise la carte SD celle-ci utilise 
+  de la mémoire RAM pour son <b>buffer</b> et les structures de données, il en reste donc moins pour le <b>video_buffer</b>. Il en reste encore moins si le 
+  support pour carte SDHC est configuré. Sans support SDHC la résolution peut-être de 128x88 mais avec le support SDHC on doit descendre à 128x72.
+</p>
+<h4>Configuration de pré-compilation</h4>
+<p>
+Il y a deux fichiers à configurer avant de compiler le projet.
+</p>
+<p>
+   Dans le fichier <b>chipcon_config.h</b> on retrouve les définitions suivantes:
+  <ul>
+  <li><b>FW_DEBUG</b>  Mettre à 1 pendant le développement du firmware pour inclure le code d'assistance au déboguage.</li>
+  <li><b>SDC_SUPPORT</b> Si on ne veut qu'utiliser la console qu'avec les jeux qui sont en mémoire programme on met cette  valeur à 0. Autrement à 1.</li>
+  <li><b>DEFVRES</b>  Détermine la résolution verticale désirée. 0 pour la résolution maximale. 1 pour la résolution SCHIP. Lorsque <b>SDC_RAW_SDHC</b> est à 1 dans 
+  le fichier <b>sd_raw_config.h</b> la valeur de <b>DEFVRES</b> est redéfinie à 2.</li>
+  </ul>
+ </p>
+<p>
+  Dans le fichier <b>sd_raw_config.h</b> une seule définition est d'intérêt, soit <b>SD_RAW_SDHC</b>. Si vous prévoyez utiliser une carte SD haute capacité 
+  (plus de 2Go), il faut mettre cette variable à <b>1</b>. Le support SDHC diminue la RAM disponible et la résolution verticale <b>VRES</b> sera définie en conséquence 
+  dans le fichier <b>tvout.h</b>
 </p>
 <h4>Autres documents</h4>
 <p>

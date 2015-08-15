@@ -51,6 +51,7 @@ namespace ccemul
 			this.loadLabelsFileMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.MenuHelp = new System.Windows.Forms.ToolStripMenuItem();
 			this.AboutMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+			this.keyshelpMenuItem = new System.Windows.Forms.ToolStripMenuItem();
 			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
 			this.timer1 = new System.Windows.Forms.Timer(this.components);
 			this.trackBar1 = new System.Windows.Forms.TrackBar();
@@ -64,6 +65,9 @@ namespace ccemul
 			this.ResumeToolBtn = new System.Windows.Forms.ToolStripButton();
 			this.StepToolBtn = new System.Windows.Forms.ToolStripButton();
 			this.StopToolBtn = new System.Windows.Forms.ToolStripButton();
+			this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
+			this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
+			this.VRESCombo = new System.Windows.Forms.ToolStripComboBox();
 			this.menuStrip1.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.trackBar1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -78,7 +82,7 @@ namespace ccemul
 			this.MenuHelp});
 			this.menuStrip1.Location = new System.Drawing.Point(0, 0);
 			this.menuStrip1.Name = "menuStrip1";
-			this.menuStrip1.Size = new System.Drawing.Size(638, 24);
+			this.menuStrip1.Size = new System.Drawing.Size(645, 24);
 			this.menuStrip1.TabIndex = 0;
 			this.menuStrip1.Text = "menuStrip1";
 			// 
@@ -98,7 +102,7 @@ namespace ccemul
 			// openFileMenuItem
 			// 
 			this.openFileMenuItem.Name = "openFileMenuItem";
-			this.openFileMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.openFileMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.openFileMenuItem.Text = "Open...";
 			this.openFileMenuItem.Click += new System.EventHandler(this.OpenFileMenuItemClick);
 			// 
@@ -106,26 +110,26 @@ namespace ccemul
 			// 
 			this.reloadLastFileMenuItem.Enabled = false;
 			this.reloadLastFileMenuItem.Name = "reloadLastFileMenuItem";
-			this.reloadLastFileMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.reloadLastFileMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.reloadLastFileMenuItem.Text = "Reload last file";
 			this.reloadLastFileMenuItem.Click += new System.EventHandler(this.ReloadLastFileMenuItemClick);
 			// 
 			// RestartMenuItem
 			// 
 			this.RestartMenuItem.Name = "RestartMenuItem";
-			this.RestartMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.RestartMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.RestartMenuItem.Text = "Restart";
 			this.RestartMenuItem.Click += new System.EventHandler(this.RestartMenuItemClick);
 			// 
 			// toolStripSeparator1
 			// 
 			this.toolStripSeparator1.Name = "toolStripSeparator1";
-			this.toolStripSeparator1.Size = new System.Drawing.Size(149, 6);
+			this.toolStripSeparator1.Size = new System.Drawing.Size(141, 6);
 			// 
 			// quitMenuItem
 			// 
 			this.quitMenuItem.Name = "quitMenuItem";
-			this.quitMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.quitMenuItem.Size = new System.Drawing.Size(144, 22);
 			this.quitMenuItem.Text = "Quit";
 			this.quitMenuItem.Click += new System.EventHandler(this.QuitMenuItemClick);
 			// 
@@ -163,7 +167,8 @@ namespace ccemul
 			// MenuHelp
 			// 
 			this.MenuHelp.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-			this.AboutMenuItem});
+			this.AboutMenuItem,
+			this.keyshelpMenuItem});
 			this.MenuHelp.Name = "MenuHelp";
 			this.MenuHelp.Size = new System.Drawing.Size(39, 20);
 			this.MenuHelp.Text = "help";
@@ -171,9 +176,16 @@ namespace ccemul
 			// AboutMenuItem
 			// 
 			this.AboutMenuItem.Name = "AboutMenuItem";
-			this.AboutMenuItem.Size = new System.Drawing.Size(115, 22);
+			this.AboutMenuItem.Size = new System.Drawing.Size(152, 22);
 			this.AboutMenuItem.Text = "About...";
 			this.AboutMenuItem.Click += new System.EventHandler(this.AboutMenuItemClick);
+			// 
+			// keyshelpMenuItem
+			// 
+			this.keyshelpMenuItem.Name = "keyshelpMenuItem";
+			this.keyshelpMenuItem.Size = new System.Drawing.Size(152, 22);
+			this.keyshelpMenuItem.Text = "keys...";
+			this.keyshelpMenuItem.Click += new System.EventHandler(this.keyhelpMenuItemClick);
 			// 
 			// openFileDialog1
 			// 
@@ -201,16 +213,16 @@ namespace ccemul
 			// pictureBox1
 			// 
 			this.pictureBox1.InitialImage = null;
-			this.pictureBox1.Location = new System.Drawing.Point(64, 106);
+			this.pictureBox1.Location = new System.Drawing.Point(64, 52);
 			this.pictureBox1.Name = "pictureBox1";
-			this.pictureBox1.Size = new System.Drawing.Size(562, 269);
+			this.pictureBox1.Size = new System.Drawing.Size(562, 384);
 			this.pictureBox1.TabIndex = 4;
 			this.pictureBox1.TabStop = false;
 			// 
 			// textBox1
 			// 
 			this.textBox1.Enabled = false;
-			this.textBox1.Location = new System.Drawing.Point(12, 427);
+			this.textBox1.Location = new System.Drawing.Point(12, 465);
 			this.textBox1.Multiline = true;
 			this.textBox1.Name = "textBox1";
 			this.textBox1.ReadOnly = true;
@@ -230,7 +242,7 @@ namespace ccemul
 			// label2
 			// 
 			this.label2.Enabled = false;
-			this.label2.Location = new System.Drawing.Point(258, 392);
+			this.label2.Location = new System.Drawing.Point(270, 439);
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(100, 23);
 			this.label2.TabIndex = 7;
@@ -243,10 +255,13 @@ namespace ccemul
 			this.PauseToolBtn,
 			this.ResumeToolBtn,
 			this.StepToolBtn,
-			this.StopToolBtn});
+			this.StopToolBtn,
+			this.toolStripSeparator2,
+			this.toolStripLabel1,
+			this.VRESCombo});
 			this.toolStrip1.Location = new System.Drawing.Point(0, 24);
 			this.toolStrip1.Name = "toolStrip1";
-			this.toolStrip1.Size = new System.Drawing.Size(638, 25);
+			this.toolStrip1.Size = new System.Drawing.Size(645, 25);
 			this.toolStrip1.TabIndex = 8;
 			this.toolStrip1.Text = "toolStrip1";
 			// 
@@ -305,11 +320,37 @@ namespace ccemul
 			this.StopToolBtn.Text = "Stop";
 			this.StopToolBtn.Click += new System.EventHandler(this.StopToolBtnClick);
 			// 
+			// toolStripSeparator2
+			// 
+			this.toolStripSeparator2.Name = "toolStripSeparator2";
+			this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
+			// 
+			// toolStripLabel1
+			// 
+			this.toolStripLabel1.Name = "toolStripLabel1";
+			this.toolStripLabel1.Size = new System.Drawing.Size(32, 22);
+			this.toolStripLabel1.Text = "VRES";
+			// 
+			// VRESCombo
+			// 
+			this.VRESCombo.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.VRESCombo.Items.AddRange(new object[] {
+			"64",
+			"72",
+			"80",
+			"88",
+			"96"});
+			this.VRESCombo.MaxDropDownItems = 5;
+			this.VRESCombo.Name = "VRESCombo";
+			this.VRESCombo.Size = new System.Drawing.Size(75, 25);
+			this.VRESCombo.ToolTipText = "résolution verticale";
+			this.VRESCombo.SelectedIndexChanged += new System.EventHandler(this.VRESComboSelectedIndexChanged);
+			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(638, 556);
+			this.ClientSize = new System.Drawing.Size(645, 600);
 			this.Controls.Add(this.toolStrip1);
 			this.Controls.Add(this.label2);
 			this.Controls.Add(this.label1);
@@ -322,7 +363,7 @@ namespace ccemul
 			this.MaximizeBox = false;
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "CHIPcon emulator";
+			this.Text = "CHIPcon V2 emulator";
 			this.Shown += new System.EventHandler(this.MainFormShown);
 			this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainFormPaint);
 			this.menuStrip1.ResumeLayout(false);
@@ -348,6 +389,8 @@ namespace ccemul
 		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.ToolStripMenuItem MenuHelp;
 		private System.Windows.Forms.ToolStripMenuItem AboutMenuItem;
+		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
+		private System.Windows.Forms.ToolStripLabel toolStripLabel1;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.ToolStripMenuItem MenuDebug;
 		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
@@ -362,5 +405,7 @@ namespace ccemul
 		private System.Windows.Forms.ToolStripMenuItem clearBreakPointsMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem loadLabelsFileMenuItem;
 		private System.Windows.Forms.ToolStripMenuItem reloadLastFileMenuItem;
+		private System.Windows.Forms.ToolStripComboBox VRESCombo;
+		private System.Windows.Forms.ToolStripMenuItem keyshelpMenuItem;
 	}
 }

@@ -41,16 +41,18 @@
 // en diminiuant la résolution
 // verticale on augmente la vitesse
 // de la VM.
-// définir LOWVRES à 1 pour VRES=64
-// définir LOWVRES à 0 pour VRES=88
-#define LOWVRES 0
+// définir DEFVRES à 0 pour VRES=88
+// définir DEFVRES à 1 pour VRES=64
+// si SD_RAW_SDHC==1 DEFRES est mis à 2
+// pour une résolution intermédaire
+#define DEFVRES 0
 #include "sd_raw_config.h"
 // lorsque SD_RAW_SDHC est à 1
 // il faut plus de mémoire RAM
 // il n'en reste plus assé pour 
 // augmenter la VRES à 88 lignes
 #if SD_RAW_SDHC
-#undef LOWVRES
-#define LOWVRES 1
+#undef DEFVRES
+#define DEFVRES 2
 #endif
 #endif /* CHIPCON_CONFIG_H_ */

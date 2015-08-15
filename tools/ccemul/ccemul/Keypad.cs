@@ -1,6 +1,6 @@
 ﻿/*---------------------------------------------------------------------------
-* Copyright 2014, Jacques Deschênes
-* This file is part of CHIPcon.
+* Copyright 2014, 2015 Jacques Deschênes
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -36,24 +36,13 @@ namespace ccemul
 	public class Keypad
 	{
 		
-		byte[] hkeys=new byte[16]
+		byte[] hkeys=new byte[5]
 		{
-		88, // X
-		49, // 1
-		50, // 2
-		51, // 3
-		81, // Q
-		87, // W
-		69, // E
-		65, // A
-		83, // S
-		68, // D
-		52, // 4
-		82, // R
-		70, // F
-		86, // V
-		90, // Z
-		67, // C
+		0x47, // UP
+        0x42, // DOWN
+        0x56, // LEFT
+        0x4e, //RIGHT
+        0x20, // FIRE        
 		};
 		
 		internal ushort keys_state=0; // état des touches
@@ -66,7 +55,7 @@ namespace ccemul
 		
 		internal byte keypadRead()
 		{
-			for (byte i=0;i<16;i++){
+			for (byte i=0;i<4;i++){
 				if ((keys_state & (1<<i))==(1<<i))
 				{
 					keys_state &=(ushort)(~(1<<i)&0xffff);
@@ -90,9 +79,9 @@ namespace ccemul
 		{
 			byte i;
 			
-			for (i=0;i<16;i++) if (hkeys[i]==k)
+			for (i=0;i<5;i++) if (hkeys[i]==k)
 			{				
-				keys_state|=(ushort)(1<<i);
+				keys_state|=(ushort)(1<<(i+1));
 				return true;
 			}
 			return false;
@@ -102,9 +91,9 @@ namespace ccemul
 		{
 			byte i=0;
 			
-			for (i=0;i<16;i++) if (hkeys[i]==k)
+			for (i=0;i<5;i++) if (hkeys[i]==k)
 			{				
-				keys_state &=(ushort)(~(1<<i)&0xffff);
+				keys_state &=(ushort)(~(1<<(i+1))&0xffff);
 				return true;
 			}
 			return false;
@@ -116,14 +105,14 @@ namespace ccemul
 		{
 			
 		}
-		
-		byte keypad_break(){
-			return 0;
+        */		
+		internal bool keypad_break(){
+       		return (((keys_state&6)==6) || ((keys_state & 24)==24));
 		}
-*/		
+		
 		internal bool keyDown(byte k)
 		{
-			return (keys_state & (1<<k))==(1<<k);
+			return (keys_state & k)==k;
 		}
 	}
 }

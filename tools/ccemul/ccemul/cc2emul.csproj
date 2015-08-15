@@ -6,7 +6,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <OutputType>WinExe</OutputType>
     <RootNamespace>ccemul</RootNamespace>
-    <AssemblyName>ccemul</AssemblyName>
+    <AssemblyName>cc2emul</AssemblyName>
     <TargetFrameworkVersion>v3.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
@@ -70,6 +70,10 @@
     <Compile Include="FormBreakPoints.Designer.cs">
       <DependentUpon>FormBreakPoints.cs</DependentUpon>
     </Compile>
+    <Compile Include="FormKeyHelp.cs" />
+    <Compile Include="FormKeyHelp.Designer.cs">
+      <DependentUpon>FormKeyHelp.cs</DependentUpon>
+    </Compile>
     <Compile Include="Keypad.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="MainForm.Designer.cs">
@@ -87,6 +91,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FormBreakPoints.resx">
       <DependentUpon>FormBreakPoints.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormKeyHelp.resx">
+      <DependentUpon>FormKeyHelp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>

@@ -1,6 +1,6 @@
 ﻿/*---------------------------------------------------------------------------
-* Copyright 2014, Jacques Deschênes
-* This file is part of CHIPcon.
+* Copyright 2014, 2015 Jacques Deschênes
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -40,8 +40,8 @@ namespace ccemul
 
 	internal class ChipConVM
 	{
-		const int ORG=512;
-		const int CODE_SIZE=4096;
+		const int ORG=0;
+		const int CODE_SIZE=8192;
 		const int STACK_SIZE=32;
 		const int MAX_BREAK=10;
 		
@@ -114,6 +114,10 @@ namespace ccemul
 			}
 			while (speed>0)
 			{
+				if (kpad.keypad_break()){
+					speed=0;
+					return vm_error.VM_END;
+				}
 				if (pc>(CODE_SIZE-2)){
 					speed=0;
 					return vm_error.PC_OUT_OF_BOUND;
@@ -133,14 +137,15 @@ namespace ccemul
 				}
 				b1=code[pc++];
 				b2=code[pc++];
-				addr=(ushort)(((b1&0xf)<<8)|b2);
+				addr=(ushort)((((b1&0xf)<<8)|b2)<<1);
 				x=(byte)(b1&0xf);
 				y=(byte)((b2&0xf0)>>4);
 				// décodeur d'instruction
 				opCode=(ushort)((b1&0xf0)<<4);
 				switch (opCode){
 					case 0x000:
-						if ((b2&0xf0)==0xc0) opCode=0xc0; else opCode=b2;
+						opCode=(ushort)(b2&0xf0);
+						if (opCode>0xd0) opCode=(ushort)b2;
 						break;
 					case 0xe00:
 					case 0xf00:
@@ -155,6 +160,9 @@ namespace ccemul
 				switch(opCode){
 					case 0xc0: // 00CN, (mode schip seulement) glisse l'affichage N lignes vers le bas
 						tv.scrollDown(b2&0xf);
+						break;
+					case 0xd0: //00DN, glisse l'affichage vers le haut de N lignes
+						tv.scrollUp(b2&0xf);
 						break;
 					case 0xe0: // 00E0, efface l'écran
 						tv.cls();
@@ -178,10 +186,10 @@ namespace ccemul
 						break; // ignore ce code
 					case 0xff:  //00FF, passe en vms.mode schip résolution 128x64
 						break; // ignore ce code
-					case 0x100: // 1NNN saut vers l'adresse NNN
+					case 0x100: // 1NNN saut vers l'adresse 2*NNN
 						pc=addr;
 						break;
-					case 0x200: // 2NNN  appelle la sous-routine à l'adresse NNN
+					case 0x200: // 2NNN  appelle la sous-routine à l'adresse 2*NNN
 						if (sp+1==STACK_SIZE){
 							return vm_error.STACK_OVERFLOW;
 						}
@@ -264,18 +272,33 @@ namespace ccemul
 					case 0x903: // 9XY3 PIXI VX, VY  inverse le pixel aux coordonnées indiquées par VX,VY
 						tv.plot(var[x],var[y],eOP.eINVERT);
 						break;
+					case 0x904: // 9NN4 NOISE NN, NN est la durée.
+						//non implémenté...
+						break;
 					case 0x905: // 9XY5 TONE VX, VY, WAIT  joue une note de la gamme tempérée attend la fin avant de poursuivre
 						if (var[x]>15){
 							return vm_error.INVALID_TONE_VALUE;
 						}
 						tone.key_tone(var[x],var[y],true);
 						break;
-					case 0xa00: // ANNN     I := NNN
+					case 0x906: // 9X06   PUSH X
+						stack[++sp]=var[x];
+						break;
+					case 0x907: // 9X07   POP X
+						var[x]=(byte)stack[sp--];
+						break;
+					case 0x908: // 9X08   SCRX VX
+						var[x]=(byte)TVout.HRES;
+						break; 
+					case 0x909: // 9X09   SCRY VX
+						var[x]=(byte)TVout.VRES;
+						break;
+					case 0xa00: // ANNN     I := 2*NNN
 						ix=addr;  // chip-8 et schip adressse de 12 bits
 						break;
-					case 0xb00: // BNNN     saut à NNN+V0
-						pc=(ushort)(var[0]+addr);
-						if (pc>=4096){
+					case 0xb00: // BNNN     saut à 2*(NNN+V0)
+						pc=(ushort)(2*var[0]+addr);
+						if (pc>=(CODE_SIZE-1)){
 							return vm_error.PC_OUT_OF_BOUND;
 						}
 						break;

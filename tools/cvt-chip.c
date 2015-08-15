@@ -8,7 +8,7 @@ void usage(){
   puts("\nConvert CHIP/SCHIP binary to 'C' and 'H' files");
   puts("USAGE: cvt-chip.exe input_file.");
   puts("input_file is SCHIP binary file.");
-  puts("exemple: cvt_sc.exe sokoban.sc");
+  puts("exemple: cvt-chip.exe sokoban.sc");
   puts("create  sokoban.c and sokoban.h");
   exit(EXIT_FAILURE);
 }
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 		exit(EXIT_FAILURE);
 	}
 	bslash=argv[1]+strlen(argv[1])-1;
-	while (bslash>=argv[1] && *bslash!='\\') --bslash;
+	while ((char*)bslash>=argv[1] && *bslash!='\\') --bslash;
 	bslash++;
 	strcpy(c_file,bslash); 
 	i=0;
@@ -66,7 +66,6 @@ int main(int argc, char *argv[]){
 		exit(EXIT_SUCCESS);
 	}
 	fprintf(cf,"#include \"%s.h\"\n\n",array_name);		
-	fprintf(cf,"PROGMEM const uint8_t %s_info[]=\"\";\n\n", array_name);
 	fprintf(cf,"PROGMEM const uint8_t %s[%s_SIZE]={",array_name,header_var);
 	fseek(inp,0,SEEK_SET);
 	i=0;
@@ -86,7 +85,6 @@ int main(int argc, char *argv[]){
 	fprintf(hf,"#include <stdint.h>\n\n");
 	fprintf(hf,"#define %s_SIZE (%d)\n\n",header_var, size);
 	fprintf(hf,"extern const uint8_t %s[%s_SIZE];\n\n",array_name,header_var);
-	fprintf(hf,"extern const uint8_t %s_info[];\n\n", array_name);
 	fprintf(hf,"#endif\n");
 	fclose(hf);
 	printf("%d octets\n",size);

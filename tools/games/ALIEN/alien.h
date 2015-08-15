@@ -8,6 +8,4 @@
 
 extern const uint8_t alien[ALIEN_SIZE];
 
-extern const uint8_t alien_info[];
-
 #endif

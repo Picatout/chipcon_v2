@@ -7,7 +7,7 @@ caractéristiques:
 =================
 * Version modifiée de la console CHIPCON (https://github.com/picatout/chipcon)
 * sortie vidéo monochrome NTSC
-* résolution vidéo: 128x88
+* résolution vidéo: configurable 128x64 à 128x96
 * sortie son tonalité.
 * contrôle de jeux: joystick Atari 2600
 * jeux sur carte SD.
@@ -21,7 +21,7 @@ modifications matérielle:
 
 Modifications logicielles:
 ==========================
-* La résolution verticale est passé de 64 à 88 pixels.
+* La résolution verticale est configurable de 64 à 96 pixels. (96 Lorsqu'il n'y a pas de support pour carte SD).
 * la machine virtuelle n'est plus compatible avec SCHIP. De toute façon puisque le clavier a été remplacé par un joystick,
   il n'est n'étais plus possible d'assuré cette compatibilité. 
 * L'espace adressable passe de 4096 à 8192. 

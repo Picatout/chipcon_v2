@@ -13,10 +13,11 @@ filesys.d filesys.o: .././filesys.c \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-gnu-toolchain\avr\include\avr\version.h \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-gnu-toolchain\avr\include\avr\fuse.h \
  c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-gnu-toolchain\avr\include\avr\lock.h \
- .././filesys.h .././hardware.h .././chipcon_config.h .././fat/fat.h \
- .././fat/fat_config.h .././fat/sd_raw_config.h .././fat/../hardware.h \
- .././fat/partition.h .././fat/partition_config.h .././fat/sd_raw.h \
- .././keypad.h .././text.h .././sram.h .././tvout.h .././chip8.h
+ .././filesys.h .././hardware.h .././chipcon_config.h \
+ .././sd_raw_config.h .././fat/fat.h .././fat/fat_config.h \
+ .././fat/sd_raw_config.h .././fat/partition.h \
+ .././fat/partition_config.h .././fat/sd_raw.h .././joystick.h \
+ .././text.h .././sram.h .././tvout.h .././chipcon_vm.h
 
 c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-gnu-toolchain\avr\include\string.h:
 
@@ -52,13 +53,13 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-g
 
 .././chipcon_config.h:
 
+.././sd_raw_config.h:
+
 .././fat/fat.h:
 
 .././fat/fat_config.h:
 
 .././fat/sd_raw_config.h:
-
-.././fat/../hardware.h:
 
 .././fat/partition.h:
 
@@ -66,7 +67,7 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-g
 
 .././fat/sd_raw.h:
 
-.././keypad.h:
+.././joystick.h:
 
 .././text.h:
 
@@ -74,4 +75,4 @@ c:\program\ files\ (x86)\atmel\atmel\ toolchain\avr8\ gcc\native\3.4.1056\avr8-g
 
 .././tvout.h:
 
-.././chip8.h:
+.././chipcon_vm.h:
