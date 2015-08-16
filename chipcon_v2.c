@@ -55,7 +55,9 @@
 #include "worm.h"
 #include "alien.h"
 #include "blinky.h"
+#if TEST
 #include "speed.h"
+#endif
 
 extern vm_state_t vms;
 
@@ -69,7 +71,7 @@ void load_flash_game(const uint8_t *addr,uint16_t size){
 }
 
 #define MAX_ENTRIES (2048)
-#define DISPLAY_LINES (10)
+#define DISPLAY_LINES (VRES/CHAR_HEIGHT)
 
 
 
@@ -90,7 +92,7 @@ uint8_t display_page(int16_t page){
 }
 
 inline void display_cursor(uint8_t line){
-	put_sprite(0,line*CHAR_HEIGHT,8,&font_6x8[(RIGHT_ARROW-32)*CHAR_HEIGHT],FLASH_MEM);
+	put_sprite(0,line*CHAR_HEIGHT,CHAR_HEIGHT,&font_6x8[(RIGHT_ARROW-32)*CHAR_HEIGHT],FLASH_MEM);
 }
 
 // sélectionne un fichier
@@ -208,12 +210,14 @@ void games_on_sdcard(){
 
 //nom des jeux en flash
 PROGMEM const uint8_t flash_games[]=
-"LEM\n"
-"CAR\n"
-"WORM\n"
-"ALIEN\n"
-"BLINKY\n"
-"speed test\n"
+"LEM\n"  // case 0
+"CAR\n"  // case 1
+"WORM\n"  // case 2
+"ALIEN\n" // case 3
+"BLINKY\n" // case 4
+#if TEST
+"speed test\n" // case last
+#endif
 "";
 
 
@@ -242,42 +246,28 @@ void games_in_flash(){
 	switch(selected){
 	case 0:
 		load_flash_game((const uint8_t*)lem,LEM_SIZE);
-//		text_scroller((const uint8_t*)lem_info,4);
 		break;
 		
 	case 1:
 		load_flash_game((const uint8_t*)car,CAR_SIZE);
-//		text_scroller((const uint8_t*)car_info,4);
 		break;
 
 	case 2:
 		load_flash_game(worm,WORM_SIZE);
-//		text_scroller(worm_info,4);
 		break;
 
 	case 3:
 		load_flash_game(alien,ALIEN_SIZE);
-//		text_scroller(alien_info,4);
 		break;
 
 	case 4:
 		load_flash_game(blinky,BLINKY_SIZE);
-//		text_scroller(mines_info,4);
 		break;
-		
+#if TEST		
 	case 5:
 		load_flash_game(speed,SPEED_SIZE);
-//		text_scroller(magic_square_info,4);
 		break;
-/*
-	case 6:
-		load_flash_game(field,FIELD_SIZE);
-		text_scroller(field_info,4);
-		//set_break_point(0x302);
-		//set_break_point(0x2fa);
-		//set_break_point(0x304);
-		break;
-*/
+#endif		
 	default:
 		return;	
 	}

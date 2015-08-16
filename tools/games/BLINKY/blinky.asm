@@ -2,6 +2,8 @@
 ; blinky 2.00 Blinky [Hans Christian Egeberg, 1991]
 ; Adapted for CHIPcon v2 by Jacques Deschenes, 2015/08
 ; 
+
+
 EQU UP 2
 EQU DOWN 4
 EQU LEFT 8
@@ -11,7 +13,8 @@ EQU SUSPEND 32
 EQU SCORE_DELAY 20
 EQU BLINK_DELAY 30
 EQU COLL_DELAY  90
-EQU ANIM_DELAY  10
+EQU ANIM_DELAY  5
+EQU MAX_SPEED 10
 
 	JP splash	
 credits:
@@ -24,13 +27,58 @@ splash:
 	shr v1
 	prt v0,v1
 	scry v1
+splash_loop:	
+	ld v0, SELECT
+	sknp v0
+	jp splash_abort
 	ld v0, 2
 	call delay
 	scu 1
 	add v1,-1
 	se v1, 0
-	jp .-5
+	jp splash_loop
+splash_abort:
+    ld v0, SELECT
+	sknp v0
+	jp .-2
+; added by J.D. 2015
+set_speed:
+	CLS
+	LD V0, 0
+	LD V1, 0
+	LD I, speed_prompt
+	PRT V0,V1
+	ld I, speed
+	ld v0, [I]
+	ld v2, v0
+	LD V3, MAX_SPEED
+	SUB V3, V2
+	LD F, V3
+	LD V0, 42
+    DRW V0,V1, 5
+	LD V0, K
+	SNE V0, UP
+	CALL incr_speed
+	SNE V0, DOWN
+	CALL decr_speed
+	SE V0, SELECT
+	JP set_speed
+	JP game_init
+decr_speed:
+    SE v2, MAX_SPEED 
+	ADD v2, 1
+	JP .+3
+incr_speed:
+	SE v2, 1
+	ADD v2, 255
+	ld v0,v2
+	ld I, speed
+	ld [I], v0
+	LD V0, 15
+    call delay
+    ret	
 game_init:
+	CLS
 	XOR V0, V0
 	XOR V1, V1
 	LD I, score
@@ -60,15 +108,9 @@ code_034:	; glutton life loop
 	DRW VA, VB, 8   ; draw predator 1
 	DRW VC, VD, 8   ; draw predator 2
 code_050: ; delay loop
-	LD V0, 2
+	LD I, speed
+	LD V0, [I]
 	call delay
-;	LD VE, 5
-;	ADD V0, 255
-;	SE V0, 0
-;	JP .-2
-;	ADD VE, 255
-;	SE VE, 0
-;	JP .-5
 	CALL btns_check	
 	SE VE, 0
 	JP code_07E	
@@ -1121,6 +1163,12 @@ eye_blink:	; right eye closed
 	DB #90, #80, #CF, #00, #C0, #80, #83, #C0
 	DB #1F, #80, #FF, #00, #FE, #00, #F8, #00
 
+speed: 
+    DB ANIM_DELAY
+	
+speed_prompt:
+	ASCII "speed: "
+	
 free_space:
-	DB 0, 0
+	DB 0, 0,0
 	

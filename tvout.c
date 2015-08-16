@@ -45,16 +45,19 @@
 void tvout_init(){
 	// met broche sync en mode sortie
 	NTSC_SYNC_DDR |= NTSC_SYNC_OUT;
-	//configuration USART0 pour mode SPI
-	NSTC_VIDEO_CONFIG();
+	//configuration USART0 pour mode master SPI
+	NTSC_VIDEO_UCSRC=((1<<UMSEL01)|(1<<UMSEL00)|(1<<UCPHA0)|(0<<UCPOL0));
+	NTSC_VIDEO_UBRR=2;
 	//configuration PWM 16 bits pour sync video
 	NTSC_SYNC_OCRA=HTIME;
 	NTSC_SYNC_OCRB=VPULSE;
-	//configuration mode PWM
-	NTSC_SYNC_CONFIG();
+	//configuration mode PWM pour synchronisation NTSC
+	NTSC_SYNC_TCCRA= (3u<<COM1B0)|3u;
+	NTSC_SYNC_TCCRB= (3u<<WGM12)|1u;
+//	NTSC_VIDEO_UCSRB=(1<<TXEN0);
+	NTSC_VIDEO_UDR=0;
 	//activation interruption
-	NTSC_SYNC_INT_ENABLE();
-	
+	NTSC_SYNC_TIMSK |= NTSC_SYNC_IE;
 }
 
 static uint8_t video_buffer[VIDEO_BUFF_SIZE];
@@ -314,15 +317,15 @@ void screen_restore(){
 volatile uint8_t frame_delay=0;
 volatile uint8_t tone_length=0;
 
-static volatile int16_t line_count=-1;
-static volatile uint8_t video=0;
-static volatile bool even=true;
 
 // interruption à la fin de
 // chaque pulse de synchronisation
 ISR(TIMER1_COMPB_vect){
+	static int16_t line_count=-1;
+	static uint8_t video=0;
+	static bool even=true;
 	register unsigned i;
-	register unsigned char *buff;
+	register unsigned char *video_line;
 
 	line_count++;
 	switch(line_count){
@@ -368,14 +371,13 @@ ISR(TIMER1_COMPB_vect){
 			}
 		default:
 			if (video){
-				buff=video_buffer+(((line_count-FIRST_VISIBLE)>>1)*HBYTES);
-				NTSC_VIDEO_UBRR=0;
-				NTSC_VIDEO_UCSRB=(1<<TXEN0);
-				NTSC_VIDEO_UBRR=2;
 				NTSC_VIDEO_UDR=0x0;
+				NTSC_VIDEO_UCSRB=(1<<TXEN0);
+				NTSC_VIDEO_UDR=0x0;
+				video_line=video_buffer+(((line_count-FIRST_VISIBLE)>>1)*HBYTES);
 				for (i=HBYTES;i;i--){
-					while ( !( UCSR0A & (1<<UDRE0)) );
-					NTSC_VIDEO_UDR=*buff++;
+					while ( !( NTSC_VIDEO_UCSRA & (1<<UDRE0)) );
+					NTSC_VIDEO_UDR=*video_line++;
 				}
 				while (!(NTSC_VIDEO_UCSRA & (1<<TXC0)));
 				NTSC_VIDEO_UCSRB &= ~(1<<TXEN0);

@@ -6,26 +6,30 @@
 
 void usage(){
   puts("\nConvert CHIP/SCHIP binary to 'C' and 'H' files");
-  puts("USAGE: cvt-chip.exe input_file.");
+  puts("USAGE: cvt-chip.exe -p[AVR|PIC] input_file.");
+  puts("-p option select target MCU AVR or PIC.");
   puts("input_file is SCHIP binary file.");
-  puts("exemple: cvt-chip.exe sokoban.sc");
+  puts("exemple: cvt_chip.exe -pAVR sokoban.sc");
   puts("create  sokoban.c and sokoban.h");
   exit(EXIT_FAILURE);
 }
 
 int main(int argc, char *argv[]){
 	FILE *inp, *hf, *cf;
-	unsigned char c;
+	unsigned char c, proc;
 	unsigned char array_name[32],header_var[32],h_file[32], c_file[32], *bslash;
 	int size,  i=0;
-	if (argc<2) usage();
-	inp=fopen(argv[1],"rb");
+	if (argc<3) usage();
+	if (!((argv[1][0]=='-') && (argv[1][1]=='p'))) usage();
+	if (!strcmp("-pAVR",argv[1])) proc='A'; else proc='P';
+	printf("%s\n", argv[2]);
+	inp=fopen(argv[2],"rb");
 	if (!inp) {
 		printf("failed to open %s file.\n",argv[1]);
 		exit(EXIT_FAILURE);
 	}
-	bslash=argv[1]+strlen(argv[1])-1;
-	while ((char*)bslash>=argv[1] && *bslash!='\\') --bslash;
+	bslash=argv[2]+strlen(argv[2])-1;
+	while (bslash>=argv[2] && *bslash!='\\') --bslash;
 	bslash++;
 	strcpy(c_file,bslash); 
 	i=0;
@@ -65,8 +69,12 @@ int main(int argc, char *argv[]){
 		fclose(cf);
 		exit(EXIT_SUCCESS);
 	}
-	fprintf(cf,"#include \"%s.h\"\n\n",array_name);		
-	fprintf(cf,"PROGMEM const uint8_t %s[%s_SIZE]={",array_name,header_var);
+	fprintf(cf,"#include \"%s.h\"\n\n",array_name);
+	if (proc=='A'){
+		fprintf(cf,"PROGMEM const uint8_t %s[%s_SIZE]={",array_name,header_var);
+	}else{
+		fprintf(cf,"const uint8_t %s[%s_SIZE]={",array_name,header_var);
+	}
 	fseek(inp,0,SEEK_SET);
 	i=0;
 	c=fgetc(inp);
@@ -81,7 +89,7 @@ int main(int argc, char *argv[]){
 	fclose(inp);
 	fprintf(hf,"#ifndef %s_\n",header_var); 
 	fprintf(hf,"#define %s_\n\n",header_var);
-	fprintf(hf,"#include <avr/pgmspace.h>\n");
+	if (proc=='A') fprintf(hf,"#include <avr/pgmspace.h>\n");
 	fprintf(hf,"#include <stdint.h>\n\n");
 	fprintf(hf,"#define %s_SIZE (%d)\n\n",header_var, size);
 	fprintf(hf,"extern const uint8_t %s[%s_SIZE];\n\n",array_name,header_var);
