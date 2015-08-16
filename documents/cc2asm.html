@@ -22,17 +22,177 @@
 </p>
 <h4>invocation</h4>
 <p>
+<pre><code>
+cc2asm.exe source binaire [-p pré-traité] [-s symboles]
+</code></pre>
+<ul>
+<li><b>source</b> est le nom du fichier texte du programme à assembler.</li>
+<li><b>binaire</b> est le nom du fichier binaire qui sera exécuté par la machine virtuelle SCHIP+</li>
+<li><b>-p pré-traité</b> est optionel. <b>pré-traité</b> est le nom du fichier qui contient le texte pré-traité avant l'assemblage. Le pré-processeur supprime les commentaires et remplace
+les <b>EQU</b> ainsi que les <b>DEFN</b> par leur définition. Le texte est lu ligne par ligne et chaque ligne est pré-traitée et assemblée.  
+Ce fichier est utile seulement lors du développement de l'assembleur pour vérifier si le pré-traitement fonctionne correctement.</li>
+<li><b>-s symboles</b> est optionel. <b>symboles</b> est le  nom du fichier qui contient la liste des étiquettes avec l'adresse correspondante. Ce fichier est
+ utilisé par l'application <a href="cc2emul.html">cc2emul</a> pour peupler la liste dans la boite de dialogue des points d'arrêt.</li>
+<li><b>exemple:</b> cc2asm.exe lem.asm lem.bin -s lem.lbl</li>
+ </ul>
+ <b>NOTES:</b>
+ <ol>
+ <li>la console <a href="CHIPcon_v2.html">CHIPcon V2</a> n'affiche que les fichiers dont l'extension est <b>.bin</b>. </li>
+ <li><a href="cc2emul.html">cc2emul</a> ne reconnait que les fichiers symboles dont l'extension est <b>.lbl</b>.</li>
+ </ol>
 </p>
 <h4>syntaxe</h4>
 <p>
+ Un programme source est un fichier ASCII comprenant des directives, des instructions machines et des commentaires. 
+ Le fichier doit se terminer optionnellement par la directive <b>END.</b><br>
+ Optionnellement une <i>étiquette</i> peut-être installée en début de ligne. Lorsque l'assembleur rencontre une étiquette il lui attribue la valeur
+ du compteur ordinal en ce point. Notez que le compteur ordinal a toujours une valeur paire. Les <i>étiquettes</i> sont des noms qui débute par une
+  lettre ou un caractère de soulignement <b>'_'</b>. Les caractères qui suivent le premier peuvent-être des <b>lettre</b>, <b>chiffre</b> et <b>'_'</b>. Une étiquette 
+  doit se terminé par le caractère <b>':'</b> sans espace entre le nom et ce caractère.
+</p>
+<p>
+  L'assembleur est insensible à la casse, le pré-processeur convertie en majuscules avant d'envoyer le texte à l'asssembleur.
+</p>
+<p>
+  Lorsque le <b>'.'</b> est utilisé comme argument pour une instruction de saut il indique la valeur actuelle du compteur 
+  ordinal. Il permet d'indiquer des sauts relatifs à la position actuelle comme ceci.
+ <pre><code>
+ ; ceci est un boucle de délais
+ ; utilisant la minuterie DT
+	ld v0, 60   ; V0=60
+	ld dt, v0   ; DT=V0  démarre la minuterie pour 1 seconde.
+	ld v0, dt   ; boucle de délais commence ici.
+	se v0, 0    ; si DT=0 c'est terminé alors on saute par desssus l'instruction suivante.
+	jp .-2  ; saute 2 instructions en arrière.
+</code></pre> 
+</p>
+<p>
+  Pour connaître la liste des instructions machine voir le fichier <a href="vm-opcodes.html">vm-opcodes.html</a>.
+</p>
+<h4>commentaires</h4>
+<p>
+  Un commentaire débute par <b>';'</b> et se poursuit jusqu'à la fin de la ligne.
 </p>
 <h4>directives</h4>
 <p>
+<table border="single">
+<tr><th>directive</th><th>syntaxe</th><th>description</th></tr>
+<tr><td>ASCII</td><td>ASCII "chaine de caractère"</td><td>cette directive insère la chaîne de caractère entre guillemet dans l'espace programme
+ à l'adresse du compteur ordinal au point de rencontre de cette directive. L'assembleur ajoute un 0 terminal à la chaine. Un 0 supplémentaire 
+ peut-être ajouté pour assurer l'alignement pair du compteur ordinal.</td></tr>
+<tr><td>DB</td><td>DB b1 [,bn]*</td><td>Insère 1 ou plusieurs données de type octet à l'adresse du compteur ordinal au point de rencontre de la 
+directive. Les données peuvent-être en décimal, hexadécimal (#HH) ou binaire ($10101). L'assembleur peut insérer un zéro supplémentaire
+pour assurer l'alignement du compteur ordinal sur une adresse paire.</td></tr>
+<tr><td>DEFN</td><td>DEFN SYMBOLE TEXTE_SUBSTITUÉ</td><td>Défini un symbole de substitution pour une chaîne de caractère. Lorsque le pré-processeur 
+rencontre un symbole défini par cette directive il remplace le symbole par <b>TEXTE_SUBSTITUÉ</b>. Cette directive est 
+utile pour donner des noms significatifs aux registres VX.</td></tr>
+<tr><td>DW</td><td>DW W1 [,W2]*</td><td>Insère 1 ou plusieurs constantes de 16 bits à l'adresse du compteur ordinal au point de rencontre 
+de cette directive. les données peuvent-être en décimal, hexadécimal (#HHHH) ou binaire ($1010111101).</td></tr>
+<tr><td>EQU</td><td>EQU SYMBOLE EXPRESSION</td><td>Sert à remplacer une constante par un nom symbolique.<b>EXPRESSION</b> peut-être une
+ expression arithmétique infixe contenant des parenthèse et les opérateurs '+','-','/' et '*'. L'expression peut contenir
+ des symboles précédemment définis par <b>EQU</b>. Lorsque le pré-processeur rencontre un symbole défini par cette directive 
+ il le substitue dans le texte par la valeur de  la constante.</td></tr>
+<tr><td>END</td><td>END</td><td>Indique la fin du programme source. S'il y a du texte après cette directive il sera ignoré par l'assembleur.</td></tr>
+</table>
 </p>
 <h4>example</h4>
 <p>
+<pre><code>
+;utilisation de la directive DEFN
+defn carry VF
+defn score ve
+defn set vd
+defn w v0
+;utilisation de la directive EQU
+EQU UP 2
+EQU DOWN 4
+; exemple de code machine
+	cls ; efface affichage
+	call show_credit ; appelle sous-routine
+	ld score, 0   ; VE=0
+	ld set, 0     ; VD=0
+	;.... le code continu
+	ld w, DOWN  ; V0=4
+	skp w       ; saute l'instruction suivante si la touche DOWN est enfoncée.
+	jp .-1  ; boucle sur l'instruction précédente.
+    ; suite du code
+	
+; sous-routine show_credit
+show_credit:
+    ld i, credit ; met l'adresse de credit dans I
+    ld v1, 0  ; V1=0
+	scry v2   ; V2=VRES
+    shr v2    ; V2=V2/2
+    prt v1,v2 ; imprime le texte pointé par I en partant de la position indiqué par x=V1 et y=V2
+	scry v1   ; V1=VRES
+scroll_loop:  ; fait défiler l'écran vers le haut.
+    scu 1      
+	ld w,3
+	call delay
+	add v1,-1
+	se v1, 0
+	jp scroll_loop
+	ret
+
+; sous-routine délais
+; arguments:
+; 	w = nombre de frame
+delay:
+	ld dt,w
+	ld w, dt
+	se w, 0
+	jp .-2
+	ret
+
+; donnée de type chaine de caractère
+credit:
+    ascii "LEM\nJacques Deschenes\nCopyright 2014,2015\nlicence GPLv3"
+
+;donnée de type octet
+BCD:
+   DB 0,0,0
+
+end ; directive terminant l'assemblage
+ce texte est ingnoré par l'assembleur.   
+</code></pre>
 </p>
 <h4>convertisseur</h4>
 <p>
+  Une fois qu'un programme a été vérifié dans <a href="cc2emul.html">cc2emul</a> et qu'il est considéré comme fonctionnel, le fichier binaire peut
+  être enregistré sur une carte SD avec l'extension <b>.bin</b> pour utilisation sur la console <a href="chipcon_v2.html">CHIPcon v2</a>.
+  Mais il est aussi possible d'utiliser ce fichier à partir de la mémoire flash du ATmega328P. Pour ce faire dans le 
+dossier <a href="https://github.com/picatout/chipcon_v2/tools">tools</a> il y a l'utilitaire <b>cvt-chip.exe</b> qui sert 
+à créer 2 fichiers pour intégration au projet <a href="chipcon_v2.html">CHIPcon v2</a>. Il s'agit d'un fichier d'entête <b>*.h</b> et
+d'un fichier C <b>*.c</b> contenant un tableau avec le data du binaire. 
+<pre><code>
+  cvt-chip.exe -pAVR jeu.bin
+</code></pre>
+var créer les fichiers <b>jeu.h</b> eet <b>jeu.c</b> qui doivent-être copiés dans le dossier du projet Atmel studio. Ensuite 
+il faut ajouter une directive <b>#include "jeu.h"</b> dans le fichier <b>chipcon_v2.c</b> du projet. Ajouter le nom
+à la fin de la chaîne <b>flash_games</b> et ensuite ajouter un <b>case</b> dans la function <b>game_in_flash()</b>.
+<pre><code>
+// ajouter l'include
+#include "jeu.h"
+
+// ajouter le nom qui sera affiché à l'écran aux
+//noms des jeux en flash
+PROGMEM const uint8_t flash_games[]=
+"LEM\n"  // case 0
+"CAR\n"  // case 1
+"WORM\n" // case 2
+"ALIEN\n"  // case 3
+"BLINKY\n" // case 4
+"speed test\n" //case 5
+"jeu\n"  // case 6
+"";
+
+// dans game_in_flash()
+// ajouter case 6 au switch
+
+	case 6:
+		load_flash_game(jeu,JEU_SIZE);
+		break;
+
+</code></pre>  
 </p>
 </body>

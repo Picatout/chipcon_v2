@@ -67,6 +67,10 @@ namespace ccemul
 		
 		//name of game loaded
 		string gameName=null;
+		//états de la console
+		enum eCSTATE {IDLE,RUNNING,PAUSED,STOPPED,STEP};
+		//état actuel de la console
+		eCSTATE conState;
 		
 		public MainForm()
 		{
@@ -86,13 +90,8 @@ namespace ccemul
 			BreaksForm = new FormBreakPoints(this);
 			VRESCombo.SelectedItem=0;
 			VRESCombo.Text="72";
-			//VRESCombo.BeginUpdate();
 		}
 		
-		//états de la console
-		enum eCSTATE {IDLE,RUNNING,PAUSED,STOPPED,STEP};
-		//état actuel de la console
-		eCSTATE conState;
 		//active/désactive les menus en fonction de conState
 		void SetMenuState(){
 			switch(conState){
@@ -192,7 +191,9 @@ namespace ccemul
             }
             gameName=openFileDialog1.FileName.Split(new char[]{'.'})[0];
             string lbl_file=gameName+".lbl";
-            BreaksForm.LoadLabels(lbl_file);
+            if (!BreaksForm.LoadLabels(lbl_file)){
+            	textBox1.AppendText("\r\nNo label file found");
+            }
             string[] pathSplit= gameName.Split(new char[]{'\\'});
             this.Text=String.Format("CHIPcon V2 emulator ( {0:S} )", pathSplit[pathSplit.Length-1]);
 		}
@@ -404,8 +405,12 @@ namespace ccemul
 		}
 		void VRESComboSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (conState==eCSTATE.STOPPED){
+			if ((conState==eCSTATE.IDLE)||(conState==eCSTATE.STOPPED)){
+				pictureBox1.Height=(int)(4*(64+8*(int)VRESCombo.SelectedIndex));
+				pictureBox1.Top=52+(32*(4-(int)VRESCombo.SelectedIndex)/2);
+				pictureBox1.Image=null;
 				vm.tv.resizeDisplay((byte)(64+8*(int)VRESCombo.SelectedIndex));
+				pictureBox1.Image=vm.tv.display;
 			}
 		}
 		

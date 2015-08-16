@@ -75,7 +75,7 @@ namespace ccemul
 
 		}
 		
-		internal void LoadLabels(string textFile)
+		internal bool LoadLabels(string textFile)
 		{
 			string line;
 		  	
@@ -92,9 +92,11 @@ namespace ccemul
 			}
 			catch (Exception e)
 			{
-				MessageBox.Show(string.Format("Loading labels file failed!\r\n {0}",e.Message));
-				
+				//MessageBox.Show(string.Format("Loading labels file failed!\r\n {0}",e.Message));
+			
+				return false;
 			}
+			return true;
 		}
 		
 		void LabelsListBoxSelectedIndexChanged(object sender, EventArgs e)

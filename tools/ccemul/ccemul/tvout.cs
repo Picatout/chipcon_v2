@@ -41,7 +41,6 @@ namespace ccemul
 		
 		internal const int PIXEL_SIZE=4;
 		internal static byte VRES=72;
-		internal static byte MAX_VRES=96;
 		internal const byte HRES=128;		
 			
 		Graphics g;
@@ -50,12 +49,16 @@ namespace ccemul
 		
 		internal TVout()
 		{
-			display=new Bitmap(HRES*PIXEL_SIZE,MAX_VRES*PIXEL_SIZE);
+			display=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
 			g= Graphics.FromImage(display);
 		}
 		
 		internal void resizeDisplay(byte newVRES){
 			VRES=newVRES;
+			display.Dispose();
+			g.Dispose();
+			display=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
+			g=Graphics.FromImage(display);
 			cls();
 		}
 		

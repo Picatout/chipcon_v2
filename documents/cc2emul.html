@@ -17,5 +17,87 @@
 <h2>émulateur SCHIP+</h2>
 <h4>Présentation</h4>
 <p>
+  <b>cc2emul.exe</b> est émulateur pour la machine virtuelle SCHIP+ avec support pour le déboguage. C'est une application windows écrite en C# développée avec <a href="http://www.icsharpcode.net/OpenSource/SD/Default.aspx">SharpDevelop 5.0</a>.
+ cc2emul.exe permet d'installer des points d'arrêt et de faire du pas à pas dans l'application et d'examiné les états de la machine virtuelle. 
+  </p>
+  <h4>Interface utilisateur</h4>
+  <p>
+  Voici de quoi à l'air l'application avec un jeu chargé.
+  <div>
+  <img src="cc2emul-capture-1.png" alt="capture écran principal"  style="border:solid;margin:10px;padding:5px;">
+  </div>
+  La vitesse d'exécution peut-être contrôlée avec le bouton à gauche de l'écran d'affichage du jeux. La résolution verticale
+  peut-être modifiée à partir de la liste déroulante <b>VRES</b> qui apparaît dans la barre d'outil.
 </p>
+<h4>barre de menu</h4>
+<p>  
+  Le menu ne contient que 3 éléments:
+<ul>
+<li><b>Files</b>,  dans ce menu on retrouve les items suivants:
+<ul>
+<li><b>Open...</b> pour ouvrir un fichier binaire de jeu.</li>
+<li><b>Reload last file</b> recharge le dernier fichier.</li>
+<li><b>Restart</b> réinitialise la machhine virtuelle et redémarre le jeu.</li>
+<li><b>Quit</b> pour quitter l'émulateur.</li>
+</ul>
+</li>
+<li>Debug
+<ul>
+<li><b>Break point...</b>  qui ouvre la boite de dialogue Breakpoint, permettant d'ajouter ou de supprimer des points d'arrêts. La liste des étiquetes disponibles est 
+chargée à partir d'un fichier <b>*.lbl</b> créé par l'assembleur cc2asm.exe en même temps que le fichier binaire du jeu. Pour obtenir 
+ce fichier il faut utilisé l'option <b>-s symbol_file</b> lors de l'invocation de l'assembleur.
+<div>
+<img src="dlg_break_point.png" alt="dialogue break point" style="border:solid;margin:10px;padding:5px;">
+</div>
+</li>
+<li><b>Clear break points</b> efface tous les poins d'arrêt.</li>
+<li><b>Load labels file</b> permet de rechargé le fichier des symboles.</li>
+</ul>
+</li>
+<li>Help
+<ul>
+<li><b>About</b> affiche la boite message <i>About...</i>
+<div>
+<img src="about.png" alt="A propros de cc2emul"  style="border:solid;margin:10px;padding:5px;">
+</div>
+.</li>
+<li><b>Keys...</b>Affiche la boite message indiquant les touches à utiliser pour contrôler le jeu.
+<div>
+<img src="keys.png" alt="touches de contrôles"  style="border:solid;margin:10px;padding:5px;">
+</div>
+</li>
+</ul>
+</li>
+</ul>  
+  </p>
+  <h4>barre d'outils</h4>
+  <p>
+  Une info bulle est affichée lorsqu'on place le curseur de la souris au dessus d'un bouton. Les 5 boutons 
+  de gauche de la barre d'outil servent au déboguage ils sont dans l'ordre de gauche à droite:
+  <ul>
+  <li><b>restart</b>, redémarrage du jeu.</li>
+  <li><b>Suspend</b>, suspend l'exécution. A partir du mode suspension il est possible d'utiliser les 3 boutons qui suivent à sa droite.</li>
+  <li><b>Resume</b>, redémarre à partir de l'endroit où le jeu a été suspendu.</li>
+  <li><b>Step</b>, exécute la prochaine instruction et s'arrête, exécution pas à pas. Permet d'examiner les registres de 
+  la VM à chaque étape.</li>
+  <li><b>Stop</b> arrête l'exécution du jeu et réinialise la machine virtuelle à l'adresse 0.</li>
+   </ul>
+   Finalement le <b>combo box VRES</b> déroule une liste de résolution verticale pour l'écran du jeu. Lorsqu'on change la
+   résolution l'écran du jeu s'ajuste en conséquence. On ne peut redimensionné que lorsque la machine virtuelle est à l'état
+   arrêtée.  Ajustez VRES en fonction de l'option que vous avez choisi lors de la compilation du projet <a href="chipcon_v2.html">CHIPcon v2</a>.
+  </p>
+  <h4>Utilisation</h4>
+  <p>
+    Lorsqu'un jeu est chargé dans l'émulateur il démarre automatiquement. On peut l'arrêter avec le bouton <b>stop</b>.
+	Ensuite ouvrir le dialogue <i>break points</i> à partir du menu <b>Debug</b>. Si cc2emul trouve un fichier avec le 
+	même nom que jeu mais avec l'extension <b>.lbl</b> il le charge en même temps que le jeu et la liste des étiquetttes 
+	définies dans le programme source avec l'adresse associé apparaît dans la liste. Pour ajouter un point d'arrêt il 
+	s'agit de sélectionner un symbole dans la liste et de cliquer sur le bouton <b>add</b>. Notez que tous les symboles 
+	sont affichés dans la liste, ceux des données aussi bien que ceux des sous-routines. Il est inutile de mettre un 
+	point d'arrêt sur un symbole de donnée puisque le compteur ordinal ne s'y rend jamais.
+  </p>
+  <p>
+    Lorsque le programme tourne il s'arrête au premier point d'arrêt rencontré et affiche les états de la VM. A partir de
+	 là on peu utiliser les boutons de débogage de la barre d'outil.
+  </p>
 </body>
