@@ -86,15 +86,16 @@ unsigned char binary[MEM_SIZE];
 int inp; // pointeur d'analyse ligne d'entrée
 char line[256]; // contient la ligne à analyser
 
-#define KW_COUNT (34)
+#define KW_COUNT (39)
 
 const char *mnemonics[KW_COUNT]={"CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
 						 "SHR","SHL","SKP","SKNP","SE","SNE","ADD","SUB","SUBN","OR","AND","XOR",
-						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY","SCU"};
+						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY",
+						 "SCU","BSET","BCLR","BINV","BTSS","BTSC"};
 
 typedef enum Mnemo {eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
                     eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP,eSCRX,eSCRY,
-					eSCU} mnemo_t;
+					eSCU,eBSET,eBCLR,eBINV,eBTSS,eBTSC} mnemo_t;
 						 
 #define DIR_COUNT (6)						 
 const char *directives[]={"DB","DW","ASCII","EQU","DEFN","END"};
@@ -435,6 +436,7 @@ void op1(mnemo_t code){
 
 // codes avec 2 ou 3 arguments
 //"SE","SNE","ADD","SUB","SUBN","OR","AND","XOR","RND","TONE","PRT"
+//"BSET","BCLR","BINV","BTSS","BTSC"
 void op2(unsigned code){
 	unsigned b1,b2,mark,i;
 	bool reg2;
@@ -534,6 +536,36 @@ void op2(unsigned code){
 			b2|=3;
 		}else error(eSYNTAX);
 		break;
+	case eBSET: // BSET VX,N 9XNA
+	    if (!(reg2 || b2>7)){
+			b1|=0x90;
+			b2=(b2<<4)|0x0A;
+		}else error(eBADARG);
+		break;
+	case eBCLR: // BCLR VX,N  9XNB
+	    if (!(reg2 || b2>7)){
+			b1|=0x90;
+			b2=(b2<<4)|0x0B;
+		}else error(eBADARG);
+	    break;
+	case eBINV: // BINV VX,N  9XNC
+	    if (!(reg2 || b2>7)){
+			b1|=0x90;
+			b2=(b2<<4)|0x0C;
+		}else error(eBADARG);
+	    break; 
+	case eBTSS: // BTSS VX,N  9XND
+	    if (!(reg2 || b2>7)){
+			b1|=0x90;
+			b2=(b2<<4)|0x0D;
+		}else error(eBADARG);
+	    break;
+	case eBTSC: // BTSC VX,N  9XNE
+	    if (!(reg2 || b2>7)){
+			b1|=0x90;
+			b2=(b2<<4)|0x0E;
+		}else error(eBADARG);
+	    break;
 	}
 op2_done:	
 	store_code(b1,b2);
@@ -1142,6 +1174,11 @@ void assemble_line(){
 				case eRND:
 				case ePRT:
 				case ePIXI:
+				case eBSET:
+				case eBCLR:
+				case eBINV:
+				case eBTSS:
+				case eBTSC:
 					op2(i);
 					break;
 				case eTONE:

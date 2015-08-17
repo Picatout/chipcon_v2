@@ -33,10 +33,13 @@ namespace ccemul
 	/// <summary>
 	/// Description of Keypad.
 	/// </summary>
+
 	public class Keypad
 	{
 		
-		byte[] hkeys=new byte[5]
+	    internal const byte KEY_COUNT=5;
+		
+		byte[] hkeys=new byte[KEY_COUNT]
 		{
 		0x47, // UP
         0x42, // DOWN
@@ -55,11 +58,11 @@ namespace ccemul
 		
 		internal byte keypadRead()
 		{
-			for (byte i=0;i<4;i++){
-				if ((keys_state & (1<<i))==(1<<i))
+			for (byte i=0;i<KEY_COUNT;i++){
+				if ((keys_state & (1<<(i+1)))==(1<<(i+1)))
 				{
-					keys_state &=(ushort)(~(1<<i)&0xffff);
-					return i;
+				     	keys_state &=(ushort)(~(1<<(i+1))&0xffff);
+					return (byte)(1<<(i+1));
 				}
 			}
 			return 255;
@@ -79,7 +82,7 @@ namespace ccemul
 		{
 			byte i;
 			
-			for (i=0;i<5;i++) if (hkeys[i]==k)
+			for (i=0;i<KEY_COUNT;i++) if (hkeys[i]==k)
 			{				
 				keys_state|=(ushort)(1<<(i+1));
 				return true;
@@ -91,7 +94,7 @@ namespace ccemul
 		{
 			byte i=0;
 			
-			for (i=0;i<5;i++) if (hkeys[i]==k)
+			for (i=0;i<KEY_COUNT;i++) if (hkeys[i]==k)
 			{				
 				keys_state &=(ushort)(~(1<<(i+1))&0xffff);
 				return true;

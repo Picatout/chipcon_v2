@@ -32,16 +32,21 @@
 #define sram_enable()  {SRAM_PORT &= ~SRAM_SEL;}
 #define sram_disable() {SRAM_PORT |= SRAM_SEL;}
 
+#define sram_send_byte(b)  {SPI_SR|=(1<<SPI2X);\
+                           SPI_DR=(b);\
+						   while(!(SPI_SR&(1<<SPIF)));}
 
+/*						   
 inline void sram_send_byte(unsigned char b){
 	SPI_SR|=(1<<SPI2X);
 	SPI_DR = b;
 	while (!(SPI_SR&(1<<SPIF)));
 }
+*/
 
-#define sram_cmd(cmd, addr) sram_send_byte(cmd);\
+#define sram_cmd(cmd, addr) {sram_send_byte(cmd);\
                             sram_send_byte(addr>>8);\
-							sram_send_byte(addr&0xff)
+							sram_send_byte(addr&0xff);}
 							
 							
 inline void sram_write_block(uint8_t *block,uint16_t size){
@@ -83,6 +88,7 @@ void sram_clear(){
 	sram_disable();
 
 }
+
 
 // initialisation de la SRAM
 void sram_init(){

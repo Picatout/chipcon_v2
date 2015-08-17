@@ -59,7 +59,7 @@ Dans la table ci-bas  <b>NNN</b> représente un nombre de 12 bits en hexadécima
 <b>X et Y</b> représentent un registre V en hexadécimal (0-F).<br>
 Les instructions suivies d'un <b>*</b> sont des instructions SCHIP ignorées par cette machine virtuelle.<br>
 Les instructions suivies de <b>**</b> sont spécifiques à cette machine virtuelle.<br>
-Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 et SCHIP<br>
+Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 et SCHIP et sont incompatibles.<br>
 </p> 
 <p>
 <table border="single"> 
@@ -99,6 +99,11 @@ Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 
 <tr><td>9X07**</td><td>POP VX</td><td>dépile dans le registre VX</td></tr>
 <tr><td>9X08**</td><td>SCRX VX</td><td>VX = pixels horizontaux.</td></tr>
 <tr><td>9X09**</td><td>SCRY VX</td><td>VX = pixels verticaux.</td></tr>
+<tr><td>9XNA**</td><td>BSET VX,N</td><td>met à 1 le bit N dans VX.</td></tr>
+<tr><td>9XNB**</td><td>BCLR VX,N</td><td>met à 0 le bit N can VX.</td></tr>
+<tr><td>9XNC**</td><td>BINV VX,N</td><td>inverse le bit N dans VX.</td></tr>
+<tr><td>9XND**</td><td>BTSS VX,N</td><td>Si le bit N dans VX est à 1 saute l'instruction suivante.</td></tr>
+<tr><td>9XNE**</td><td>BTSC VX,N</td><td>Si le bit N dans VX est à 0 saute l'insruction suivante.</td></tr>
 <tr><td>ANNN***</td><td>LD I, NNN</td><td>I := 2*NNN </td></tr>
 <tr><td>BNNN***</td><td>JP V0, NNN</td><td>saute à l'adresse 2*(NNN+V0)</td></tr>
 <tr><td>CXKK</td><td>RND VX, KK</td><td>VX := nombre aléatoire and KK </td></tr>

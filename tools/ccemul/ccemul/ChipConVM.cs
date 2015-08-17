@@ -57,6 +57,7 @@ namespace ccemul
 		internal byte st; // durée tonalité
 		internal bool codeInStore=false;
 		internal ushort pc; // compteur ordinal
+		internal ushort last; //adresse dernière instruction décodée
 		internal short sp; // pointeur de pile
 		internal ushort ix; // registre pointeur de donnée
 		internal ushort[] stack=new ushort[STACK_SIZE]; //pile des retours
@@ -75,6 +76,7 @@ namespace ccemul
 			kpad=new Keypad();
 			sp=-1;
 			pc=ORG;
+			last=0;
 			dt=0;
 			st=0;
 			breaks= new BreakPoint[MAX_BREAK] {null,null,null,null,null,null,null,null,null,null};
@@ -104,7 +106,7 @@ namespace ccemul
 			
 			if (kpad.fWaitKey){
 				var[kx]=kpad.keypadRead();
-				if (var[kx]<16)
+				if (var[kx]<255)
 					kpad.fWaitKey=false;
 				else
 				{
@@ -135,6 +137,7 @@ namespace ccemul
 						breaks[j].enable();
 					}
 				}
+				last=pc;
 				b1=code[pc++];
 				b2=code[pc++];
 				addr=(ushort)((((b1&0xf)<<8)|b2)<<1);
@@ -293,6 +296,21 @@ namespace ccemul
 					case 0x909: // 9X09   SCRY VX
 						var[x]=(byte)TVout.VRES;
 						break;
+					case 0x90A: // 9XNA, BSET VX,N  ; met à 1 le bit N de VX
+						var[x] |= (byte)(1<<(y&0x7));
+					    break;
+				    case 0x90B: // 9XNB  BCLR VX,N  ; met à 0 le bit N de VX
+					    var[x] &= (byte)~(1<<(y&0x7));
+					    break;
+					case 0x90C: // 9XNC  BINV VX,N  ; inverse le bit N de VX
+					    var[x] ^= (byte)(1<<(y&0x7));
+						break;
+					case 0x90D: // 9XND  BTSS VX,N  ; saute l'instruction suivante si le bit N de VX==1
+						if ((var[x]&(1<<(y&0x7)))!=0) pc+=2;
+						break;
+					case 0x90E: // 9XNE  BTSC VX,N  ; saute l'instruction suivante si le bit N de VX==0
+					    if ((var[x]&(1<<(y&0x7)))==0) pc+=2;
+						break;
 					case 0xa00: // ANNN     I := 2*NNN
 						ix=addr;  // chip-8 et schip adressse de 12 bits
 						break;
@@ -319,16 +337,16 @@ namespace ccemul
 						}
 						font_char=0;
 						break;
-					case 0xe9e: //EX9E, saute l'instruction suivante si la touche VX est enfoncée
+					case 0xe9e: //EX9E, SKP VX ; saute l'instruction suivante si la touche VX est enfoncée
 						if (kpad.keyDown(var[x])) pc+=2;
 						break;
-					case 0xea1: //EXA1, saute l'instruction suivante si la touche VX n'est pas enfoncée
+					case 0xea1: //EXA1, SKNP VX ;saute l'instruction suivante si la touche VX n'est pas enfoncée
 						if (!kpad.keyDown(var[x])) pc+=2;
 						break;
-					case 0xf07: // FX07     VX := dt
+					case 0xf07: // FX07 LD VX,DT    VX := dt
 						var[x]=dt;
 						break;
-					case 0xf0a: // FX0A     attend qu'une touche soit enfoncée et met sa valeur dans VX
+					case 0xf0a: // FX0A  LD VX, K ;attend qu'une touche soit enfoncée et met sa valeur dans VX
 						var[x]=kpad.waitKey();
 						if (var[x]==255){
 							kpad.fWaitKey=true;

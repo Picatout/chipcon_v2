@@ -80,10 +80,10 @@ namespace ccemul
 				}
 				break;
 			case 1: // 1NNN saut vers l'adresse NNN
-				s=string.Format("{0:S}JP #{1:X3} ",s,((b1&0xf)<<8)|b2);
+				s=string.Format("{0:S}JP #{1:X3} ",s,(((b1&0xf)<<8)|b2)<<1);
 				break;
 			case 2: // 2NNN  appelle la sous-routine à l'adresse NNN
-				s=string.Format("{0:S}CALL #{1:X3} ",s,((b1&0xf)<<8)|b2);
+				s=string.Format("{0:S}CALL #{1:X3} ",s,(((b1&0xf)<<8)|b2)<<1);
 				break;
 			case 3: // 3XKK     saute l'instruction suivante si VX == KK 
 				s=string.Format("{0:S}SE V{1:X}, {2:D2} ",s,(b1&0xf),b2);
@@ -151,13 +151,40 @@ namespace ccemul
 				case 5: // tonalité  fréquence V[X], durée V[Y], attend la fin.
 					s=string.Format("{0:S}TONE V{1:X}, V{2:X}, WAIT ",s,(b1&0xf),(b2&0xf0)>>4);
 					break;
+				case 6: // PUSH VX
+					s=string.Format("{0:s}PUSH V{1:X} ",s,(b1&0xf));
+					break;
+				case 7: // POP VX
+					s=string.Format("{0:s}PUSH V{1:X} ",s,(b1&0xf));
+					break;
+				case 8: // SCRX VX
+					s=string.Format("{0:s}SCRX V{1:X} ",s,(b1&0xf));
+					break;
+				case 9: // SCRY VX
+					s=string.Format("{0:s}SCRX V{1:X} ",s,(b1&0xf));
+					break;
+				case 0xA: // BSET VX,N
+					s=string.Format("{0:s}BSET V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
+				case 0xB: // BCLR VX,N
+					s=string.Format("{0:s}BCLR V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
+				case 0xC: // BINV VX,N
+					s=string.Format("{0:s}BINV V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
+				case 0xD: // BTSS VX, N
+					s=string.Format("{0:s}BTSS V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
+				case 0xE: // BTSC VX, N
+					s=string.Format("{0:s}BTSC V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
 				}
 				break;
-			case 0xA: // ANNN     I := NNN 
-				s=string.Format("{0:S}LD I, {1:X3} ",s,code&0xfff);
+			case 0xA: // ANNN  LD I, NNN  ;  I := 2*NNN 
+				s=string.Format("{0:S}LD I, {1:X3} ",s,(code&0xfff)<<1);
 				break;
-			case 0xB: // BNNN     saut à NNN+V0
-				s=string.Format("{0:S}JP V0, {1:X3} ",s,code&0xfff);
+			case 0xB: // BNNN     saut à 2*(NNN+V0)
+				s=string.Format("{0:S}JP V0, {1:X3} ",s,(code&0xfff)<<1);
 				break;
 			case 0xC: //CXKK VX=random_number&KK
 				s=string.Format("{0:S}RND V{1:X}, {2:D3} ",s,b1&0xf,b2);
@@ -183,7 +210,7 @@ namespace ccemul
 				case 0x07: // FX07     VX := DELAY_TIMER
 					s=string.Format("{0:S}LD V{1:X}, DT ",s,b1&0xf);
 					break;
-				case 0x0a: // FX0A     attend qu'une touche soit enfoncée et met sa valeur dans VX
+				case 0x0a: // FX0A LD VX, K ;attend qu'une touche soit enfoncée et met sa valeur dans VX
 					s=string.Format("{0:S}LD V{1:X}, K ",s,b1&0xf);
 					break;
 				case 0x15: // FX15     démarre la minuterie DELAY_TIMER avec la valeur de délais VX*16 

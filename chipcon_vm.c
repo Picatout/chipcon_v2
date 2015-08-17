@@ -229,6 +229,21 @@ uint8_t schipp(){
 			case 0x9: // 9X09, SCRY  ; VX=VRES  nombre de pixels en hauteur d'écran.
 				vms.var[x]=VRES;
 				break;
+			case 0xA: // 9XNA, BSET VX,N  ; met à 1 le bit N de VX
+			    vms.var[x] |= (1<<(y&0x7));
+			    break;
+		    case 0xB: // 9XNB  BCLR VX,N  ; met à 0 le bit N de VX
+			    vms.var[x] &= ~(1<<(y&0x7));
+			    break;
+			case 0xC: // 9XNC  BINV VX,N  ; inverse le bit N de VX
+   			    vms.var[x] ^= (1<<(y&0x7));
+				break;
+			case 0xD: // 9XND  BTSS VX,N  ; saute l'instruction suivante si le bit N de VX==1
+			    if (vms.var[x]&(1<<(y&0x7))) vms.pc+=2;
+				break;
+			case 0xE: // 9XNE  BTSC VX,N  ; saute l'instruction suivante si le bit N de VX==0
+			    if (!(vms.var[x]&(1<<(y&0x7)))) vms.pc+=2;
+				break;
 			default:
 				return CHIP_BAD_OPCODE;
 			}//switch(vms.b2&0xf)

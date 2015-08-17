@@ -323,6 +323,8 @@ int main(void){
 	//initialisation carte SD
 	if (sd_raw_init() && fs_mount()){
 		 sdc_ok=fs_open_dir("/");
+	}else{
+		SPI_FAST_CLOCK();
 	}
 #endif
 #if !FW_DEBUG

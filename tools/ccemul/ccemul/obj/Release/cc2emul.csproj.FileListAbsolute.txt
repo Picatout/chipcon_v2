@@ -1,0 +1,8 @@
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\bin\Release\cc2emul.exe
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\cc2emul.csprojResolveAssemblyReference.cache
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\ccemul.FormAbout.resources
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\ccemul.FormBreakPoints.resources
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\ccemul.FormKeyHelp.resources
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\ccemul.MainForm.resources
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\cc2emul.csproj.GenerateResource.Cache
+C:\Users\Jacques\Documents\GitHub\chipcon_v2\tools\ccemul\ccemul\obj\Release\cc2emul.exe

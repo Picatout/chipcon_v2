@@ -172,6 +172,7 @@ namespace ccemul
             openFileDialog1.Filter = "CHIPcon binary|*.bin|SCHIP files|*.SC,*.CH8|All Files (*.*)|*.*";
             openFileDialog1.FilterIndex = 1;
             openFileDialog1.Multiselect = false;
+            openFileDialog1.FileName="";
             DialogResult result=openFileDialog1.ShowDialog();
             if (result == DialogResult.OK)
             {
@@ -222,12 +223,12 @@ namespace ccemul
 			textBox1.AppendText(string.Format("DT={0}, ",vm.dt));
 			textBox1.AppendText(string.Format("ST={0}\r\n",vm.st));
 			for (int i=0;i<16;i++){
-				textBox1.AppendText(string.Format("var[{0:D}]={1:D}, ",i,vm.var[i]));
+				textBox1.AppendText(string.Format("var[{0:X}]={1:X2}, ",i,vm.var[i]));
 				if (i==9) textBox1.AppendText("\r\n");
 			}
 			textBox1.AppendText("\r\n");
 			for (int i=0;i<16;i++){
-				textBox1.AppendText(string.Format("rpl[{0:D}]={0:D}, ",i,vm.rpl[i]));
+				textBox1.AppendText(string.Format("rpl[{0:X}]={0:X2}, ",i,vm.rpl[i]));
 				if (i==9) textBox1.AppendText("\r\n");
 			}
 			textBox1.Invalidate();
@@ -249,9 +250,9 @@ namespace ccemul
 					break;
 				case eCSTATE.STEP:
 					textBox1.Text="last step\r\n";
-					displayVMState(vm.pc);
 					vm.speed=1;
 					error=vm.ccVM();
+					displayVMState(vm.last);
 					conState=eCSTATE.PAUSED;
 					SetMenuState();
 					break;
@@ -277,7 +278,7 @@ namespace ccemul
 					break;
 				default:
 					textBox1.Text=String.Format("VM error:{0:S}\r\n",error_msg[(int)error]);
-					displayVMState((ushort)(vm.pc-2));
+					displayVMState(vm.last);
 					conState=eCSTATE.STOPPED;
 					vm.Reset();
 					break;
@@ -334,7 +335,7 @@ namespace ccemul
 		void PauseToolBtnClick(object sender, EventArgs e)
 		{
 			textBox1.Text="Paused, last instruction:\r\n";
-			displayVMState((ushort)(vm.pc-2));
+			displayVMState(vm.last);
 			conState=eCSTATE.PAUSED;
 			SetMenuState();
 		}
@@ -386,21 +387,25 @@ namespace ccemul
 		void ReloadLastFileMenuItemClick(object sender, EventArgs e)
 		{
 		    byte[] data;
-		    
-			System.IO.Stream fileStream = openFileDialog1.OpenFile();
-            data= new byte[Math.Min(3584,fileStream.Length)];
-            using (System.IO.BinaryReader reader = new System.IO.BinaryReader(fileStream))
-            {
-            	reader.Read(data,0,(int)data.Length);
-            }
-            fileStream.Close();
-            vm.load(data);
-            textBox1.Text="Running";
-            conState=eCSTATE.RUNNING;
-            SetMenuState();
-            BreaksForm.ClearList();
-            string lbl_file=openFileDialog1.FileName.Split(new char[]{'.'})[0]+".lbl";
-            BreaksForm.LoadLabels(lbl_file);
+		    try {
+				System.IO.Stream fileStream = openFileDialog1.OpenFile();
+	            data= new byte[Math.Min(3584,fileStream.Length)];
+	            using (System.IO.BinaryReader reader = new System.IO.BinaryReader(fileStream))
+	            {
+	            	reader.Read(data,0,(int)data.Length);
+	            }
+	            fileStream.Close();
+	            vm.load(data);
+	            textBox1.Text="Running";
+	            conState=eCSTATE.RUNNING;
+	            SetMenuState();
+	            BreaksForm.ClearList();
+	            string lbl_file=openFileDialog1.FileName.Split(new char[]{'.'})[0]+".lbl";
+	            BreaksForm.LoadLabels(lbl_file);
+		    }
+		    catch(FileNotFoundException ex){
+		    	MessageBox.Show(string.Format("file {0:s} was not found!",ex.FileName),"File error");
+		    }
 
 		}
 		void VRESComboSelectedIndexChanged(object sender, EventArgs e)

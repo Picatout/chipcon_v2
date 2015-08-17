@@ -77,6 +77,8 @@
 #define SPI_CR  SPCR
 #define SPI_DR  SPDR
 #define SPI_SR  SPSR
+#define SPI_SLOW_CLOCK() {SPI_SR&=~1u;SPI_CR|=3u;}
+#define SPI_FAST_CLOCK() {SPI_SR|=1;SPI_CR&=~3u;}	
 
 // sélectin carte SD
 #define SDC_PORT PORTB
