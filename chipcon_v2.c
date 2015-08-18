@@ -55,6 +55,7 @@
 #include "worm.h"
 #include "alien.h"
 #include "blinky.h"
+#include "joymus.h"
 #if TEST
 #include "speed.h"
 #endif
@@ -215,6 +216,7 @@ PROGMEM const uint8_t flash_games[]=
 "WORM\n"  // case 2
 "ALIEN\n" // case 3
 "BLINKY\n" // case 4
+"JOYMUS\n" // case 5
 #if TEST
 "speed test\n" // case last
 #endif
@@ -263,8 +265,11 @@ void games_in_flash(){
 	case 4:
 		load_flash_game(blinky,BLINKY_SIZE);
 		break;
-#if TEST		
 	case 5:
+	    load_flash_game(joymus,JOYMUS_SIZE);
+		break;	
+#if TEST		
+	case 6:
 		load_flash_game(speed,SPEED_SIZE);
 		break;
 #endif		

@@ -115,6 +115,6 @@
 #define TONE_PORT  PORTD
 #define TONE_DDR   DDRD
 #define TONE_OUT   (1<<PORTD6)
-
+#define TONE_ENV   (1<<PORTD0)
 
 #endif /* HARDWARE_H_ */

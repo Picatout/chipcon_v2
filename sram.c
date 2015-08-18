@@ -32,9 +32,7 @@
 #define sram_enable()  {SRAM_PORT &= ~SRAM_SEL;}
 #define sram_disable() {SRAM_PORT |= SRAM_SEL;}
 
-#define sram_send_byte(b)  {SPI_SR|=(1<<SPI2X);\
-                           SPI_DR=(b);\
-						   while(!(SPI_SR&(1<<SPIF)));}
+#define sram_send_byte(b)  {SPI_DR=(b);while(!(SPI_SR&(1<<SPIF)));}
 
 /*						   
 inline void sram_send_byte(unsigned char b){

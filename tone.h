@@ -30,8 +30,8 @@
 #include "hardware.h"
 
 
-#define tone_on() TONE_DDR |= TONE_OUT
-#define tone_off() TONE_DDR &= ~TONE_OUT
+#define tone_on() TONE_PORT |= TONE_ENV
+#define tone_off() TONE_PORT &= ~TONE_ENV
 #define wait_tone_end()  while (tone_length)
 
 void tone_init();

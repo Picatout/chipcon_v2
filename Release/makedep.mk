@@ -18,6 +18,8 @@ fat.c
 
 filesys.c
 
+joymus.c
+
 joystick.c
 
 lem.c

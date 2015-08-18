@@ -14,8 +14,8 @@ start:
 	ld v1, 0
 	ld dt, v3
 loop:
-;    add v1,1
-;	se vf,0
+    add v1,1
+	se vf,0
 	add v0,1
 	ld v3,dt
 	se v3,0

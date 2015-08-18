@@ -161,6 +161,12 @@
     <Compile Include="hardware.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="joymus.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="joymus.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="joystick.c">
       <SubType>compile</SubType>
     </Compile>

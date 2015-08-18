@@ -348,11 +348,11 @@ ISR(TIMER1_COMPB_vect){
 			if (frame_delay) frame_delay--;
 			break;
 		case 20:
-		if (tone_length){
-			tone_length--;
-			if (!tone_length) tone_off();
-		}
-		break;
+			if (tone_length){
+				tone_length--;
+				if (!tone_length) tone_off();
+			}
+			break;
 		case FIRST_VISIBLE:
 			video=1;
 			break;
@@ -366,12 +366,28 @@ ISR(TIMER1_COMPB_vect){
 			}
 			break;
 		case 272:
-		    if (!even){
-				line_count=-1;
-				even=true;
-			}
+			line_count=-1;
+			even=true;
+			break;
 		default:
 			if (video){
+				asm(// élimination de la gigue d'interuption (jitter)
+				"ldi r30,lo8(jit)\n"
+				"ldi r31,hi8(jit)\n"
+				"clc\n"
+				"ror r31\n"
+				"ror r30\n"
+				"lds r24,0x84\n"
+				"andi r24,3\n"
+				"add r30,r24\n"
+				"adc r31,r1\n"
+				"ijmp\n"
+				"jit:"
+				"nop\n"
+				"nop\n"
+				"nop\n"
+				"nop\n"
+				);
 				NTSC_VIDEO_UDR=0x0;
 				NTSC_VIDEO_UCSRB=(1<<TXEN0);
 				video_line=video_buffer+(((line_count-FIRST_VISIBLE)>>1)*HBYTES);
@@ -381,9 +397,10 @@ ISR(TIMER1_COMPB_vect){
 				}
 				while (!(NTSC_VIDEO_UCSRA & (1<<TXC0)));
 				NTSC_VIDEO_UCSRB &= ~(1<<TXEN0);
-			}
+			}			
 			break;
 	}//switch
+	
 }
 
 

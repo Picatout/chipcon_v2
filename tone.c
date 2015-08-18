@@ -37,7 +37,7 @@
 
 
 void tone_init(){
-	TONE_DDR |= TONE_OUT;
+	TONE_DDR |= TONE_OUT+TONE_ENV;
 	TONE_TCCRB = 3; // CLKt0=CLKio/64
 	TONE_TCCRA = (1<<6)| 2; // OC0A toggle, mode 2 CTC
 }
@@ -60,14 +60,20 @@ inline void key_tone(uint8_t key, uint8_t length,bool wait_end){
 
 void noise(uint8_t length){
 	TONE_TCCRA=0; // désactivation PWM
-	TONE_DDR |= TONE_OUT;
+	TONE_PORT |= TONE_ENV;
 	tone_length=length;
-	while (tone_length){
+	while ((tone_length>>1)){
 		if (rand()&1)
 		   TONE_PORT|=TONE_OUT;
 		else
 		   TONE_PORT&=~TONE_OUT;   
 	}
-	TONE_DDR &= ~TONE_OUT;
+	TONE_PORT &= ~TONE_ENV;
+	while (tone_length){
+		if (rand()&1)
+		TONE_PORT|=TONE_OUT;
+		else
+		TONE_PORT&=~TONE_OUT;
+	}
 	TONE_TCCRA=(1<<6)| 2; // réactivation PWM
 }
