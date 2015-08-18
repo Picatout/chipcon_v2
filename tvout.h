@@ -29,7 +29,6 @@
 
 #include <avr/pgmspace.h>
 
-
 #define HRES (128)
 #define HBYTES (HRES/8)
 #if !SDC_SUPPORT
@@ -39,7 +38,7 @@
 #else
 #if DEFVRES==1
 #define VRES (64)
-#elif DEFVRES==2 
+#elif DEFVRES==2
 #define VRES (72)
 #else
 #define VRES (88)
@@ -49,6 +48,7 @@
 #define VLINES (VRES*2)
 #define FIRST_VISIBLE (((240-VLINES)>>1)+24)
 #define LAST_VISIBLE  (VLINES+FIRST_VISIBLE-1)
+
 
 #define SAVE_SCREEN_ADDR (32768)
 

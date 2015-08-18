@@ -45,6 +45,7 @@
 void tvout_init(){
 	// met broche sync en mode sortie
 	NTSC_SYNC_DDR |= NTSC_SYNC_OUT;
+	NTSC_SYNC_PORT &= ~NTSC_SYNC_OUT;
 	//configuration USART0 pour mode master SPI
 	NTSC_VIDEO_UCSRC=((1<<UMSEL01)|(1<<UMSEL00)|(1<<UCPHA0)|(0<<UCPOL0));
 	NTSC_VIDEO_UBRR=2;
@@ -60,7 +61,7 @@ void tvout_init(){
 	NTSC_SYNC_TIMSK |= NTSC_SYNC_IE;
 }
 
-static uint8_t video_buffer[VIDEO_BUFF_SIZE];
+uint8_t video_buffer[VIDEO_BUFF_SIZE];
 
 void video_write_byte(uint16_t addr, uint8_t b){
 	video_buffer[addr]=b;	
@@ -373,7 +374,6 @@ ISR(TIMER1_COMPB_vect){
 			if (video){
 				NTSC_VIDEO_UDR=0x0;
 				NTSC_VIDEO_UCSRB=(1<<TXEN0);
-				NTSC_VIDEO_UDR=0x0;
 				video_line=video_buffer+(((line_count-FIRST_VISIBLE)>>1)*HBYTES);
 				for (i=HBYTES;i;i--){
 					while ( !( NTSC_VIDEO_UCSRA & (1<<UDRE0)) );
@@ -385,4 +385,5 @@ ISR(TIMER1_COMPB_vect){
 			break;
 	}//switch
 }
+
 
