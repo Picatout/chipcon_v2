@@ -217,7 +217,7 @@ namespace ccemul
 		{   
 			ushort code=(ushort)((vm.code[pc]<<8)|vm.code[pc+1]);
 			textBox1.AppendText(string.Format("PC={0:X3}, ",pc));
-			textBox1.AppendText(string.Format("opCode={0:X4} ({1:S})\t",code,dasm.deassemble(pc,code)));
+			textBox1.AppendText(string.Format("opCode={0:X4} ({1:S})\t",code,dasm.deassemble(BreaksForm,pc,code)));
 			textBox1.AppendText(string.Format("I={0:X3}, ",vm.ix));
 			textBox1.AppendText(string.Format("sp={0}, ",vm.sp));
 			textBox1.AppendText(string.Format("DT={0}, ",vm.dt));

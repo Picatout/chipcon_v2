@@ -104,7 +104,16 @@ namespace ccemul
 			BreaksCombo.Text=(string)LabelsListBox.SelectedItem;
 		}
 		
-	
+		internal string GetSymbol(int addr){
+			string [] symb;
+			foreach(var i in LabelsListBox.Items){
+				    symb=i.ToString().Split(new char[]{' ','\t'}, StringSplitOptions.RemoveEmptyEntries);
+					if (symb[1]==addr.ToString()){
+							return symb[0];
+					}
+			}
+			return null;
+		}
 		
 	}
 }

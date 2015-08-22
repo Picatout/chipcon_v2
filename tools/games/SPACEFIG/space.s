@@ -1,18 +1,9 @@
-;***************************************************
-; Spacefight 2091, by Carsten Soerensen, 1992.
-; adapted to CHIPcon v2 by Jacques Deschênes, 2015
-;***************************************************
-
-; joytick buttons
-	equ UP 2
-	equ DOWN 4
-	equ LEFT 8
-	equ RIGHT 16
-	equ FIRE_BTN 32
-
 	JP code_024
-credits:	
-	ASCII "Spacefight 2091\nby Slammer Anarchy!\n"
+	DB #53, #70, #61, #63, #65, #46, #69, #67
+	DB #68, #74, #32, #30, #39, #31, #20, #62
+	DB #79, #20, #53, #6C, #61, #6D, #6D, #65
+	DB #72, #2F, #41, #6E, #61, #72, #63, #68
+	DB #79, #21
 code_024:
 	HIGH
 code_026:
@@ -22,14 +13,14 @@ code_026:
 	JP code_026
 code_02E:
 	LD I, data_A40
-	LD V0 , 0
+	LD V0, 0
 	LD [I], V0
 	LD V8, 0
 code_036:
-	LD I , data_66F
-	ADD I , V8
-	LD V7 , [I]
-	LD I , data_A57
+	LD I, data_66F
+	ADD I, V8
+	LD V7, [I]
+	LD I, data_A57
 	ADD I, V8
 	LD [I], V7
 	ADD V8, 8
@@ -49,7 +40,7 @@ code_054:
 	ADD V0, 255
 	LD [I], V0
 code_060:
-	CALL delay_1frm
+	CALL code_63E
 	CALL code_41E
 	CALL code_366
 	CALL code_27E
@@ -76,21 +67,18 @@ code_060:
 	CALL code_09E
 	JP code_054
 code_094:
-	LD VF, 1
-	LD I, data_A40
-	ADD I, VF
+	LD I, data_A41
 	LD V0, [I]
 	SE V0, 0
 	JP code_054
 	RET
 code_09E:
 	CALL code_4EA
-	LD I, data_A42
-	LD V0, 0
-	LD V1, 56
+	LD I, data_A43
+	LD V0, 56
+	LD V1, 0
 	LD V2, 0
-	LD V3, 0
-	LD [I], V3
+	LD [I], V2
 	LD I, data_A46
 	LD V0, 0
 	LD V1, 0
@@ -149,8 +137,8 @@ code_10A:
 	SE V3, 8
 	JP code_10A
 	CALL code_464
-	CALL delay_12frm
-	CALL delay_12frm
+	CALL code_636
+	CALL code_636
 	LD I, data_A3F
 	LD V0, [I]
 	SNE V0, 0
@@ -170,13 +158,13 @@ code_124:
 	CALL code_46E
 	LD V0, 1
 	LD ST, V0
-	CALL delay_1frm
+	CALL code_63E
 	LD I, data_A3F
 	LD V0, [I]
 	SE V0, 0
 	JP code_124
-	CALL delay_12frm
-	CALL delay_12frm
+	CALL code_636
+	CALL code_636
 	RET
 code_150:
 	LD I, data_A50
@@ -329,13 +317,12 @@ code_262:
 	CALL code_48C
 	LD V0, 1
 	LD ST, V0
-	LD I, data_A40
-	ADD I, V0
+	LD I, data_A41
 	LD V0, [I]
 	ADD V0, V9
 	LD [I], V0
 	CALL code_48C
-	JP delay_6frm
+	JP code_63A
 code_274:
 	LD I, data_A50
 	LD V1, [I]
@@ -343,9 +330,7 @@ code_274:
 	DRW V0, V1, 3
 	RET
 code_27E:
-    LD V0, 1
-	LD I, data_A4C
-	ADD I, V0
+	LD I, data_A4D
 	LD V0, [I]
 	ADD V0, 255
 	LD [I], V0
@@ -369,17 +354,13 @@ code_298:
 	JP code_2F0
 	LD V0, 10
 	LD ST, V0
-	LD V0, 1
-	LD I, data_A46
-	ADD I, V0
+	LD I, data_A47
 	LD V0, [I]
 	SE V0, 12
 	ADD V0, 1
 	LD [I], V0
 	ADD V1, 1
-	LD VF, 1
-	LD I, data_A4E
-	ADD I, VF
+	LD I, data_A4F
 	LD V0, V1
 	LD [I], V0
 	SE V1, 4
@@ -392,17 +373,13 @@ code_298:
 code_2CC:
 	LD V0, 10
 	LD ST, V0
-	LD V0, 1
-	LD I, data_A46
-	ADD I, V0
+	LD I, data_A47
 	LD V0, [I]
 	SE V0, 12
 	ADD V0, 1
 	LD [I], V0
 	ADD V1, 1
-	LD VF, 1
-	LD I, data_A4E
-	ADD I, VF
+	LD I, data_A4F
 	LD V0, V1
 	LD [I], V0
 	SE V1, 4
@@ -528,16 +505,14 @@ code_3BE:
 	LD I, data_A44
 	JP code_416
 code_3C4:
-	LD V0, FIRE_BTN
+	LD V0, 10
 	SKP V0
 	RET
 	LD I, data_A44
 	LD V0, [I]
 	SE V0, 0
 	RET
-	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD V0, [I]
 	ADD V0, 7
 	LD I, data_A44
@@ -581,47 +556,37 @@ code_416:
 code_41E:
 	CALL code_3C4
 	CALL code_3F2
-	LD V0, LEFT
+	LD V0, 3
 	SKNP V0
 	JP code_444
-	LD V0, RIGHT
+	LD V0, 12
 	SKNP V0
 	JP code_430
 	RET
 code_430:
-    LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD V0, [I]
 	SNE V0, 112
 	RET
 	CALL code_458
 	ADD V0, 1
-	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD [I], V0
 	CALL code_458
 	RET
 code_444:
-    LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD V0, [I]
 	SNE V0, 0
 	RET
 	CALL code_458
 	ADD V0, 255
-	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD [I], V0
 	CALL code_458
 	RET
 code_458:
-    LD VF , 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, data_A43
 	LD V0, [I]
 	LD V1, 49
 	LD I, data_8CF
@@ -632,19 +597,14 @@ code_464:
 	LD V0, [I]
 	LD V3, 57
 	LD V4, 34
-	JP prt_v0
+	JP code_476
 code_46E:
 	LD I, data_A42
 	LD V0, [I]
 	LD V3, 34
 	LD V4, 3
-;********************
-; print V0 in small decimal
-;  V3=X
-;  V4=Y
-;********************
-prt_v0:
-	LD I, BCD
+code_476:
+	LD I, data_A53
 	LD B, V0
 	LD V2, [I]
 	LD F, V0
@@ -657,9 +617,7 @@ code_486:
 	ADD V3, 5
 	RET
 code_48C:
-	LD VF, 1
-	LD I, data_A40
-	ADD I, VF
+	LD I, data_A41
 	LD V0, [I]
 	SNE V0, 0
 	RET
@@ -722,17 +680,17 @@ code_4EA:
 	RET
 code_4F6:
 	CALL code_50E
-	CALL delay_12frm
+	CALL code_636
 	CALL code_50E
-	CALL delay_6frm
+	CALL code_63A
 	CALL code_50E
-	CALL delay_6frm
+	CALL code_63A
 	CALL code_50E
-	CALL delay_12frm
+	CALL code_636
 	CALL code_50E
-	CALL delay_12frm
+	CALL code_636
 	CALL code_50E
-	JP delay_12frm
+	JP code_636
 code_50E:
 	LD V0, 3
 	LD ST, V0
@@ -780,7 +738,7 @@ code_536:
 code_55C:
 	LD V1, 0
 code_55E:
-	CALL delay_1frm
+	CALL code_63E
 	SCL
 	ADD V1, 1
 	SE V1, 32
@@ -789,7 +747,7 @@ code_55E:
 code_56A:
 	LD V1, 0
 code_56C:
-	CALL delay_1frm
+	CALL code_63E
 	SCR
 	ADD V1, 1
 	SE V1, 32
@@ -798,14 +756,14 @@ code_56C:
 code_578:
 	LD V1, 0
 code_57A:
-	CALL delay_1frm
+	CALL code_63E
 	SCD 4
 	ADD V1, 1
 	SE V1, 16
 	JP code_57A
 	RET
 code_586:
-	LD I, scr_tgl_dly
+	LD I, data_A3E
 	LD V0, 100
 	LD [I], V0
 	CALL code_5D0
@@ -815,15 +773,15 @@ code_586:
 	CALL code_46E
 	CALL code_5E8
 code_598:
-	CALL delay_1frm
+	CALL code_63E
 	CALL code_600
 	CALL code_5A6
-	LD V0, FIRE_BTN
+	LD V0, 10
 	SKP V0
 	JP code_598
 	RET
 code_5A6:
-	LD I, scr_tgl_dly
+	LD I, data_A3E
 	LD V0, [I]
 	ADD V0, 255
 	LD [I], V0
@@ -885,7 +843,7 @@ code_600:
 	RND V0, #7F
 	RND V1, #3F
 	LD [I], V1
-	LD I, dot_sprite
+	LD I, data_A39
 	DRW V0, V1, 1
 	LD V3, 15
 	ADD V4, 1
@@ -899,20 +857,19 @@ code_628:
 	SHL V0
 	ADD I, V0
 	LD V1, [I]
-	LD I, dot_sprite
+	LD I, data_A39
 	DRW V0, V1, 1
 	RET
-delay_12frm:
+code_636:
 	LD V0, 12
 	JP code_640
-delay_6frm: 
+code_63A:
 	LD V0, 6
 	JP code_640
-delay_1frm: 
+code_63E:
 	LD V0, 1
-code_640: 
+code_640:
 	LD DT, V0
-;delay loop	
 code_642:
 	LD V0, DT
 	SE V0, 0
@@ -1074,47 +1031,58 @@ data_9F9:
 	DB #19, #99, #D9, #DF, #CF, #C6, #C6, #86
 	DB #98, #98, #98, #98, #18, #00, #18, #18
 
-dot_sprite: ; dot sprite
+data_A39:
 	DB #80
 
 data_A3A:
 	DB #FF, #AA, #55, #FF
 
-scr_tgl_dly:
+data_A3E:
 	DB #00
 
-data_A3F:  ; level
+data_A3F:
 	DB #00
 
-data_A40:  ; dca guns
-	DB #00, #00
+data_A40:
+	DB #00
+
+data_A41:
+	DB #00
 
 data_A42:
-	DB #00, #00
+	DB #00
+
+data_A43:
+	DB #00
 
 data_A44:
 	DB #00, #00
 
 data_A46:
-	DB #00, #00
+	DB #00
+
+data_A47:
+	DB #00
 
 data_A48:
-	DB #00, #00, #00, #00
+	DB #00, #00, #00, #00, #00
 
-data_A4C:
-	DB #00, #00
+data_A4D:
+	DB #00
 
 data_A4E:
-	DB #00, #00
+	DB #00
 
+data_A4F:
+	DB #00
 
-data_A50: ; coordinates x,y
+data_A50:
 	DB #00, #00
 
 data_A52:
 	DB #00
 
-BCD: ; BCD store
+data_A53:
 	DB #00, #00, #00
 
 data_A56:

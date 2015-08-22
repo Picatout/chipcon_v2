@@ -38,10 +38,10 @@ namespace ccemul
 		{
 		}
 		
-		static internal string deassemble(ushort pc, ushort code)
+		static internal string deassemble(FormBreakPoints brkpt, ushort pc, ushort code)
 		{
 			byte b1,b2;
-			string s;
+			string s, symb;
 			b1=(byte)(code>>8);
 			b2=(byte)(code&0xff);
 			
@@ -80,10 +80,20 @@ namespace ccemul
 				}
 				break;
 			case 1: // 1NNN saut vers l'adresse NNN
-				s=string.Format("{0:S}JP #{1:X3} ",s,(((b1&0xf)<<8)|b2)<<1);
+				symb=brkpt.GetSymbol((((b1&0xf)<<8)|b2)<<1);
+				if (symb!=null){
+					s=string.Format("{0:S}JP {1:S} ",s,symb);
+				}else{
+					s=string.Format("{0:S}JP {1:D} ",s,(((b1&0xf)<<8)|b2)<<1);
+				}
 				break;
 			case 2: // 2NNN  appelle la sous-routine à l'adresse NNN
-				s=string.Format("{0:S}CALL #{1:X3} ",s,(((b1&0xf)<<8)|b2)<<1);
+				symb=brkpt.GetSymbol((((b1&0xf)<<8)|b2)<<1);
+				if (symb!=null){
+					s=string.Format("{0:S}CALL {1:S} ",s,symb);
+				}else{
+					s=string.Format("{0:S}CALL {1:D} ",s,(((b1&0xf)<<8)|b2)<<1);
+				}
 				break;
 			case 3: // 3XKK     saute l'instruction suivante si VX == KK 
 				s=string.Format("{0:S}SE V{1:X}, {2:D2} ",s,(b1&0xf),b2);
@@ -181,7 +191,13 @@ namespace ccemul
 				}
 				break;
 			case 0xA: // ANNN  LD I, NNN  ;  I := 2*NNN 
-				s=string.Format("{0:S}LD I, {1:X3} ",s,(code&0xfff)<<1);
+				symb=brkpt.GetSymbol((((b1&0xf)<<8)|b2)<<1);
+				if (symb!=null){
+					s=string.Format("{0:S}LD I, {1:S} ",s,symb);
+				}else{
+					s=string.Format("{0:S}LD I, {1:D} ",s,(((b1&0xf)<<8)|b2)<<1);
+				}
+				//s=string.Format("{0:S}LD I, {1:X3} ",s,(code&0xfff)<<1);
 				break;
 			case 0xB: // BNNN     saut à 2*(NNN+V0)
 				s=string.Format("{0:S}JP V0, {1:X3} ",s,(code&0xfff)<<1);

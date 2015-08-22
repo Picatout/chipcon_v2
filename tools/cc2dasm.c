@@ -567,6 +567,7 @@ int main(int argc, char *argv[]){
 	puts("data labels\n==============");
 	unsigned byte_count;
 	for (i=0;i<dx-1;i++){
+	    if (decoded[data[i].addr) continue;
 		byte_count=0;
 		printf("data_%03X\n",data[i].addr);
 		line=malloc(128);
@@ -577,7 +578,7 @@ int main(int argc, char *argv[]){
 		decoded[data[i].addr]=1;
 		byte_count++;
 		j=1;
-		while ((data[i].addr+j)<data[i+1].addr){
+		while (!decoded[data[i].addr+j] && ((data[i].addr+j)<data[i+1].addr)){
 			sprintf(line+strlen(line),", #%02X",bytecode[data[i].addr+j]);
 			decoded[data[i].addr+j++]=1;
 			byte_count++;
@@ -588,7 +589,7 @@ int main(int argc, char *argv[]){
 				*line=0;
 				new=new_dasm_line(data[i].addr+j,line);
 				insert_dasm(new);
-				if ((data[i].addr+j)<data[i+1].addr){
+				if (!decoded[data[i].addr+j] && ((data[i].addr+j)<data[i+1].addr)){
 					sprintf(line,"\tDB #%02X",bytecode[data[i].addr+j]);
 				    decoded[data[i].addr+j++]=1;
 					byte_count++;
