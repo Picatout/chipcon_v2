@@ -1,6 +1,6 @@
 /*
-* Copyright 2014, Jacques Deschênes
-* This file is part of CHIPcon.
+* Copyright 2014,2015 Jacques Deschênes
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 *     GNU General Public License for more details.
 *
 *     You should have received a copy of the GNU General Public License
-*     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
+*     along with CHIPcon v2.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -58,22 +58,18 @@ inline void key_tone(uint8_t key, uint8_t length,bool wait_end){
 	if (wait_end) wait_tone_end();
 }
 
+
 void noise(uint8_t length){
 	TONE_TCCRA=0; // désactivation PWM
 	TONE_PORT |= TONE_ENV;
 	tone_length=length;
-	while ((tone_length>>1)){
-		if (rand()&1)
-		   TONE_PORT|=TONE_OUT;
-		else
-		   TONE_PORT&=~TONE_OUT;   
+	if (length<5) length=2; else length-=3;
+	while ((tone_length>length)){
+		TONE_PORT^=(rand()&1)<<TONE_PIN;
 	}
-	TONE_PORT &= ~TONE_ENV;
+	TONE_PORT &= ~TONE_ENV;//atténuation
 	while (tone_length){
-		if (rand()&1)
-		TONE_PORT|=TONE_OUT;
-		else
-		TONE_PORT&=~TONE_OUT;
+		TONE_PORT^=(rand()&1)<<TONE_PIN;
 	}
 	TONE_TCCRA=(1<<6)| 2; // réactivation PWM
 }

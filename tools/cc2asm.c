@@ -1204,8 +1204,6 @@ void assemble_line(){
 				case 2:  // ASCII
 					data_ascii();
 					break;
-			    case 5: // END
-					file_done=true;
 				}//switch 
 			}else if (tok_id==eLABEL){
 				// label
@@ -1231,6 +1229,7 @@ void fix_forward_ref(){
 			binary[fwd->pc] |= (lbl->addr>>9)&0xf;
 			binary[fwd->pc+1] = (lbl->addr>>1)&0xff;
 		}else{
+			printf("%s ?\n",fwd->name);
 			error(eNOTREF);
 		}
 		fwd=fwd->next;
@@ -1276,6 +1275,11 @@ bool preprocess(){
 			case 4: // DEFN
 				define();
 				completed=true;
+				break;
+		    case 5: // END
+				if (ppf) fprintf(ppf,"\nEND\n");
+				completed=true;
+				file_done=true;
 				break;
 			}//switch
 		}else{

@@ -16,7 +16,7 @@
 ;     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
 ;
 ;--------------------------------------------------------------------------
-; fichier source pour l'assembleur de CHIPcon 
+; fichier source pour l'assembleur cc2asm.exe
 ;
 ; NOM: LEM
 ; DESCRIPION: Jeux qui consiste à faire alunir le LEM.
@@ -27,6 +27,7 @@
 ;
 ; AUTEUR: Jacques Deschênes
 ; CRÉATION: 2014-10-30
+; MISE à JOUR: 2015-08-19
 ;--------------------------------------------------------------------------
 
 ;;;;;;;;;;;;;;;
@@ -51,7 +52,7 @@ equ LEM_WIDTH 16     ; largeur du LEM
 equ K_RIGHT_JET 8    ; touche de contrôle du jet de droite
 equ K_LEFT_JET  16   ; touche de contrôle du jet de gauche
 equ K_UP_JET    32   ; touche de contrôle du jet vertical
-
+equ FIRE_BTN    32
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;  code segment  ;;
@@ -339,6 +340,9 @@ show_credit:
     prt v1,v2
 	scry v1
 scroll_loop:
+	ld w,FIRE_BTN
+	sknp w
+	ret
     scu 1
 	ld w,3
 	call delay

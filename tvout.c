@@ -318,7 +318,6 @@ void screen_restore(){
 volatile uint8_t frame_delay=0;
 volatile uint8_t tone_length=0;
 
-
 // interruption à la fin de
 // chaque pulse de synchronisation
 ISR(TIMER1_COMPB_vect){
@@ -371,7 +370,7 @@ ISR(TIMER1_COMPB_vect){
 			break;
 		default:
 			if (video){
-				asm(// élimination de la gigue d'interuption (jitter)
+		        asm(// élimination de la gigue d'interuption (jitter)
 				"ldi r30,lo8(jit)\n"
 				"ldi r31,hi8(jit)\n"
 				"clc\n"

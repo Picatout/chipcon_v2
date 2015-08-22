@@ -322,8 +322,9 @@ int main(void){
 	// initialisation mémoire SRAM
 	sram_init();
 	sei();// activation des interruptions
-	srand(TCNT1);
 	splash_screen();
+	srand(TCNT1);
+	
 #if SDC_SUPPORT
 	//initialisation carte SD
 	if (sd_raw_init() && fs_mount()){

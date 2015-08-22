@@ -1,0 +1,1068 @@
+1		JP CODE_024 
+2		DB #53 , #70 , #61 , #63 , #65 , #46 , #69 , #67 
+3		DB #68 , #74 , #32 , #30 , #39 , #31 , #20 , #62 
+4		DB #79 , #20 , #53 , #6C , #61 , #6D , #6D , #65 
+5		DB #72 , #2F , #41 , #6E , #61 , #72 , #63 , #68 
+6		DB #79 , #21 
+7	CODE_024: 
+8		HIGH 
+9	CODE_026: 
+10		CLS 
+11		CALL CODE_586 
+12		CALL CODE_02E 
+13		JP CODE_026 
+14	CODE_02E: 
+15		LD I , DATA_A40 
+16		LD V0 , 0 
+17		LD [ I ] , V0 
+18		LD V8 , 0 
+19	CODE_036: 
+20		LD I , DATA_66F 
+21		ADD I , V8 
+22		LD V7 , [ I ] 
+23		LD I , DATA_A57 
+24		ADD I , V8 
+25		LD [ I ] , V7 
+26		ADD V8 , 8 
+27		SE V8 , 192 
+28		JP CODE_036 
+29		LD I , DATA_A40 
+30		LD V0 , 0 
+31		LD V1 , 3 
+32		LD V2 , 0 
+33		LD [ I ] , V2 
+34		CALL CODE_09E 
+35	CODE_054: 
+36		LD I , DATA_A3F 
+37		LD V0 , [ I ] 
+38		SNE V0 , 0 
+39		JP CODE_060 
+40		ADD V0 , 255 
+41		LD [ I ] , V0 
+42	CODE_060: 
+43		CALL CODE_63E 
+44		CALL CODE_41E 
+45		CALL CODE_366 
+46		CALL CODE_27E 
+47		CALL CODE_150 
+48		LD I , DATA_A48 
+49		LD V4 , [ I ] 
+50		SE V0 , 0 
+51		JP CODE_094 
+52		SE V1 , 0 
+53		JP CODE_094 
+54		SE V2 , 0 
+55		JP CODE_094 
+56		SE V3 , 0 
+57		JP CODE_094 
+58		SE V4 , 0 
+59		JP CODE_094 
+60		CALL CODE_0EA 
+61		LD I , DATA_A40 
+62		LD V0 , [ I ] 
+63		ADD V0 , 32 
+64		LD [ I ] , V0 
+65		SNE V0 , 192 
+66		RET 
+67		CALL CODE_09E 
+68		JP CODE_054 
+69	CODE_094: 
+70		LD I , DATA_A41 
+71		LD V0 , [ I ] 
+72		SE V0 , 0 
+73		JP CODE_054 
+74		RET 
+75	CODE_09E: 
+76		CALL CODE_4EA 
+77		LD I , DATA_A43 
+78		LD V0 , 56 
+79		LD V1 , 0 
+80		LD V2 , 0 
+81		LD [ I ] , V2 
+82		LD I , DATA_A46 
+83		LD V0 , 0 
+84		LD V1 , 0 
+85		LD V2 , 1 
+86		LD V3 , 1 
+87		LD V4 , 1 
+88		LD V5 , 1 
+89		LD V6 , 1 
+90		LD V7 , 5 
+91		LD V8 , 0 
+92		LD V9 , 0 
+93		LD VA , 0 
+94		LD VB , 0 
+95		LD VC , 5 
+96		LD [ I ] , VC 
+97		LD I , DATA_A3F 
+98		LD V0 , 255 
+99		LD [ I ] , V0 
+100		CLS 
+101		CALL CODE_4A6 
+102		CALL CODE_48C 
+103		CALL CODE_4BE 
+104		CALL CODE_46E 
+105		CALL CODE_458 
+106		CALL CODE_4C6 
+107		LD V5 , 0 
+108		JP CODE_318 
+109	CODE_0E0: 
+110		ADD V3 , 1 
+111		SE V3 , 5 
+112		JP CODE_17E 
+113		LD V3 , 0 
+114		JP CODE_17E 
+115	CODE_0EA: 
+116		LD I , DATA_A3F 
+117		LD V0 , [ I ] 
+118		SHR V0 
+119		SHR V0 
+120		SHR V0 
+121		LD [ I ] , V0 
+122		CALL CODE_578 
+123		CALL CODE_4A6 
+124		CALL CODE_48C 
+125		CALL CODE_4BE 
+126		CALL CODE_46E 
+127		LD V0 , 32 
+128		LD V1 , 25 
+129		LD I , DATA_7AF 
+130		LD V2 , 8 
+131		LD V3 , 0 
+132	CODE_10A: 
+133		DRW V0 , V1 , 8 
+134		ADD V0 , 8 
+135		ADD I , V2 
+136		ADD V3 , 1 
+137		SE V3 , 8 
+138		JP CODE_10A 
+139		CALL CODE_464 
+140		CALL CODE_636 
+141		CALL CODE_636 
+142		LD I , DATA_A3F 
+143		LD V0 , [ I ] 
+144		SNE V0 , 0 
+145		RET 
+146	CODE_124: 
+147		CALL CODE_464 
+148		CALL CODE_46E 
+149		LD I , DATA_A3F 
+150		LD V0 , [ I ] 
+151		ADD V0 , 255 
+152		LD [ I ] , V0 
+153		LD I , DATA_A42 
+154		LD V0 , [ I ] 
+155		ADD V0 , 1 
+156		LD [ I ] , V0 
+157		CALL CODE_464 
+158		CALL CODE_46E 
+159		LD V0 , 1 
+160		LD ST , V0 
+161		CALL CODE_63E 
+162		LD I , DATA_A3F 
+163		LD V0 , [ I ] 
+164		SE V0 , 0 
+165		JP CODE_124 
+166		CALL CODE_636 
+167		CALL CODE_636 
+168		RET 
+169	CODE_150: 
+170		LD I , DATA_A50 
+171		LD V2 , [ I ] 
+172		SE V0 , 0 
+173		JP CODE_1A4 
+174		ADD V2 , 255 
+175		LD [ I ] , V2 
+176		SE V2 , 0 
+177		RET 
+178		LD I , DATA_A40 
+179		LD V0 , [ I ] 
+180		LD V2 , 192 
+181		SUB V2 , V0 
+182		SHR V2 
+183		SHR V2 
+184		SHR V2 
+185		SHR V2 
+186		SHR V2 
+187		LD V0 , V2 
+188		LD I , DATA_A52 
+189		LD [ I ] , V0 
+190		RND V3 , #03 
+191		RND V4 , #01 
+192		ADD V3 , V4 
+193	CODE_17E: 
+194		LD I , DATA_A48 
+195		ADD I , V3 
+196		LD V0 , [ I ] 
+197		SNE V0 , 0 
+198		JP CODE_0E0 
+199		LD I , DATA_66A 
+200		ADD I , V3 
+201		LD V0 , [ I ] 
+202		LD V3 , V0 
+203		LD I , DATA_A46 
+204		LD V1 , [ I ] 
+205		ADD V0 , V3 
+206		ADD V0 , 7 
+207		ADD V1 , 25 
+208		LD I , DATA_A50 
+209		LD [ I ] , V2 
+210		LD V0 , 2 
+211		LD ST , V0 
+212		JP CODE_274 
+213	CODE_1A4: 
+214		CALL CODE_274 
+215		ADD V1 , 4 
+216		LD I , DATA_A50 
+217		LD [ I ] , V1 
+218		CALL CODE_274 
+219		SNE V1 , 64 
+220		JP CODE_24E 
+221		SNE V1 , 63 
+222		JP CODE_24E 
+223		SNE V1 , 62 
+224		JP CODE_24E 
+225		SNE V1 , 61 
+226		JP CODE_24E 
+227		SNE V1 , 43 
+228		JP CODE_20E 
+229		SNE V1 , 42 
+230		JP CODE_20E 
+231		SNE V1 , 41 
+232		JP CODE_20E 
+233		SNE V1 , 40 
+234		JP CODE_20E 
+235		SNE V1 , 39 
+236		JP CODE_20E 
+237		SNE VF , 0 
+238		RET 
+239		LD V2 , V0 
+240		LD V3 , V1 
+241		LD I , DATA_A44 
+242		LD V1 , [ I ] 
+243		SNE V0 , 0 
+244		JP CODE_1FE 
+245		SE V0 , V2 
+246		JP CODE_1FE 
+247		LD I , DATA_A42 
+248		LD V0 , [ I ] 
+249		ADD V0 , 1 
+250		LD [ I ] , V0 
+251		LD V0 , 1 
+252		LD ST , V0 
+253		CALL CODE_3E6 
+254		LD I , DATA_A44 
+255		LD V0 , 0 
+256		LD V1 , 0 
+257		LD [ I ] , V1 
+258		JP CODE_24E 
+259	CODE_1FE: 
+260		LD VA , 0 
+261	CODE_200: 
+262		CALL CODE_25E 
+263		CALL CODE_25A 
+264		ADD VA , 1 
+265		SE VA , 5 
+266		JP CODE_200 
+267		CALL CODE_25E 
+268		JP CODE_24E 
+269	CODE_20E: 
+270		LD V2 , V0 
+271		LD V3 , V0 
+272		SHR V2 
+273		SHR V2 
+274		SHR V2 
+275		LD I , DATA_A40 
+276		LD V0 , [ I ] 
+277		LD I , DATA_A57 
+278		ADD I , V0 
+279		ADD I , V2 
+280		LD V0 , [ I ] 
+281		SNE V0 , 0 
+282		RET 
+283		LD V0 , [ I ] 
+284		ADD V0 , 255 
+285		LD V2 , V0 
+286		LD V0 , 0 
+287		LD [ I ] , V0 
+288		SNE V2 , 0 
+289		JP CODE_244 
+290		LD V0 , V2 
+291		LD [ I ] , V0 
+292		LD V2 , 16 
+293		ADD I , V2 
+294		LD V0 , 0 
+295		LD [ I ] , V0 
+296		JP CODE_24E 
+297	CODE_244: 
+298		LD V0 , 248 
+299		AND V0 , V3 
+300		LD V1 , 44 
+301		LD I , DATA_A3A 
+302		DRW V0 , V1 , 4 
+303	CODE_24E: 
+304		CALL CODE_274 
+305		LD I , DATA_A50 
+306		LD V0 , 0 
+307		LD V1 , 0 
+308		LD [ I ] , V1 
+309		RET 
+310	CODE_25A: 
+311		LD V9 , 1 
+312		JP CODE_262 
+313	CODE_25E: 
+314		LD V9 , 255 
+315		JP CODE_262 
+316	CODE_262: 
+317		CALL CODE_48C 
+318		LD V0 , 1 
+319		LD ST , V0 
+320		LD I , DATA_A41 
+321		LD V0 , [ I ] 
+322		ADD V0 , V9 
+323		LD [ I ] , V0 
+324		CALL CODE_48C 
+325		JP CODE_63A 
+326	CODE_274: 
+327		LD I , DATA_A50 
+328		LD V1 , [ I ] 
+329		LD I , DATA_8F6 
+330		DRW V0 , V1 , 3 
+331		RET 
+332	CODE_27E: 
+333		LD I , DATA_A4D 
+334		LD V0 , [ I ] 
+335		ADD V0 , 255 
+336		LD [ I ] , V0 
+337		SE V0 , 0 
+338		RET 
+339		LD V0 , 5 
+340		LD [ I ] , V0 
+341		LD V5 , 0 
+342		CALL CODE_318 
+343		CALL CODE_298 
+344		LD V5 , 1 
+345		JP CODE_318 
+346	CODE_298: 
+347		LD I , DATA_A4E 
+348		LD V1 , [ I ] 
+349		SNE V0 , 0 
+350		JP CODE_304 
+351		SNE V0 , 1 
+352		JP CODE_2CC 
+353		SNE V0 , 2 
+354		JP CODE_2F0 
+355		LD V0 , 10 
+356		LD ST , V0 
+357		LD I , DATA_A47 
+358		LD V0 , [ I ] 
+359		SE V0 , 12 
+360		ADD V0 , 1 
+361		LD [ I ] , V0 
+362		ADD V1 , 1 
+363		LD I , DATA_A4F 
+364		LD V0 , V1 
+365		LD [ I ] , V0 
+366		SE V1 , 4 
+367		RET 
+368		LD I , DATA_A4E 
+369		LD V0 , 0 
+370		LD V1 , 0 
+371		LD [ I ] , V1 
+372		RET 
+373	CODE_2CC: 
+374		LD V0 , 10 
+375		LD ST , V0 
+376		LD I , DATA_A47 
+377		LD V0 , [ I ] 
+378		SE V0 , 12 
+379		ADD V0 , 1 
+380		LD [ I ] , V0 
+381		ADD V1 , 1 
+382		LD I , DATA_A4F 
+383		LD V0 , V1 
+384		LD [ I ] , V0 
+385		SE V1 , 4 
+386		RET 
+387		LD I , DATA_A4E 
+388		LD V0 , 2 
+389		LD V1 , 0 
+390		LD [ I ] , V1 
+391		RET 
+392	CODE_2F0: 
+393		LD I , DATA_A46 
+394		LD V0 , [ I ] 
+395		ADD V0 , 252 
+396		LD [ I ] , V0 
+397		SE V0 , 0 
+398		RET 
+399		LD I , DATA_A4E 
+400		LD V0 , 3 
+401		LD [ I ] , V0 
+402		RET 
+403	CODE_304: 
+404		LD I , DATA_A46 
+405		LD V0 , [ I ] 
+406		ADD V0 , 4 
+407		LD [ I ] , V0 
+408		SE V0 , 40 
+409		RET 
+410		LD I , DATA_A4E 
+411		LD V0 , 1 
+412		LD [ I ] , V0 
+413		RET 
+414	CODE_318: 
+415		LD I , DATA_A46 
+416		LD V1 , [ I ] 
+417		LD V7 , V1 
+418		LD V6 , V0 
+419		ADD V7 , 9 
+420		LD V8 , 0 
+421		LD I , DATA_A40 
+422		LD V0 , [ I ] 
+423		LD V9 , V0 
+424	CODE_32A: 
+425		LD I , DATA_A48 
+426		ADD I , V8 
+427		LD V0 , [ I ] 
+428		LD I , DATA_80F 
+429		ADD I , V9 
+430		SE V0 , 0 
+431		DRW V6 , V7 , 0 
+432		SE VF , 0 
+433		CALL CODE_346 
+434		ADD V6 , 18 
+435		ADD V8 , 1 
+436		SE V8 , 5 
+437		JP CODE_32A 
+438		RET 
+439	CODE_346: 
+440		SNE V5 , 0 
+441		RET 
+442		DRW V6 , V7 , 0 
+443		LD I , DATA_A48 
+444		ADD I , V8 
+445		LD V0 , 0 
+446		LD [ I ] , V0 
+447		CALL CODE_46E 
+448		LD I , DATA_A42 
+449		LD V0 , [ I ] 
+450		ADD V0 , 2 
+451		LD [ I ] , V0 
+452		CALL CODE_46E 
+453		CALL CODE_3E6 
+454		LD I , DATA_A44 
+455		JP CODE_416 
+456	CODE_366: 
+457		LD I , DATA_A44 
+458		LD V1 , [ I ] 
+459		SNE V0 , 0 
+460		RET 
+461		SNE V1 , 44 
+462		JP CODE_37E 
+463		SNE V1 , 45 
+464		JP CODE_37E 
+465		SNE V1 , 46 
+466		JP CODE_37E 
+467		SE V1 , 47 
+468		RET 
+469	CODE_37E: 
+470		LD V2 , V0 
+471		LD V3 , V0 
+472		SHR V2 
+473		SHR V2 
+474		SHR V2 
+475		LD I , DATA_A40 
+476		LD V0 , [ I ] 
+477		LD I , DATA_A57 
+478		ADD I , V0 
+479		ADD I , V2 
+480		LD V0 , [ I ] 
+481		SNE V0 , 0 
+482		RET 
+483		LD V0 , [ I ] 
+484		ADD V0 , 255 
+485		LD V2 , V0 
+486		LD V0 , 0 
+487		LD [ I ] , V0 
+488		SNE V2 , 0 
+489		JP CODE_3B4 
+490		LD V0 , V2 
+491		LD [ I ] , V0 
+492		LD V2 , 16 
+493		ADD I , V2 
+494		LD V0 , 0 
+495		LD [ I ] , V0 
+496		JP CODE_3BE 
+497	CODE_3B4: 
+498		LD V0 , 248 
+499		AND V0 , V3 
+500		LD V1 , 44 
+501		LD I , DATA_A3A 
+502		DRW V0 , V1 , 4 
+503	CODE_3BE: 
+504		CALL CODE_3E6 
+505		LD I , DATA_A44 
+506		JP CODE_416 
+507	CODE_3C4: 
+508		LD V0 , 10 
+509		SKP V0 
+510		RET 
+511		LD I , DATA_A44 
+512		LD V0 , [ I ] 
+513		SE V0 , 0 
+514		RET 
+515		LD I , DATA_A43 
+516		LD V0 , [ I ] 
+517		ADD V0 , 7 
+518		LD I , DATA_A44 
+519		LD V1 , 46 
+520		LD [ I ] , V1 
+521		CALL CODE_3E6 
+522		LD V0 , 1 
+523		LD ST , V0 
+524		RET 
+525	CODE_3E6: 
+526		LD I , DATA_A44 
+527		LD V1 , [ I ] 
+528		LD I , DATA_8F6 
+529		SE V0 , 0 
+530		DRW V0 , V1 , 3 
+531		RET 
+532	CODE_3F2: 
+533		CALL CODE_3E6 
+534		LD I , DATA_A44 
+535		LD V1 , [ I ] 
+536		ADD V1 , 254 
+537		SNE V1 , 8 
+538		JP CODE_416 
+539		SNE V1 , 9 
+540		JP CODE_416 
+541		LD [ I ] , V1 
+542		CALL CODE_3E6 
+543		SE V0 , 0 
+544		SNE VF , 0 
+545		RET 
+546		LD V5 , 0 
+547		CALL CODE_318 
+548		LD V5 , 1 
+549		CALL CODE_318 
+550		RET 
+551	CODE_416: 
+552		LD V0 , 0 
+553		LD V1 , 0 
+554		LD [ I ] , V1 
+555		RET 
+556	CODE_41E: 
+557		CALL CODE_3C4 
+558		CALL CODE_3F2 
+559		LD V0 , 3 
+560		SKNP V0 
+561		JP CODE_444 
+562		LD V0 , 12 
+563		SKNP V0 
+564		JP CODE_430 
+565		RET 
+566	CODE_430: 
+567		LD I , DATA_A43 
+568		LD V0 , [ I ] 
+569		SNE V0 , 112 
+570		RET 
+571		CALL CODE_458 
+572		ADD V0 , 1 
+573		LD I , DATA_A43 
+574		LD [ I ] , V0 
+575		CALL CODE_458 
+576		RET 
+577	CODE_444: 
+578		LD I , DATA_A43 
+579		LD V0 , [ I ] 
+580		SNE V0 , 0 
+581		RET 
+582		CALL CODE_458 
+583		ADD V0 , 255 
+584		LD I , DATA_A43 
+585		LD [ I ] , V0 
+586		CALL CODE_458 
+587		RET 
+588	CODE_458: 
+589		LD I , DATA_A43 
+590		LD V0 , [ I ] 
+591		LD V1 , 49 
+592		LD I , DATA_8CF 
+593		DRW V0 , V1 , 0 
+594		RET 
+595	CODE_464: 
+596		LD I , DATA_A3F 
+597		LD V0 , [ I ] 
+598		LD V3 , 57 
+599		LD V4 , 34 
+600		JP CODE_476 
+601	CODE_46E: 
+602		LD I , DATA_A42 
+603		LD V0 , [ I ] 
+604		LD V3 , 34 
+605		LD V4 , 3 
+606	CODE_476: 
+607		LD I , DATA_A53 
+608		LD B , V0 
+609		LD V2 , [ I ] 
+610		LD F , V0 
+611		CALL CODE_486 
+612		LD F , V1 
+613		CALL CODE_486 
+614		LD F , V2 
+615	CODE_486: 
+616		DRW V3 , V4 , 5 
+617		ADD V3 , 5 
+618		RET 
+619	CODE_48C: 
+620		LD I , DATA_A41 
+621		LD V0 , [ I ] 
+622		SNE V0 , 0 
+623		RET 
+624		LD V1 , 77 
+625		LD V2 , 1 
+626		LD I , DATA_8EF 
+627	CODE_49A: 
+628		DRW V1 , V2 , 7 
+629		ADD V1 , 8 
+630		ADD V0 , 255 
+631		SE V0 , 0 
+632		JP CODE_49A 
+633		RET 
+634	CODE_4A6: 
+635		LD V0 , 101 
+636		LD V1 , 0 
+637		LD I , DATA_919 
+638	CODE_4AC: 
+639		LD V2 , 8 
+640		LD V3 , 0 
+641	CODE_4B0: 
+642		DRW V0 , V1 , 8 
+643		ADD V0 , 8 
+644		ADD I , V2 
+645		ADD V3 , 1 
+646		SE V3 , 4 
+647		JP CODE_4B0 
+648		RET 
+649	CODE_4BE: 
+650		LD V0 , 0 
+651		LD V1 , 0 
+652		LD I , DATA_8F9 
+653		JP CODE_4AC 
+654	CODE_4C6: 
+655		LD V1 , 0 
+656		LD V2 , 44 
+657		LD V3 , 0 
+658		LD I , DATA_A40 
+659		LD V0 , [ I ] 
+660		LD V4 , V0 
+661	CODE_4D2: 
+662		LD I , DATA_A67 
+663		ADD I , V4 
+664		ADD I , V3 
+665		LD V0 , [ I ] 
+666		LD I , DATA_A3A 
+667		SE V0 , 0 
+668		DRW V1 , V2 , 4 
+669		ADD V1 , 8 
+670		ADD V3 , 1 
+671		SE V3 , 16 
+672		JP CODE_4D2 
+673		RET 
+674	CODE_4EA: 
+675		CALL CODE_55C 
+676		CALL CODE_514 
+677		CALL CODE_52C 
+678		CALL CODE_4F6 
+679		CALL CODE_56A 
+680		RET 
+681	CODE_4F6: 
+682		CALL CODE_50E 
+683		CALL CODE_636 
+684		CALL CODE_50E 
+685		CALL CODE_63A 
+686		CALL CODE_50E 
+687		CALL CODE_63A 
+688		CALL CODE_50E 
+689		CALL CODE_636 
+690		CALL CODE_50E 
+691		CALL CODE_636 
+692		CALL CODE_50E 
+693		JP CODE_636 
+694	CODE_50E: 
+695		LD V0 , 3 
+696		LD ST , V0 
+697		RET 
+698	CODE_514: 
+699		LD V0 , 32 
+700		LD V1 , 12 
+701		LD I , DATA_9F9 
+702		LD V2 , 8 
+703		LD V3 , 0 
+704	CODE_51E: 
+705		DRW V0 , V1 , 8 
+706		ADD V0 , 8 
+707		ADD I , V2 
+708		ADD V3 , 1 
+709		SE V3 , 8 
+710		JP CODE_51E 
+711		RET 
+712	CODE_52C: 
+713		LD V0 , 48 
+714		LD V1 , 32 
+715		LD I , DATA_7EF 
+716		LD V2 , 8 
+717		LD V3 , 0 
+718	CODE_536: 
+719		DRW V0 , V1 , 8 
+720		ADD V0 , 8 
+721		ADD I , V2 
+722		ADD V3 , 1 
+723		SE V3 , 4 
+724		JP CODE_536 
+725		LD I , DATA_A40 
+726		LD V0 , [ I ] 
+727		SHR V0 
+728		SHR V0 
+729		SHR V0 
+730		SHR V0 
+731		SHR V0 
+732		ADD V0 , 1 
+733		LD LF , V0 
+734		LD V0 , 59 
+735		LD V1 , 41 
+736		DRW V0 , V1 , 10 
+737		RET 
+738	CODE_55C: 
+739		LD V1 , 0 
+740	CODE_55E: 
+741		CALL CODE_63E 
+742		SCL 
+743		ADD V1 , 1 
+744		SE V1 , 32 
+745		JP CODE_55E 
+746		RET 
+747	CODE_56A: 
+748		LD V1 , 0 
+749	CODE_56C: 
+750		CALL CODE_63E 
+751		SCR 
+752		ADD V1 , 1 
+753		SE V1 , 32 
+754		JP CODE_56C 
+755		RET 
+756	CODE_578: 
+757		LD V1 , 0 
+758	CODE_57A: 
+759		CALL CODE_63E 
+760		SCD 4 
+761		ADD V1 , 1 
+762		SE V1 , 16 
+763		JP CODE_57A 
+764		RET 
+765	CODE_586: 
+766		LD I , DATA_A3E 
+767		LD V0 , 100 
+768		LD [ I ] , V0 
+769		CALL CODE_5D0 
+770		CALL CODE_4A6 
+771		CALL CODE_48C 
+772		CALL CODE_4BE 
+773		CALL CODE_46E 
+774		CALL CODE_5E8 
+775	CODE_598: 
+776		CALL CODE_63E 
+777		CALL CODE_600 
+778		CALL CODE_5A6 
+779		LD V0 , 10 
+780		SKP V0 
+781		JP CODE_598 
+782		RET 
+783	CODE_5A6: 
+784		LD I , DATA_A3E 
+785		LD V0 , [ I ] 
+786		ADD V0 , 255 
+787		LD [ I ] , V0 
+788		SE V0 , 0 
+789		RET 
+790		LD V0 , 100 
+791		LD [ I ] , V0 
+792		CALL CODE_5D0 
+793		LD I , DATA_939 
+794		LD V0 , 16 
+795		LD V1 , 24 
+796		LD V2 , 32 
+797		LD V3 , 0 
+798	CODE_5C2: 
+799		DRW V0 , V1 , 0 
+800		ADD V0 , 16 
+801		ADD I , V2 
+802		ADD V3 , 1 
+803		SE V3 , 6 
+804		JP CODE_5C2 
+805		RET 
+806	CODE_5D0: 
+807		LD I , DATA_72F 
+808		LD V0 , 32 
+809		LD V1 , 24 
+810		LD V2 , 32 
+811		LD V3 , 0 
+812	CODE_5DA: 
+813		DRW V0 , V1 , 0 
+814		ADD V0 , 16 
+815		ADD I , V2 
+816		ADD V3 , 1 
+817		SE V3 , 4 
+818		JP CODE_5DA 
+819		RET 
+820	CODE_5E8: 
+821		LD I , DATA_A56 
+822		LD V0 , 0 
+823		LD [ I ] , V0 
+824		LD V2 , V0 
+825		LD V4 , 0 
+826	CODE_5F2: 
+827		CALL CODE_628 
+828		ADD V2 , 1 
+829		LD V0 , V2 
+830		ADD V4 , 1 
+831		SE V4 , 16 
+832		JP CODE_5F2 
+833		RET 
+834	CODE_600: 
+835		LD I , DATA_A56 
+836		LD V0 , [ I ] 
+837		LD V2 , V0 
+838		LD V4 , V0 
+839		CALL CODE_628 
+840		LD I , DATA_64A 
+841		SHL V2 
+842		ADD I , V2 
+843		RND V0 , #7F 
+844		RND V1 , #3F 
+845		LD [ I ] , V1 
+846		LD I , DATA_A39 
+847		DRW V0 , V1 , 1 
+848		LD V3 , 15 
+849		ADD V4 , 1 
+850		AND V4 , V3 
+851		LD V0 , V4 
+852		LD I , DATA_A56 
+853		LD [ I ] , V0 
+854		RET 
+855	CODE_628: 
+856		LD I , DATA_64A 
+857		SHL V0 
+858		ADD I , V0 
+859		LD V1 , [ I ] 
+860		LD I , DATA_A39 
+861		DRW V0 , V1 , 1 
+862		RET 
+863	CODE_636: 
+864		LD V0 , 12 
+865		JP CODE_640 
+866	CODE_63A: 
+867		LD V0 , 6 
+868		JP CODE_640 
+869	CODE_63E: 
+870		LD V0 , 1 
+871	CODE_640: 
+872		LD DT , V0 
+873	CODE_642: 
+874		LD V0 , DT 
+875		SE V0 , 0 
+876		JP CODE_642 
+877		RET 
+879	DATA_64A: 
+880		DB #0A , #11 , #5B , #22 , #5B , #29 , #75 , #38 
+881		DB #54 , #11 , #0C , #09 , #34 , #13 , #78 , #34 
+882		DB #26 , #04 , #06 , #1A , #0C , #22 , #20 , #0A 
+883		DB #00 , #16 , #06 , #05 , #3F , #07 , #00 , #1E 
+885	DATA_66A: 
+886		DB #00 , #12 , #24 , #36 , #48 
+887	DATA_66F: 
+888		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+889		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+890		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+891		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+892		DB #00 , #00 , #00 , #00 , #00 , #00 , #01 , #01 
+893		DB #01 , #01 , #00 , #00 , #00 , #00 , #00 , #00 
+894		DB #00 , #00 , #00 , #00 , #00 , #00 , #01 , #01 
+895		DB #01 , #01 , #00 , #00 , #00 , #00 , #00 , #00 
+896		DB #00 , #00 , #00 , #02 , #02 , #02 , #00 , #00 
+897		DB #00 , #00 , #01 , #01 , #01 , #00 , #00 , #00 
+898		DB #00 , #00 , #00 , #01 , #01 , #01 , #00 , #00 
+899		DB #00 , #00 , #01 , #01 , #01 , #00 , #00 , #00 
+900		DB #00 , #05 , #05 , #00 , #00 , #00 , #05 , #00 
+901		DB #00 , #05 , #00 , #00 , #00 , #05 , #05 , #00 
+902		DB #00 , #01 , #01 , #00 , #00 , #00 , #01 , #00 
+903		DB #00 , #01 , #00 , #00 , #00 , #01 , #01 , #00 
+904		DB #0A , #0A , #00 , #00 , #0A , #0A , #00 , #00 
+905		DB #00 , #00 , #0A , #0A , #00 , #00 , #0A , #0A 
+906		DB #01 , #01 , #00 , #00 , #01 , #01 , #00 , #00 
+907		DB #00 , #00 , #01 , #01 , #00 , #00 , #01 , #01 
+908		DB #14 , #14 , #14 , #14 , #14 , #14 , #14 , #14 
+909		DB #14 , #14 , #14 , #14 , #14 , #14 , #14 , #14 
+910		DB #01 , #01 , #01 , #01 , #01 , #01 , #01 , #01 
+911		DB #01 , #01 , #01 , #01 , #01 , #01 , #01 , #01 
+913	DATA_72F: 
+914		DB #3C , #00 , #7C , #00 , #E0 , #00 , #C0 , #00 
+915		DB #CC , #71 , #CC , #FB , #CD , #DB , #CD , #9B 
+916		DB #CD , #9B , #FD , #FB , #7C , #FB , #00 , #00 
+917		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+918		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+919		DB #F0 , #E0 , #F9 , #F0 , #7D , #98 , #6D , #F8 
+920		DB #6D , #80 , #6D , #F8 , #6C , #F8 , #00 , #00 
+921		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+922		DB #38 , #00 , #7C , #00 , #EC , #00 , #CC , #00 
+923		DB #CD , #99 , #CD , #9B , #CD , #9B , #CD , #9B 
+924		DB #CD , #9B , #FC , #F3 , #78 , #61 , #00 , #00 
+925		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+926		DB #00 , #07 , #00 , #07 , #00 , #06 , #00 , #06 
+927		DB #C1 , #CC , #E3 , #CC , #37 , #08 , #F6 , #08 
+928		DB #06 , #00 , #F6 , #18 , #F6 , #18 , #00 , #00 
+929		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+931	DATA_7AF: 
+932		DB #FD , #FD , #11 , #31 , #31 , #31 , #31 , #31 
+933		DB #A1 , #B3 , #BF , #BF , #B3 , #B3 , #B3 , #B3 
+934		DB #1C , #3C , #70 , #60 , #78 , #60 , #7C , #3C 
+935		DB #0E , #1F , #1B , #19 , #1F , #19 , #1F , #1F 
+936		DB #0E , #1F , #BB , #B3 , #33 , #B3 , #BF , #1E 
+937		DB #66 , #76 , #7E , #6E , #66 , #66 , #66 , #66 
+938		DB #CC , #CC , #CD , #CD , #CC , #EC , #7D , #3D 
+939		DB #70 , #F3 , #83 , #E0 , #F0 , #33 , #F3 , #E0 
+941	DATA_7EF: 
+942		DB #C0 , #C1 , #C3 , #C3 , #C3 , #E3 , #7B , #39 
+943		DB #EC , #EC , #8C , #0C , #CC , #0F , #E7 , #E3 
+944		DB #C7 , #CF , #DC , #D8 , #DE , #D8 , #9F , #0F 
+945		DB #60 , #60 , #60 , #60 , #60 , #70 , #3C , #1C 
+947	DATA_80F: 
+948		DB #00 , #00 , #97 , #D2 , #03 , #80 , #01 , #00 
+949		DB #0F , #E0 , #3F , #F8 , #55 , #54 , #AB , #BA 
+950		DB #FF , #6E , #BA , #BA , #55 , #54 , #3F , #F8 
+951		DB #4F , #E4 , #00 , #00 , #80 , #02 , #00 , #00 
+952		DB #03 , #C0 , #06 , #60 , #04 , #A0 , #03 , #C0 
+953		DB #04 , #20 , #0B , #30 , #14 , #58 , #14 , #28 
+954		DB #10 , #58 , #12 , #A8 , #0D , #50 , #16 , #A8 
+955		DB #23 , #C4 , #7F , #FE , #40 , #02 , #00 , #00 
+956		DB #4A , #AA , #15 , #50 , #4A , #AA , #D5 , #53 
+957		DB #E4 , #27 , #7F , #FE , #39 , #9C , #0C , #30 
+958		DB #06 , #60 , #07 , #E0 , #33 , #CC , #2B , #D4 
+959		DB #07 , #E0 , #03 , #C0 , #01 , #80 , #00 , #00 
+960		DB #03 , #C0 , #05 , #60 , #06 , #A0 , #03 , #C0 
+961		DB #1B , #D8 , #2D , #74 , #5E , #BA , #A5 , #65 
+962		DB #C6 , #A3 , #C7 , #E3 , #CD , #B3 , #DA , #5B 
+963		DB #54 , #2A , #18 , #18 , #18 , #18 , #30 , #0C 
+964		DB #30 , #0C , #48 , #12 , #A4 , #25 , #84 , #21 
+965		DB #4C , #32 , #32 , #4C , #02 , #40 , #1F , #F8 
+966		DB #20 , #AC , #28 , #54 , #20 , #AC , #1F , #F8 
+967		DB #7F , #FE , #92 , #49 , #92 , #49 , #92 , #49 
+968		DB #3F , #FC , #40 , #02 , #5A , #FA , #50 , #0A 
+969		DB #43 , #EA , #52 , #4A , #47 , #CA , #50 , #0A 
+970		DB #5F , #FA , #40 , #02 , #3F , #FC , #0F , #F0 
+971		DB #38 , #1C , #54 , #36 , #AC , #2B , #F8 , #1F 
+973	DATA_8CF: 
+974		DB #01 , #00 , #01 , #00 , #01 , #00 , #01 , #00 
+975		DB #01 , #00 , #03 , #80 , #03 , #80 , #03 , #80 
+976		DB #07 , #C0 , #C6 , #C6 , #7D , #7C , #3F , #F8 
+977		DB #7F , #FC , #C3 , #86 , #01 , #00 , #00 , #00 
+979	DATA_8EF: 
+980		DB #10 , #10 , #10 , #28 , #7C , #D6 , #FE 
+981	DATA_8F6: 
+982		DB #80 , #80 , #80 
+983	DATA_8F9: 
+984		DB #38 , #79 , #C3 , #F3 , #7B , #1B , #FB , #F1 
+985		DB #E3 , #E7 , #8E , #0C , #0C , #0C , #EF , #E7 
+986		DB #8E , #DF , #DB , #D9 , #DF , #DF , #DB , #99 
+987		DB #0E , #1E , #B8 , #B0 , #BC , #30 , #BE , #9E 
+989	DATA_919: 
+990		DB #C3 , #C3 , #C3 , #C3 , #C3 , #E3 , #7B , #3B 
+991		DB #66 , #66 , #66 , #66 , #66 , #7E , #3C , #18 
+992		DB #38 , #79 , #E3 , #C3 , #F1 , #C0 , #FB , #7B 
+993		DB #E0 , #E0 , #00 , #C0 , #E0 , #60 , #E0 , #C0 
+995	DATA_939: 
+996		DB #3C , #00 , #7C , #00 , #E0 , #00 , #C0 , #00 
+997		DB #F1 , #E0 , #79 , #F1 , #1D , #BB , #0D , #9B 
+998		DB #0D , #9B , #FD , #FB , #F9 , #F1 , #01 , #80 
+999		DB #01 , #80 , #01 , #80 , #FC , #3F , #FF , #FF 
+1000		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1001		DB #E1 , #CE , #F3 , #DF , #B7 , #19 , #36 , #1F 
+1002		DB #36 , #18 , #F7 , #DF , #F3 , #CF , #00 , #00 
+1003		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+1004		DB #0F , #00 , #1F , #00 , #38 , #00 , #30 , #00 
+1005		DB #3E , #C7 , #3E , #CF , #B0 , #1D , #B0 , #D9 
+1006		DB #30 , #D9 , #B0 , #DF , #B0 , #CF , #00 , #01 
+1007		DB #00 , #0F , #00 , #0F , #FF , #E0 , #FF , #FF 
+1008		DB #30 , #60 , #30 , #60 , #30 , #60 , #30 , #60 
+1009		DB #3C , #78 , #BE , #78 , #B7 , #60 , #B3 , #60 
+1010		DB #B3 , #70 , #B3 , #3C , #B3 , #1C , #80 , #00 
+1011		DB #80 , #00 , #00 , #00 , #7F , #FF , #FF , #FF 
+1012		DB #3C , #3C , #7E , #7E , #E6 , #E6 , #C6 , #C6 
+1013		DB #0E , #C6 , #1C , #C6 , #38 , #C6 , #70 , #C6 
+1014		DB #E0 , #C6 , #FE , #FE , #FE , #7C , #00 , #00 
+1015		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+1016		DB #3C , #C7 , #7E , #C7 , #E6 , #C6 , #C6 , #C6 
+1017		DB #C6 , #CC , #FE , #CC , #7E , #C8 , #06 , #C8 
+1018		DB #06 , #C0 , #FE , #D8 , #FC , #D8 , #00 , #00 
+1019		DB #00 , #00 , #00 , #00 , #FF , #FF , #FF , #FF 
+1021	DATA_9F9: 
+1022		DB #3C , #7C , #E1 , #C1 , #CD , #CD , #FD , #7C 
+1023		DB #77 , #F7 , #C0 , #81 , #E1 , #81 , #F1 , #F1 
+1024		DB #E0 , #E0 , #80 , #80 , #80 , #80 , #80 , #80 
+1025		DB #F0 , #F8 , #DD , #CD , #FD , #F9 , #DD , #CC 
+1026		DB #71 , #F3 , #C7 , #86 , #E7 , #86 , #F6 , #F6 
+1027		DB #C7 , #EF , #6D , #6C , #EC , #6C , #6F , #6F 
+1028		DB #19 , #99 , #D9 , #DF , #CF , #C6 , #C6 , #86 
+1029		DB #98 , #98 , #98 , #98 , #18 , #00 , #18 , #18 
+1031	DATA_A39: 
+1032		DB #80 
+1033	DATA_A3A: 
+1034		DB #FF , #AA , #55 , #FF 
+1035	DATA_A3E: 
+1036		DB #00 
+1037	DATA_A3F: 
+1038		DB #00 
+1039	DATA_A40: 
+1040		DB #00 
+1041	DATA_A41: 
+1042		DB #00 
+1043	DATA_A42: 
+1044		DB #00 
+1045	DATA_A43: 
+1046		DB #00 
+1047	DATA_A44: 
+1048		DB #00 , #00 
+1049	DATA_A46: 
+1050		DB #00 
+1051	DATA_A47: 
+1052		DB #00 
+1053	DATA_A48: 
+1054		DB #00 , #00 , #00 , #00 , #00 
+1055	DATA_A53: 
+1056		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1057		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1059	DATA_A67: 
+1060		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1061		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1062		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1063		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1064		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1065		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1066		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1067		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1068		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1069		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1070		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1071		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1072		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1073		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1074		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1075		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1076		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1077		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1078		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1079		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1080		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
+1081		DB #00 , #00 , #00 , #00 , #00 , #00 , #00 , #00 
