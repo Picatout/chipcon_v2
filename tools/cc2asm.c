@@ -86,16 +86,16 @@ unsigned char binary[MEM_SIZE];
 int inp; // pointeur d'analyse ligne d'entrée
 char line[256]; // contient la ligne à analyser
 
-#define KW_COUNT (39)
+#define KW_COUNT (42)
 
 const char *mnemonics[KW_COUNT]={"CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
 						 "SHR","SHL","SKP","SKNP","SE","SNE","ADD","SUB","SUBN","OR","AND","XOR",
 						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY",
-						 "SCU","BSET","BCLR","BINV","BTSS","BTSC"};
+						 "SCU","BSET","BCLR","BINV","BTSS","BTSC","SAVE","RSTR","GPIX"};
 
 typedef enum Mnemo {eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
                     eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP,eSCRX,eSCRY,
-					eSCU,eBSET,eBCLR,eBINV,eBTSS,eBTSC} mnemo_t;
+					eSCU,eBSET,eBCLR,eBINV,eBTSS,eBTSC,eSAVE,eRSTR,eGPIX} mnemo_t;
 						 
 #define DIR_COUNT (6)						 
 const char *directives[]={"DB","DW","ASCII","EQU","DEFN","END"};
@@ -256,7 +256,7 @@ int parse_vx(){
 }
 
 // codes sans arguments
-// "CLS","RET","SCR","SCL","EXIT","LOW","HIGH"
+// "CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SAVE","RSTR"
 void op0(mnemo_t code){
 	unsigned b1,b2;
 	
@@ -265,6 +265,12 @@ void op0(mnemo_t code){
 	case eCLS: // CLS
 		b2=0xe0;
 		break;
+	case eSAVE: // SAVE
+       b2=0xe1;
+       break;
+    case eRSTR:  // RSTR
+       b2=0xe2;
+       break;	   
 	case eRET: // RET
 		b2=0xee;
 		break;
@@ -435,7 +441,7 @@ void op1(mnemo_t code){
 }
 
 // codes avec 2 ou 3 arguments
-//"SE","SNE","ADD","SUB","SUBN","OR","AND","XOR","RND","TONE","PRT"
+//"SE","SNE","ADD","SUB","SUBN","OR","AND","XOR","RND","TONE","PRT","GPIX"
 //"BSET","BCLR","BINV","BTSS","BTSC"
 void op2(unsigned code){
 	unsigned b1,b2,mark,i;
@@ -536,6 +542,12 @@ void op2(unsigned code){
 			b2|=3;
 		}else error(eSYNTAX);
 		break;
+	case eGPIX: // GPIX VX,VY
+		if (reg2){ 
+			b1|=0x90;
+			b2|=0xf;
+		}else error(eSYNTAX);
+        break;	
 	case eBSET: // BSET VX,N 9XNA
 	    if (!(reg2 || b2>7)){
 			b1|=0x90;
@@ -1140,6 +1152,8 @@ void assemble_line(){
 				//operation code
 				switch(i){
 				case eCLS:
+				case eSAVE:
+				case eRSTR:
 				case eRET:
 				case eSCR:
 				case eSCL:
@@ -1174,6 +1188,7 @@ void assemble_line(){
 				case eRND:
 				case ePRT:
 				case ePIXI:
+				case eGPIX:
 				case eBSET:
 				case eBCLR:
 				case eBINV:
@@ -1317,6 +1332,17 @@ bool preprocess(){
 	return completed;
 }
 
+
+void add_predefined(){
+	symbol_list=add_symbol("UP",2);
+	symbol_list=add_symbol("DOWN",4);
+	symbol_list=add_symbol("LEFT",8);
+	symbol_list=add_symbol("RIGHT",16);
+	symbol_list=add_symbol("FIRE_BTN",32);
+	define_list=add_define("W","V0"); // working register
+	define_list=add_define("C","VF"); // carry register
+}
+
 int main(int argc, char **argv){
 	FILE *src;
 	char *ppf_name;
@@ -1366,6 +1392,7 @@ int main(int argc, char **argv){
 			break;
 		}
 	}
+	add_predefined();
 	pc=0;
 	memset(line,0,256);
 	line_no=0;

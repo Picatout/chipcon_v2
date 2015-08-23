@@ -48,6 +48,7 @@ C_SRCS +=  \
 ../joystick.c \
 ../lem.c \
 ../partition.c \
+../saverstr.c \
 ../sd_raw.c \
 ../speed.c \
 ../splash.c \
@@ -78,6 +79,7 @@ joymus.o \
 joystick.o \
 lem.o \
 partition.o \
+saverstr.o \
 sd_raw.o \
 speed.o \
 splash.o \
@@ -101,6 +103,7 @@ joymus.o \
 joystick.o \
 lem.o \
 partition.o \
+saverstr.o \
 sd_raw.o \
 speed.o \
 splash.o \
@@ -124,6 +127,7 @@ joymus.d \
 joystick.d \
 lem.d \
 partition.d \
+saverstr.d \
 sd_raw.d \
 speed.d \
 splash.d \
@@ -147,6 +151,7 @@ joymus.d \
 joystick.d \
 lem.d \
 partition.d \
+saverstr.d \
 sd_raw.d \
 speed.d \
 splash.d \
@@ -168,6 +173,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

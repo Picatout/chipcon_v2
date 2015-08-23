@@ -72,8 +72,8 @@ void plot(int8_t x, int8_t y, optype op){
 	int8_t xbyte,xbit;
 	
 	if ((x<0)||(x>=HRES)||(y<0)||(y>=VRES)) return;
-	xbyte= x/8;
-	xbit = 7-x%8;
+	xbyte= x>>3;
+	xbit = 7-x&7;
 	switch (op){
 		case WHITE:
 		video_buffer[y*HBYTES+xbyte] |= (1<<xbit);
@@ -87,6 +87,14 @@ void plot(int8_t x, int8_t y, optype op){
 	}
 }
 
+// renvoie la valeur du pixel {0,1}
+int8_t get_pixel(int8_t x, int8_t y){
+	int8_t xbyte,xbit;
+	if ((x<0)||(x>=HRES)||(y<0)||(y>=VRES)) return 0;
+	xbyte= x>>3;
+	xbit = 7-x&7;
+	return video_buffer[y*HBYTES+xbyte] & (1<<xbit);
+}
 
 // dessine un sprite 8 pixels par n pixels
 // s'il y a collision retourne une valeur 1

@@ -188,6 +188,12 @@
     <Compile Include="partition_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="saverstr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="saverstr.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="sd-reader_config.h">
       <SubType>compile</SubType>
     </Compile>

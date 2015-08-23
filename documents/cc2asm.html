@@ -95,26 +95,43 @@ de cette directive. les données peuvent-être en décimal, hexadécimal (#HHHH)
 <tr><td>END</td><td>END</td><td>Indique la fin du programme source. S'il y a du texte après cette directive il sera ignoré par l'assembleur.</td></tr>
 </table>
 </p>
+<h4>Constantes prédéfinies</h4>
+<p>
+Les constantes suivantes sont prédéfinies dans l'assembleur.
+<table border="single">
+<tr><th>symbole</th><th>valeur</th><th>descirption</th></tr>
+<tr><td>UP</td><td>2</td><td>joystick vers le haut.</td></tr>
+<tr><td>DOWN</td><td>4</td><td>joystick vers le bas.</td></tr>
+<tr><td>LEFT</td><td>8</td><td>joystick à gauche.</td></tr>
+<tr><td>RIGHT</td><td>16</td><td>joystick à droite.</td></tr>
+<tr><td>FIRE_BTN</td><td>32</td><td>bouton du joystick</td></tr>
+</table>
+</p>
+<h4>Aliases de registres</h4>
+<p>
+  Certains registres ont un nom de substitution.
+<table border="single">
+<tr><th>registre</th><th>alias</th><th>information</th></tr>
+<tr><td>V0</td><td>W</td><td>Ce registre est souvent utilisé comme registre de travail temporaire.</td></tr>
+<tr><td>VF</td><td>C</td><td>ce registre contient le <b>C</b>arry bit des opérations arithmétiques.</td></tr>
+</table>
+</p>
 <h4>example</h4>
 <p>
 <pre><code>
 ;utilisation de la directive DEFN
-defn carry VF
 defn score ve
 defn set vd
-defn w v0
-;utilisation de la directive EQU
-EQU UP 2
-EQU DOWN 4
+
 ; exemple de code machine
-	cls ; efface affichage
-	call show_credit ; appelle sous-routine
-	ld score, 0   ; VE=0
-	ld set, 0     ; VD=0
-	;.... le code continu
-	ld w, DOWN  ; V0=4
-	skp w       ; saute l'instruction suivante si la touche DOWN est enfoncée.
-	jp .-1  ; boucle sur l'instruction précédente.
+    cls ; efface affichage
+    call show_credit ; appelle sous-routine
+    ld score, 0   ; VE=0
+    ld set, 0     ; VD=0
+    ;.... le code continu
+    ld w, DOWN  ; V0=4
+    skp w       ; saute l'instruction suivante si la touche DOWN est enfoncée.
+    jp .-1  ; boucle sur l'instruction précédente.
     ; suite du code
 	
 ; sous-routine show_credit
@@ -123,26 +140,26 @@ show_credit:
     ld v1, 0  ; V1=0
 	scry v2   ; V2=VRES
     shr v2    ; V2=V2/2
-    prt v1,v2 ; imprime le texte pointé par I en partant de la position indiqué par x=V1 et y=V2
-	scry v1   ; V1=VRES
+    prt v1,v2 ; imprime le texte pointé par I , position indiquée par x=V1 et y=V2
+    scry v1   ; V1=VRES
 scroll_loop:  ; fait défiler l'écran vers le haut.
     scu 1      
-	ld w,3
-	call delay
-	add v1,-1
-	se v1, 0
-	jp scroll_loop
-	ret
+    ld w,3
+    call delay
+    add v1,-1
+    se v1, 0
+    jp scroll_loop
+    ret
 
 ; sous-routine délais
 ; arguments:
 ; 	w = nombre de frame
 delay:
-	ld dt,w
-	ld w, dt
-	se w, 0
-	jp .-2
-	ret
+    ld dt,w
+    ld w, dt
+    se w, 0
+    jp .-2
+    ret
 
 ; donnée de type chaine de caractère
 credit:

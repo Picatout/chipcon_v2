@@ -107,6 +107,12 @@ uint8_t schipp(){
 				case 0xe0: // 00E0, CLS   ;efface l'écran
 					cls();
 					break;
+				case 0xe1:
+				    screen_save();
+					break;
+				case 0xe2:
+				    screen_restore();
+					break;	
 				case 0xee: // 00EE, RET   ;sortie de sous-routine
 					vms.pc=vms.stack[vms.sp--];
 					break;
@@ -244,6 +250,9 @@ uint8_t schipp(){
 			case 0xE: // 9XNE  BTSC VX,N  ; saute l'instruction suivante si le bit N de VX==0
 			    if (!(vms.var[x]&(1<<(y&0x7)))) vms.pc+=2;
 				break;
+			case 0xF: // 9XYF GPIX,  VF=pixel((vx),(vy))
+			    vms.var[15]=get_pixel(x,y);
+				break;  	
 			default:
 				return CHIP_BAD_OPCODE;
 			}//switch(vms.b2&0xf)

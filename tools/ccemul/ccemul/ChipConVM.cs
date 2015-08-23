@@ -170,6 +170,12 @@ namespace ccemul
 					case 0xe0: // 00E0, efface l'écran
 						tv.cls();
 						break;
+					case 0xe1: // 00E1, sauvarde affichage
+						tv.screen_save();
+						break;
+					case 0xe2: // 00E2, restauration de la sauvegarde affichage
+						tv.screen_restore();
+						break;
 					case 0xee: // 00EE, sortie de sous-routine
 						if (sp==-1){
 							return vm_error.STACK_UNDERFLOW;
@@ -212,7 +218,9 @@ namespace ccemul
 						var[x]=b2;
 						break;
 					case 0x700: // 7XKK     VX := VX + KK
+						if (var[x]+b2>255) n=1; else n=0;
 						var[x]= (byte)((var[x]+b2)&0xff);
+						var[0xf]=n;
 						break;
 					case 0x800: // 8XY0     VX := VY
 						var[x]=var[y];
@@ -310,6 +318,9 @@ namespace ccemul
 						break;
 					case 0x90E: // 9XNE  BTSC VX,N  ; saute l'instruction suivante si le bit N de VX==0
 					    if ((var[x]&(1<<(y&0x7)))==0) pc+=2;
+						break;
+					case 0x90F: // 9XYF  GPIX VX,VY ; VF=pixel(x,y)
+						var[15]=(byte)tv.getPixel(var[x],var[y]);
 						break;
 					case 0xa00: // ANNN     I := 2*NNN
 						ix=addr;  // chip-8 et schip adressse de 12 bits

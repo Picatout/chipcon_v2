@@ -55,6 +55,12 @@ namespace ccemul
 					case 0xE0:  // 00E0, efface l'écran
 						s=string.Format("{0:S}CLS ",s);
 						break;
+					case 0xE1: // 00E1, sauvegarde l'écran
+						s=string.Format("{0:S}SAVE ",s);
+						break;
+					case 0xE2: // 00E2, restaure l'écran
+						s=string.Format("{0:S}RSTR ",s);
+						break;
 					case 0xEE: // 00EE, sortie de sous-routine
 						s=string.Format("{0:S}RET ",s);
 						break;
@@ -187,6 +193,9 @@ namespace ccemul
 					break;
 				case 0xE: // BTSC VX, N
 					s=string.Format("{0:s}BTSC V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);
+					break;
+				case 0xF: // GPIX VX, VY
+					s=string.Format("{0:S}GPIX V{1:X}, V{2:X} ",s,(b1&0xf),(b2&0xf0)>>4);
 					break;
 				}
 				break;

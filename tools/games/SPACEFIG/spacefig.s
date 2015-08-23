@@ -21,7 +21,7 @@ code_026:
 	CALL code_02E
 	JP code_026
 code_02E:
-	LD I, data_A40
+	LD I, level
 	LD V0 , 0
 	LD [I], V0
 	LD V8, 0
@@ -35,7 +35,7 @@ code_036:
 	ADD V8, 8
 	SE V8, 192
 	JP code_036
-	LD I, data_A40
+	LD I, level
 	LD V0, 0
 	LD V1, 3
 	LD V2, 0
@@ -67,7 +67,7 @@ code_060:
 	SE V4, 0
 	JP code_094
 	CALL code_0EA
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	ADD V0, 32
 	LD [I], V0
@@ -77,7 +77,7 @@ code_060:
 	JP code_054
 code_094:
 	LD VF, 1
-	LD I, data_A40
+	LD I, level
 	ADD I, VF
 	LD V0, [I]
 	SE V0, 0
@@ -85,7 +85,7 @@ code_094:
 	RET
 code_09E:
 	CALL code_4EA
-	LD I, data_A42
+	LD I, score
 	LD V0, 0
 	LD V1, 56
 	LD V2, 0
@@ -114,7 +114,7 @@ code_09E:
 	CALL code_48C
 	CALL code_4BE
 	CALL code_46E
-	CALL code_458
+	CALL draw_gun
 	CALL code_4C6
 	LD V5, 0
 	JP code_318
@@ -162,7 +162,7 @@ code_124:
 	LD V0, [I]
 	ADD V0, 255
 	LD [I], V0
-	LD I, data_A42
+	LD I, score
 	LD V0, [I]
 	ADD V0, 1
 	LD [I], V0
@@ -187,7 +187,7 @@ code_150:
 	LD [I], V2
 	SE V2, 0
 	RET
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	LD V2, 192
 	SUB V2, V0
@@ -256,7 +256,7 @@ code_1A4:
 	JP code_1FE
 	SE V0, V2
 	JP code_1FE
-	LD I, data_A42
+	LD I, score
 	LD V0, [I]
 	ADD V0, 1
 	LD [I], V0
@@ -284,7 +284,7 @@ code_20E:
 	SHR V2
 	SHR V2
 	SHR V2
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	LD I, data_A57
 	ADD I, V0
@@ -329,7 +329,7 @@ code_262:
 	CALL code_48C
 	LD V0, 1
 	LD ST, V0
-	LD I, data_A40
+	LD I, level
 	ADD I, V0
 	LD V0, [I]
 	ADD V0, V9
@@ -441,7 +441,7 @@ code_318:
 	LD V6, V0
 	ADD V7, 9
 	LD V8, 0
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	LD V9, V0
 code_32A:
@@ -468,7 +468,7 @@ code_346:
 	LD V0, 0
 	LD [I], V0
 	CALL code_46E
-	LD I, data_A42
+	LD I, score
 	LD V0, [I]
 	ADD V0, 2
 	LD [I], V0
@@ -495,7 +495,7 @@ code_37E:
 	SHR V2
 	SHR V2
 	SHR V2
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	LD I, data_A57
 	ADD I, V0
@@ -536,8 +536,8 @@ code_3C4:
 	SE V0, 0
 	RET
 	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF   ; gun_x
 	LD V0, [I]
 	ADD V0, 7
 	LD I, data_A44
@@ -588,43 +588,43 @@ code_41E:
 	SKNP V0
 	JP code_430
 	RET
-code_430:
+code_430: ; RIGHT button
     LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF   ; gun_x
 	LD V0, [I]
 	SNE V0, 112
 	RET
-	CALL code_458
+	CALL draw_gun
 	ADD V0, 1
 	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF   ; gun_x
 	LD [I], V0
-	CALL code_458
+	CALL draw_gun
 	RET
-code_444:
+code_444: ; LEFT button
     LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF ; gun_x
 	LD V0, [I]
 	SNE V0, 0
 	RET
-	CALL code_458
+	CALL draw_gun
 	ADD V0, 255
 	LD VF, 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF  ; gun_x
 	LD [I], V0
-	CALL code_458
+	CALL draw_gun
 	RET
-code_458:
+draw_gun: ; draw dca_gun 
     LD VF , 1
-	LD I, data_A42
-	ADD I, VF
+	LD I, score
+	ADD I, VF   ; gun_x
 	LD V0, [I]
 	LD V1, 49
-	LD I, data_8CF
+	LD I, dca_gun
 	DRW V0, V1, 0
 	RET
 code_464:
@@ -634,7 +634,7 @@ code_464:
 	LD V4, 34
 	JP prt_v0
 code_46E:
-	LD I, data_A42
+	LD I, score
 	LD V0, [I]
 	LD V3, 34
 	LD V4, 3
@@ -658,7 +658,7 @@ code_486:
 	RET
 code_48C:
 	LD VF, 1
-	LD I, data_A40
+	LD I, level
 	ADD I, VF
 	LD V0, [I]
 	SNE V0, 0
@@ -697,7 +697,7 @@ code_4C6:
 	LD V1, 0
 	LD V2, 44
 	LD V3, 0
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	LD V4, V0
 code_4D2:
@@ -764,7 +764,7 @@ code_536:
 	ADD V3, 1
 	SE V3, 4
 	JP code_536
-	LD I, data_A40
+	LD I, level
 	LD V0, [I]
 	SHR V0
 	SHR V0
@@ -1014,7 +1014,7 @@ data_80F:
 	DB #5F, #FA, #40, #02, #3F, #FC, #0F, #F0
 	DB #38, #1C, #54, #36, #AC, #2B, #F8, #1F
 
-data_8CF:
+dca_gun:
 	DB #01, #00, #01, #00, #01, #00, #01, #00
 	DB #01, #00, #03, #80, #03, #80, #03, #80
 	DB #07, #C0, #C6, #C6, #7D, #7C, #3F, #F8
@@ -1086,10 +1086,10 @@ scr_tgl_dly:
 data_A3F:  ; level
 	DB #00
 
-data_A40:  ; dca guns
+level:  ; play level / dca guns
 	DB #00, #00
 
-data_A42:
+score: ;  score / gun_x
 	DB #00, #00
 
 data_A44:

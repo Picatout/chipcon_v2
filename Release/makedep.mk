@@ -26,6 +26,8 @@ lem.c
 
 partition.c
 
+saverstr.c
+
 sd_raw.c
 
 speed.c

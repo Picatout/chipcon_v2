@@ -67,6 +67,8 @@ Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 
 <tr><td>00CN</td><td>SCD N</td><td>défile l'affichage vers le bas de N lignes.</td></tr>
 <tr><td>00DN**</td><td>SCU N</td><td>défile l'affichage vers le haut de N lignes.</td></tr>
 <tr><td>00E0</td><td>CLS</td><td>Efface l'affichage.</td></tr>
+<tr><td>00E1</td><td>SAVE</td><td>sauvagarde l'affichage.</td></tr>
+<tr><td>00E2</td><td>RSTR</td><td>réinitialise l'affichage à partir de la sauvegarde.</td></tr>
 <tr><td>00EE</td><td>RET</td><td>Quitte une sous-routine.</td></tr>
 <tr><td>00FB</td><td>SCR</td><td>Défile l'écran vers la droite de 4 pixels.</td></tr>
 <tr><td>00FC</td><td>SCL</td><td>Défile l'écran vers la gauche de 4 pixels.</td></tr>
@@ -104,6 +106,7 @@ Les instructions suivies de <b>***</b> ont un comportement différent de CHIP-8 
 <tr><td>9XNC**</td><td>BINV VX,N</td><td>inverse le bit N dans VX.</td></tr>
 <tr><td>9XND**</td><td>BTSS VX,N</td><td>Si le bit N dans VX est à 1 saute l'instruction suivante.</td></tr>
 <tr><td>9XNE**</td><td>BTSC VX,N</td><td>Si le bit N dans VX est à 0 saute l'insruction suivante.</td></tr>
+<tr><td>9XYF**</td><td>GPIX VX, VY</td><td>met VF à la valeur du pixel aux coordonnées indiquées par VX,VY.</td>
 <tr><td>ANNN***</td><td>LD I, NNN</td><td>I := 2*NNN </td></tr>
 <tr><td>BNNN***</td><td>JP V0, NNN</td><td>saute à l'adresse 2*(NNN+V0)</td></tr>
 <tr><td>CXKK</td><td>RND VX, KK</td><td>VX := nombre aléatoire and KK </td></tr>

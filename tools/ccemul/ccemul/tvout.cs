@@ -45,12 +45,13 @@ namespace ccemul
 			
 		Graphics g;
 		
-		internal Bitmap display;
+		internal Bitmap display, saved=null;
 		
 		internal TVout()
 		{
 			display=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
 			g= Graphics.FromImage(display);
+			//saved=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
 		}
 		
 		internal void resizeDisplay(byte newVRES){
@@ -59,6 +60,7 @@ namespace ccemul
 			g.Dispose();
 			display=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
 			g=Graphics.FromImage(display);
+			//saved=new Bitmap(HRES*PIXEL_SIZE,VRES*PIXEL_SIZE);
 			cls();
 		}
 		
@@ -67,6 +69,16 @@ namespace ccemul
 			g.Clear(Color.Black);
 		}
 		
+		internal void screen_save(){
+		    Rectangle cloneRect = new Rectangle(0, 0, HRES*PIXEL_SIZE, VRES*PIXEL_SIZE);
+		    System.Drawing.Imaging.PixelFormat format = display.PixelFormat;
+		    if (saved!=null) saved.Dispose();
+		    saved = display.Clone(cloneRect, format);
+		}
+		
+		internal void screen_restore(){
+			g.DrawImage(saved,new PointF(0,0));
+		}
 		
 		internal void plot(int x, int y, eOP op)
 		{
@@ -102,6 +114,12 @@ namespace ccemul
 					break;
 			}
 		
+		}
+		
+		internal int getPixel(int x, int y){
+			if ((x<0)||(x>=HRES)||(y<0)||(y>=VRES)) return 0;
+			Color c=display.GetPixel(x,y);
+			if (c.B==255 && c.R==255 &&  c.G==255) return 1; else return 0;
 		}
 		
 		internal byte putSprite(int x, int y, int width, int height, byte[] sprite)
