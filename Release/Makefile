@@ -43,6 +43,7 @@ C_SRCS +=  \
 ../chipcon_v2.c \
 ../chipcon_vm.c \
 ../fat.c \
+../field.c \
 ../filesys.c \
 ../joymus.c \
 ../joystick.c \
@@ -74,6 +75,7 @@ car.o \
 chipcon_v2.o \
 chipcon_vm.o \
 fat.o \
+field.o \
 filesys.o \
 joymus.o \
 joystick.o \
@@ -98,6 +100,7 @@ car.o \
 chipcon_v2.o \
 chipcon_vm.o \
 fat.o \
+field.o \
 filesys.o \
 joymus.o \
 joystick.o \
@@ -122,6 +125,7 @@ car.d \
 chipcon_v2.d \
 chipcon_vm.d \
 fat.d \
+field.d \
 filesys.d \
 joymus.d \
 joystick.d \
@@ -146,6 +150,7 @@ car.d \
 chipcon_v2.d \
 chipcon_vm.d \
 fat.d \
+field.d \
 filesys.d \
 joymus.d \
 joystick.d \
@@ -173,6 +178,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

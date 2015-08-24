@@ -102,16 +102,7 @@ namespace ccemul
 			return false;
 		}
 		
-		/*
- 
-		void prompt_key()
-		{
-			
-		}
-        */		
-		internal bool keypad_break(){
-       		return (((keys_state&6)==6) || ((keys_state & 24)==24));
-		}
+
 		
 		internal bool keyDown(byte k)
 		{

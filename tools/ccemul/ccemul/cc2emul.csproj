@@ -74,7 +74,7 @@
     <Compile Include="FormKeyHelp.Designer.cs">
       <DependentUpon>FormKeyHelp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Keypad.cs" />
+    <Compile Include="Joystick.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>

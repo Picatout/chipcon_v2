@@ -41,7 +41,7 @@ namespace ccemul
 	internal class ChipConVM
 	{
 		const int ORG=0;
-		const int CODE_SIZE=8192;
+		internal const int CODE_SIZE=8192;
 		const int STACK_SIZE=32;
 		const int MAX_BREAK=10;
 		
@@ -116,10 +116,6 @@ namespace ccemul
 			}
 			while (speed>0)
 			{
-				if (kpad.keypad_break()){
-					speed=0;
-					return vm_error.VM_END;
-				}
 				if (pc>(CODE_SIZE-2)){
 					speed=0;
 					return vm_error.PC_OUT_OF_BOUND;

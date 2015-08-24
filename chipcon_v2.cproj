@@ -152,6 +152,12 @@
     <Compile Include="fat_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="field.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="field.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="filesys.c">
       <SubType>compile</SubType>
     </Compile>

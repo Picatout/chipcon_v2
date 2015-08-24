@@ -55,6 +55,7 @@
 #include "worm.h"
 #include "alien.h"
 #include "blinky.h"
+#include "field.h"
 #if TEST
 #include "joymus.h"
 #include "saverstr.h"
@@ -85,7 +86,7 @@ uint8_t display_page(int16_t page){
 		if (strlen((char *)fname)){
 			put_char(' ');
 			print(fname);
-			if (i<7) new_line();
+			if (i<(DISPLAY_LINES-1)) new_line();
 		}else{
 			break;
 		}
@@ -217,10 +218,11 @@ PROGMEM const uint8_t flash_games[]=
 "WORM\n"  // case 2
 "ALIEN\n" // case 3
 "BLINKY\n" // case 4
+"FIELD!\n" // case 5
 #if TEST
-"JOYMUS\n" // case 5
-"save/restore\n" // case 6
-"speed test\n" // case last
+"JOYMUS\n"
+"save-restore\n"
+"speed\n"
 #endif
 "";
 
@@ -267,14 +269,18 @@ void games_in_flash(){
 	case 4:
 		load_flash_game(blinky,BLINKY_SIZE);
 		break;
-#if TEST		
 	case 5:
+		load_flash_game(field,FIELD_SIZE);
+		break;
+		
+#if TEST		
+	case 6:
 		load_flash_game(joymus,JOYMUS_SIZE);
 		break;
-	case 6:
+	case 7:
 	    load_flash_game(saverstr,SAVERSTR_SIZE);
 		break;
-	case 7:
+	case 8:
 		load_flash_game(speed,SPEED_SIZE);
 		break;
 #endif		

@@ -16,6 +16,8 @@ chipcon_vm.c
 
 fat.c
 
+field.c
+
 filesys.c
 
 joymus.c

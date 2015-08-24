@@ -177,7 +177,7 @@ namespace ccemul
             if (result == DialogResult.OK)
             {
                 System.IO.Stream fileStream = openFileDialog1.OpenFile();
-                data= new byte[Math.Min(3584,fileStream.Length)];
+                data= new byte[Math.Min(ChipConVM.CODE_SIZE,fileStream.Length)];
                 using (System.IO.BinaryReader reader = new System.IO.BinaryReader(fileStream))
                 {
                 	reader.Read(data,0,(int)data.Length);
@@ -189,6 +189,7 @@ namespace ccemul
                 SetMenuState();
                 BreaksForm.ClearList();
                 reloadLastFileMenuItem.Enabled=true;
+                trackBar1.Focus();
             }
             gameName=openFileDialog1.FileName.Split(new char[]{'.'})[0];
             string lbl_file=gameName+".lbl";
@@ -389,7 +390,7 @@ namespace ccemul
 		    byte[] data;
 		    try {
 				System.IO.Stream fileStream = openFileDialog1.OpenFile();
-	            data= new byte[Math.Min(3584,fileStream.Length)];
+	            data= new byte[Math.Min(ChipConVM.CODE_SIZE,fileStream.Length)];
 	            using (System.IO.BinaryReader reader = new System.IO.BinaryReader(fileStream))
 	            {
 	            	reader.Read(data,0,(int)data.Length);
@@ -402,6 +403,7 @@ namespace ccemul
 	            BreaksForm.ClearList();
 	            string lbl_file=openFileDialog1.FileName.Split(new char[]{'.'})[0]+".lbl";
 	            BreaksForm.LoadLabels(lbl_file);
+	            trackBar1.Focus();
 		    }
 		    catch(FileNotFoundException ex){
 		    	MessageBox.Show(string.Format("file {0:s} was not found!",ex.FileName),"File error");
@@ -417,6 +419,7 @@ namespace ccemul
 				vm.tv.resizeDisplay((byte)(64+8*(int)VRESCombo.SelectedIndex));
 				pictureBox1.Image=vm.tv.display;
 			}
+			trackBar1.Focus();
 		}
 		
 		void keyhelpMenuItemClick(object sender, EventArgs e){
