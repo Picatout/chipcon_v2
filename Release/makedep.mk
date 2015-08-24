@@ -28,6 +28,8 @@ lem.c
 
 partition.c
 
+piper.c
+
 saverstr.c
 
 sd_raw.c
@@ -35,6 +37,8 @@ sd_raw.c
 speed.c
 
 splash.c
+
+square.c
 
 sram.c
 

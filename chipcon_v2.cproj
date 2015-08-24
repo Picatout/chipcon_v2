@@ -194,6 +194,12 @@
     <Compile Include="partition_config.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="piper.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="piper.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="saverstr.c">
       <SubType>compile</SubType>
     </Compile>
@@ -222,6 +228,12 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="splash.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="square.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="square.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="sram.c">

@@ -49,10 +49,12 @@ C_SRCS +=  \
 ../joystick.c \
 ../lem.c \
 ../partition.c \
+../piper.c \
 ../saverstr.c \
 ../sd_raw.c \
 ../speed.c \
 ../splash.c \
+../square.c \
 ../sram.c \
 ../text.c \
 ../tone.c \
@@ -81,10 +83,12 @@ joymus.o \
 joystick.o \
 lem.o \
 partition.o \
+piper.o \
 saverstr.o \
 sd_raw.o \
 speed.o \
 splash.o \
+square.o \
 sram.o \
 text.o \
 tone.o \
@@ -106,10 +110,12 @@ joymus.o \
 joystick.o \
 lem.o \
 partition.o \
+piper.o \
 saverstr.o \
 sd_raw.o \
 speed.o \
 splash.o \
+square.o \
 sram.o \
 text.o \
 tone.o \
@@ -131,10 +137,12 @@ joymus.d \
 joystick.d \
 lem.d \
 partition.d \
+piper.d \
 saverstr.d \
 sd_raw.d \
 speed.d \
 splash.d \
+square.d \
 sram.d \
 text.d \
 tone.d \
@@ -156,10 +164,12 @@ joymus.d \
 joystick.d \
 lem.d \
 partition.d \
+piper.d \
 saverstr.d \
 sd_raw.d \
 speed.d \
 splash.d \
+square.d \
 sram.d \
 text.d \
 tone.d \
@@ -178,6 +188,10 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
+
+
 
 
 

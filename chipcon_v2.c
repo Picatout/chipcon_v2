@@ -56,6 +56,8 @@
 #include "alien.h"
 #include "blinky.h"
 #include "field.h"
+#include "piper.h"
+#include "square.h"
 #if TEST
 #include "joymus.h"
 #include "saverstr.h"
@@ -219,6 +221,8 @@ PROGMEM const uint8_t flash_games[]=
 "ALIEN\n" // case 3
 "BLINKY\n" // case 4
 "FIELD!\n" // case 5
+"PIPER\n"  // case 6
+"MAGIC SQUARE\n" // case 7
 #if TEST
 "JOYMUS\n"
 "save-restore\n"
@@ -272,15 +276,20 @@ void games_in_flash(){
 	case 5:
 		load_flash_game(field,FIELD_SIZE);
 		break;
-		
-#if TEST		
-	case 6:
-		load_flash_game(joymus,JOYMUS_SIZE);
+	case 6:	
+		load_flash_game(piper,PIPER_SIZE);
 		break;
 	case 7:
+		load_flash_game(magic_square,SQUARE_SIZE);
+		break;
+#if TEST		
+	case 8:
+		load_flash_game(joymus,JOYMUS_SIZE);
+		break;
+	case 9:
 	    load_flash_game(saverstr,SAVERSTR_SIZE);
 		break;
-	case 8:
+	case 10:
 		load_flash_game(speed,SPEED_SIZE);
 		break;
 #endif		
