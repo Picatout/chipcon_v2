@@ -177,7 +177,7 @@ namespace ccemul
 					s=string.Format("{0:s}SCRX V{1:X} ",s,(b1&0xf));
 					break;
 				case 9: // SCRY VX
-					s=string.Format("{0:s}SCRX V{1:X} ",s,(b1&0xf));
+					s=string.Format("{0:s}SCRY V{1:X} ",s,(b1&0xf));
 					break;
 				case 0xA: // BSET VX,N
 					s=string.Format("{0:s}BSET V{1:X},{2:X}",s,(b1&0xf),(b2&0xf0)>>4);

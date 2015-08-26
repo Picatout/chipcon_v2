@@ -4,20 +4,20 @@ code_002:
 	CALL code_01B
 code_004:
 	LD VE, 5
-	CALL delay
-	LD VF, LEFT
-	SKNP VF
+	CALL code_02F
+	SKNP VC
 	JP code_037
-	LD VF, FIRE_BTN
-	SKNP VF
+	SKNP VD
 	JP code_07F
-	SNE VA, 50   ; VA=no de grille
+	SNE VA, 50
 	JP code_004
-	LD VF, RIGHT
-	SKNP VF
+	SKNP VB
 code_016:
 	CALL code_03F
 	JP code_004
+
+data_01A:
+	DB #80
 code_01B:
 	CLS
 	LD I, data_288
@@ -30,47 +30,45 @@ code_027:
 	LD F, V6
 	DRW V9, V9, 5
 	RET
-delay:
+code_02F:
 	LD V1, DT
 	SE V1, 0
-	JP delay
+	JP code_02F
 	RET
 code_037:
 	SNE VA, 1
-	JP code_004 
+	JP code_004
 	LD VE, 8
 	JP code_016
-; calcul la valeur de I
-;pour grille (VA)
 code_03F:
 	LD DT, V7
 	LD V0, 1
 	LD ST, V0
 	LD I, data_DC8
 	ADD I, VA
-	LD V5, [I] ; 
+	LD V5, [I]
 	LD I, data_0F3
 	LD V1, [I]
 	SNE VE, 5
 	JP code_05F
-	SUB V1, V3 ; grille précédente
+	SUB V1, V3
 	SNE VF, 0
 	ADD V0, 255
 	ADD VA, 255
 	LD V5, V3
 	JP code_065
-code_05F: ; grille suivante
+code_05F:
 	ADD V1, V4
 	ADD V0, VF
 	ADD VA, 1
 code_065:
-	LD [I], V1 ; V0:V1 = adresse grille sélectionnée
+	LD [I], V1
 	CALL code_06D
-code_069: ; affiche no grille
-	LD I, BCD
+code_069:
+	LD I, data_24C
 	LD B, VA
 code_06D:
-	LD I, BCD
+	LD I, data_24C
 	LD V2, [I]
 	LD F, V1
 	DRW VD, V9, 5
@@ -127,11 +125,7 @@ code_0C5:
 	JP code_0C5
 	JP code_099
 code_0CF:
-	LD I, data_284
-	PUSH V0
-	LD V0, 1
-	ADD I, V0
-	POP V0
+	LD I, data_285
 	LD [I], V7
 	JP code_0A3
 code_0D5:
@@ -152,8 +146,7 @@ code_0E5:
 	RET
 code_0F1:
 	LD VD, 8
-data_0F3:	
-	LD I, data_2B4 ; code modifié en exécution
+	LD I, data_2B4
 	ADD I, VC
 	LD V0, [I]
 	LD VB, V0
@@ -187,40 +180,28 @@ code_11B:
 	ADD V7, 4
 	RET
 code_12D:
-	LD I, data_284
-    PUSH V0
-	LD V0, 1
-	ADD I, V0
-	POP V0
+	LD I, data_285
 	LD V7, [I]
 	LD VA, 0
 code_133:
-	CALL delay
+	CALL code_02F
 code_135:
 	LD VB, 1
-	LD I, data_28C
-	LD V0, 7
-	ADD I, V0
+	LD I, data_293
 	LD V5, [I]
 	SNE  V8, V9
 	JP code_217
-	LD VF, LEFT
-	SKNP VF
+	SKNP V1
 	JP code_23C
-	LD VF, RIGHT
-	SKNP VF
+	SKNP V0
 	JP code_240
-	LD VF, UP
-	SKNP VF
+	SKNP V3
 	JP code_244
-	LD VF, DOWN
-	SKNP VF
+	SKNP V4
 	JP code_248
-	LD VF, LEFT+FIRE_BTN
-	SKNP VF
+	SKNP V5
 	JP code_229
-	LD VF, FIRE_BTN
-	SKP VF
+	SKP V2
 	JP code_135
 	SNE VC, 0
 	JP code_135
@@ -231,18 +212,14 @@ code_135:
 	ADD VD, 255
 	SNE VD, 255
 	LD VD, 56
-	LD I, BCD
+	LD I, data_24C
 	ADD I, VD
 	LD V0, [I]
 	LD VA, V0
 code_171:
 	LD DT, V4
 	AND V1, VA
-	LD I, data_28C
-	PUSH V0
-	LD V0, 7
-	ADD I, V0
-	POP V0
+	LD I, data_293
 	ADD I, V1
 	LD V5, [I]
 	SNE VB, 0
@@ -289,7 +266,7 @@ code_1C3:
 	SE VC, 57
 	ADD VC, 1
 	LD V0, VA
-	LD I, BCD
+	LD I, data_24C
 	ADD I, VD
 	ADD VD, 1
 	SNE VD, 57
@@ -307,18 +284,12 @@ code_1E5:
 	SNE VF, 1
 	JP code_1B1
 code_1EB:
-	LD I, data_284
-	LD V0, 1
-	ADD I, V0
+	LD I, data_285
 	LD V7, [I]
 	LD I, data_2AC
 	JP code_1DD
 code_1F3:
-	LD I, data_284
-	PUSH V0
-	LD V0, 1
-	ADD I, V0
-	POP V0
+	LD I, data_285
 	LD [I], V7
 	ADD V6, V4
 	ADD V7, V5
@@ -342,7 +313,7 @@ code_217:
 	LD ST, V3
 	LD V0, 50
 	LD DT, V0
-	CALL delay
+	CALL code_02F
 	CALL code_01B
 	SNE VA, 50
 	JP code_002
@@ -352,9 +323,8 @@ code_229:
 	LD ST, V1
 	LD V0, 30
 	LD DT, V0
-	CALL delay
-	LD VF, FIRE_BTN
-	SKP VF
+	CALL code_02F
+	SKP V5
 	JP code_135
 	SE VA, 0
 	JP code_07F
@@ -372,8 +342,6 @@ code_244:
 code_248:
 	LD VA, 3
 	JP code_171
-
-BCD:
 code_24C:
 	SCD 1
 code_24E:
@@ -390,33 +358,22 @@ code_258:
 	LD VA, 1
 	JP code_027
 
-
-
 data_264:
-	DB #FE, #79, #99, #E7, #C7, #DB, #0E, #CD 
-	DB #F3, #36, #6C, #DB, #1C, #CD, #E3, #36 
-	DB #6C, #DB, #38, #CD, #B3, #36, #67, #DB 
-	DB #70, #CD, #9B, #37, #C0, #DB, #E0, #79 
-data_284:
-	DB #81, #E6, #07, #9E
+	DB #FE, #79, #99, #E7, #C7, #DB, #0E, #CD
+	DB #F3, #36, #6C, #DB, #1C, #CD, #E3, #36
+	DB #6C, #DB, #38, #CD, #B3, #36, #67, #DB
+	DB #70, #CD, #9B, #37, #C0, #DB, #E0, #79
+	DB #81
+
+data_285:
+	DB #E6, #07, #9E
+
 data_288:
-	DB #FE, #01, #80, #06
-data_28C:
-	DB #00, #00, #0F, #07, #02, #02, #00, #09
-	; DB #07, #0A, #05, #08, #00, #FC, #00, #04 ;294
-	; DB #00, #00, #00, #00, #F0, #F0, #F0, #F0 ;29C
-	
+	DB #FE, #01, #80, #06, #00, #00, #0F, #07
+	DB #02, #02, #00
 
-; data_285:
-	; DB #E6, #07, #9E, #FE, #01, #80, #06, #00
-    ; DB #00, #0F, #07, #02, #02, #00, #09, #07 
-
-; data_288:
-	; DB #FE, #01, #80, #06, #00, #00, #0F, #07
-	; DB #02, #02, #00
-
-; data_293:
-	; DB #09
+data_293:
+	DB #09
 
 data_294:
 	DB #07, #0A, #05, #08, #00, #FC, #00, #04
@@ -431,27 +388,21 @@ data_2AC:
 data_2B0:
 	DB #F0, #90, #90, #F0
 
-data_2B4:
-grid1:
+data_2B4: ; linked list of grid data
 	DB #6E, #00, #88, #C2, #90, #18, #53, #41
 	DB #84, #2A, #15, #60, #E8, #52, #8C, #15
 	DB #51, #14, #40, #89, #80, #8A, #44, #43
 	DB #65, #28, #58, #36, #D1, #21, #51, #91
 	DB #43, #64, #01, #80, #C5, #40, #22, #60
-grid2:
 	DB #59, #8C, #03, #B0, #30, #15, #5D, #81
 	DB #28, #50, #5D, #81, #AA, #A0, #BB, #00
 	DB #48, #28, #2E, #C0, #88, #52, #28, #2D
 	DB #28, #82, #50, #A5, #28, #82, #00, #C0
-	DB #50, #8C, #00 
-grid3:
- 	DB #5C, #82, #45, #20, #AC, #06, #46, #0A 
-	DB #95, #A2, #C1, #52, #85, #60, #CB, #4A  
-	DB #21, #15, #28, #8A, #B3, #00, #29, #42  
-	DB #82, #BB, #60, #0A, #14, #05, #98, #02  
-	DB #3C  
-grid4:
-	DB #9E, #83, #C5, #20
+	DB #50, #8C, #00, #5C, #82, #45, #20, #AC
+	DB #06, #46, #0A, #95, #A2, #C1, #52, #85
+	DB #60, #CB, #4A, #21, #15, #28, #8A, #B3
+	DB #00, #29, #42, #82, #BB, #60, #0A, #14
+	DB #05, #98, #02, #3C, #9E, #83, #C5, #20
 	DB #E8, #4C, #11, #90, #98, #14, #01, #0A
 	DB #50, #26, #05, #2D, #AD, #0A, #21, #30
 	DB #28, #58, #0D, #10, #98, #14, #B4, #69
@@ -795,20 +746,10 @@ grid4:
 	DB #14, #10, #60, #48
 
 data_DC8:
-	DB #02, #82, #AC, #0A, #12, #14, #12, #11
+	DB #02, #82, #AC, #0A, #24, #28, #23, #21
 	DB #38, #2E, #24, #28, #37, #35, #4C, #3B
 	DB #33, #3C, #43, #3E, #33, #31, #39, #47
 	DB #4B, #37, #47, #46, #45, #44, #2C, #39
 	DB #3F, #35, #43, #41, #31, #2C, #36, #4B
 	DB #46, #42, #1F, #48, #3F, #35, #39, #32
 	DB #3C, #3A, #34, #2E, #38, #38, #4B
-
- data_01A:
-	DB #80, #00
-
-;data_0F3:
-;	DB #A4, #B4
-
-data_23A:	
-	DB #00, #20	
-  

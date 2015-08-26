@@ -82,6 +82,7 @@ namespace ccemul
 			try{
 				StreamReader sr= new StreamReader(textFile);
 				line=sr.ReadLine();
+				LabelsListBox.Items.Clear();
 				while (line!=null)
 				{
 	            	LabelsListBox.Items.Add(line);

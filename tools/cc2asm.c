@@ -1208,7 +1208,7 @@ void assemble_line(){
 				}
 			}else if ((i=search_word(tok_value,directives,DIR_COUNT))<DIR_COUNT){
 				// directive d'assembleur
-				// les directives 'EQU','DEFN'  sont traité par preprocess() 
+				// les directives 'EQU','DEFN' et les LABELS  sont traité par preprocess() 
 				switch(i){
 				case 0: // DB
 					data_byte();
@@ -1220,10 +1220,6 @@ void assemble_line(){
 					data_ascii();
 					break;
 				}//switch 
-			}else if (tok_id==eLABEL){
-				// label
-				inp++;
-				label_list=add_label(tok_value,pc);
 			}else{
 				//unknown code
 				error(eBADMNEMO);
@@ -1269,6 +1265,13 @@ bool preprocess(){
 		next_token();
 		if (tok_id==eNONE) return true;
 		if (!(tok_id==eSYMBOL || tok_id==eLABEL)) error(eSYNTAX);
+		if (tok_id==eLABEL){
+			inp++;
+			label_list=add_label(tok_value,pc);
+			next_token();
+			if (tok_id==eNONE) return true;
+			if (!(tok_id==eSYMBOL)) error(eSYNTAX);
+		}
 		i=search_word(tok_value,directives,DIR_COUNT);
 		if ((i<DIR_COUNT) && (i>1)){
 			switch(i){
