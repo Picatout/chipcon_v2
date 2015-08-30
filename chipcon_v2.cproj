@@ -185,6 +185,12 @@
     <Compile Include="lem.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="octopac.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="octopac.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="partition.c">
       <SubType>compile</SubType>
     </Compile>

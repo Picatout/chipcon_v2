@@ -50,6 +50,8 @@ namespace ccemul
 			case 0:
 				if ((b2&0xf0)==0xc0){ // 00CN, glisse l'affichage N lignes vers le bas  
 					s=string.Format("{0:S}SCD {1:D} ",s,b2&0xf);
+				}else if((b2&0xf0)==0xd0){
+				    s=string.Format("{0:S}SCU {1:D} ",s,b2&0xf);		
 				}else{
 					switch (b2){
 					case 0xE0:  // 00E0, efface l'écran
@@ -171,7 +173,7 @@ namespace ccemul
 					s=string.Format("{0:s}PUSH V{1:X} ",s,(b1&0xf));
 					break;
 				case 7: // POP VX
-					s=string.Format("{0:s}PUSH V{1:X} ",s,(b1&0xf));
+					s=string.Format("{0:s}POP V{1:X} ",s,(b1&0xf));
 					break;
 				case 8: // SCRX VX
 					s=string.Format("{0:s}SCRX V{1:X} ",s,(b1&0xf));

@@ -58,6 +58,7 @@
 #include "field.h"
 #include "piper.h"
 #include "square.h"
+#include "octopac.h"
 #if TEST
 #include "joymus.h"
 #include "saverstr.h"
@@ -223,6 +224,7 @@ PROGMEM const uint8_t flash_games[]=
 "FIELD!\n" // case 5
 "PIPER\n"  // case 6
 "MAGIC SQUARE\n" // case 7
+"OCTO PACMAN\n"  //8
 #if TEST
 "JOYMUS\n"
 "save-restore\n"
@@ -282,14 +284,17 @@ void games_in_flash(){
 	case 7:
 		load_flash_game(magic_square,SQUARE_SIZE);
 		break;
-#if TEST		
 	case 8:
+	    load_flash_game(octopac,OCTOPAC_SIZE);
+		break;	
+#if TEST		
+	case 9:
 		load_flash_game(joymus,JOYMUS_SIZE);
 		break;
-	case 9:
+	case 10:
 	    load_flash_game(saverstr,SAVERSTR_SIZE);
 		break;
-	case 10:
+	case 11:
 		load_flash_game(speed,SPEED_SIZE);
 		break;
 #endif		

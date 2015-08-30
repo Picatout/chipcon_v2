@@ -1,0 +1,108 @@
+﻿<!doctype html>
+<html>
+<header>
+<title>SCHIP+ assembler</title>
+<meta charset="UTF-8">
+<meta name="Author" content="Jacques Deschênes">
+<meta name="copiright" content="2015, Jacques Deschênes">
+<meta name="date created" content="2015-08-28">
+<meta name="licence" content="GPL v3">
+</header>
+<body>
+<h4>introduction</h4>
+<p>
+  Ce document fait partie du projet <a href="CHIPcon_v2.html">CHIPcon_v2</a> et décris l'assembleur pour la machine virtuelle utilisée dans ce projet.
+  L'ensemble du projet logiciel ainsi que la documentation est sous licence <a href="http://www.gnu.org/licenses/gpl-3.0.fr.html">GPLv3</a>. La partie matériel est <a href="https://en.wikipedia.org/wiki/Open-source_hardware">OSH</a>.
+</p>
+<h2>Tutoriel cc2asm</h2>
+<p>
+  Apprendre à programmer en assembleur demande moins de temps et d'efforts que d'apprendre à programmer dans un langage de 
+  haut niveau car la syntaxe est simple et le nombre de mots clés à mémoriser est limité. La machine virtuelle 
+  <a href="vm-opcodes.html">SCHIP+</a> possède 42 mots clés et 6 directives d'assembleur ainsi que 5 constantes et 2 alias de 
+  registres préfinis. 
+</p>
+<p>
+  J'ai trouvé un jeu appellé <a href="HTTP://WWW.JDROID.CH/INDEX.PHP?INHALT_LINKS=NAVIGATION.INC.PHP&INHALT_MITTE=PIXELGAMES/HEXAPAC.INC.PHP">hexa Packman</a>
+  et je vais utiliser ce jeux comme démonstration pour ce tutoriel. 
+</p>
+<h4>Hexa Pacman</h4>
+<p>
+   Hexa Pacman se tiens au centre de l'écran et ne fait que pivoter sur lui-même pour avaler les bijoux qui se déplacent
+   dans sa direction. Chaque bijou avalé donne des points et rallonge la ligne de vie qui apparaît en bas de l'écran. Par
+   contre si un bijou frappe Hexa Pacman ailleurs que dans la bouche des points sont perdus et la ligne de vie racourcie.
+   La jeu s'arrête lorsque la ligne de vie tombe à zéro.
+</p>
+<p>
+  Il y a 3 types de bijou:
+  <ol>
+  <li>Gros losange: <b>10</b> points.</li>
+  <li>Petit losange: <b>5</b> points.</li>
+  <li>petit carré: <b>1</b> point.</li>
+  </ol>
+  Pour chaque point gagné la ligne rallonge d'un pixel et racourci d'autant pour chaque point perdu. À chaque <b>20</b> 
+  points gagné la vitesse de bijoux augmente.
+</p>
+<h4>Analyse de la mise en oeuvre</h4>
+<p>
+  La première étape d'une mise en oeuvre logicielle consiste à analyser le problème pour comprendre quels sont les besoins
+  en terme de données ainsi que la structure générale du programme. 
+</p>
+<h4>Les données</h4>
+<p>
+  Il y a d'abord les figures qui apparaissent à l'écran. Il y a Hexa Pacman en centre de l'écran et qui pivote sur lui-même. 
+  sont On va limiter la rotation de Hexa Pacman par angle de 45 degrés. Donc il y aura 8 positions. A chaque changement de
+  d'angle on pourrait redessiner Hexa Pacman en utilsant l'instruction <b>PIXI</b> et un algorithme différent pour chaque 
+  angle.  Mais la façon la plus simple est d'avoir 8 <b>sprite</b> prédéfinis et de choisir lequel va à l'écran en fonction 
+  de l'angle de la bouche d'Hexa Pacman.  Voilà donc une donnée à conserver. On va donc nommée une variable ainsi 
+  <b>ANGLE</b> pour cette information.
+</p>
+<p>
+   Les bijoux sont générer au hasard. Pour chaque bijou créé il faut garder les informations suivantes:
+   <ul>
+   <li><b>type</b>, le type de bijou. Un octet suffit <b>TYPE</b>.</li>
+   <li><b>position</b>, sa position à chaque cycle du jeu. Deux octets <b>X</b>, <b>Y</b>.</li>
+   <li><b>delta</b>, les valeurs à ajouter à chaque coordonnée pour faire avancer le bijou vers Hexa Pacman.
+    Deux octets <b>DX</b>, <b>DY</b>.</li>
+   </ul>
+   On a donc une structure de donnée de 5 octets. IL y aura plusieurs bijoux présent à l'écran à chaque instant.
+   Il faut donc une instance de cette structure pour chaque bijou. On a donc un tableau de donnée. On va déterminer
+    une grandeur pour ce tableau à 10. 
+</p>
+<p>
+  Est-ce qu'Il y aura toujours 10 bijoux en jeu à chaque instant. Si ce n'est pas le cas il faut garder le nombre 
+  en jeu dans une variable <b>JEWELS</b>.
+</p>
+<p>
+  Il ne faut pas oublier le pointage qu'il faut aussi garder dans une variable <b>SCORE</b>.
+</p>
+<p>
+  D'autres variables seront nécessaires en cours d'exécution mais se seront des variables locales conservées dans les
+   regitres VX.
+</p>
+<h4>L'algorithme</h4>
+<p>
+  <b>Algorithme</b> est le nom qu'on donne en informatique à la séquence d'instructions qui exécute une tâche. Un programme 
+  se compose d'un algorithme global qui est lui-même constituer de sous-algorithmes aussi  nommés sous-programmes.
+</p>
+<p>
+  Globalement les étapes seront les suivantes:
+ <ol>
+ <li>Affichier l'écran de présentation.</li>
+ <li>Initialiser les variables globales.</li>
+ <li>Desssiner Hexa Pacman au centre de l'écran.</li>
+ <li>Dessiner la ligne de vie en bas de l'écran.</li>
+ <li>Généer des bijoux au hazard et les placer à l'écran.</li>
+ <li>Entrer dans la boucle du jeu.</li>
+ <ol>
+ <li>Lire le joystick et positionner Hexa Pacman dans le bon angle.</li>
+ <li>Faire avancer chaque bijou d'un pas.
+ <ol>
+ <li>Collision? Si oui vérifier si c'est dans la bouche ou non. Ajouter ou soustraire les points et supprimer le bijou.</li>
+ <li>Mettre à jour la ligne de vie. Si à zéro fin du jeu sortir de la boucle.</li>
+ <li>Fin de la boucle on retourne au début de celle-ci.</li>
+ </ol>
+ </li>
+ </ol>
+ <li>Indiquer fin du jeu et attendre bouton pour recommencer.</li>
+ </ol>
+</p>

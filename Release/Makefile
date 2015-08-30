@@ -48,6 +48,7 @@ C_SRCS +=  \
 ../joymus.c \
 ../joystick.c \
 ../lem.c \
+../octopac.c \
 ../partition.c \
 ../piper.c \
 ../saverstr.c \
@@ -82,6 +83,7 @@ filesys.o \
 joymus.o \
 joystick.o \
 lem.o \
+octopac.o \
 partition.o \
 piper.o \
 saverstr.o \
@@ -109,6 +111,7 @@ filesys.o \
 joymus.o \
 joystick.o \
 lem.o \
+octopac.o \
 partition.o \
 piper.o \
 saverstr.o \
@@ -136,6 +139,7 @@ filesys.d \
 joymus.d \
 joystick.d \
 lem.d \
+octopac.d \
 partition.d \
 piper.d \
 saverstr.d \
@@ -163,6 +167,7 @@ filesys.d \
 joymus.d \
 joystick.d \
 lem.d \
+octopac.d \
 partition.d \
 piper.d \
 saverstr.d \
@@ -188,6 +193,8 @@ OUTPUT_FILE_DEP:= ./makedep.mk
 LIB_DEP+= 
 
 # AVR32/GNU C Compiler
+
+
 
 
 

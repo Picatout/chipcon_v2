@@ -152,7 +152,9 @@ uint8_t schipp(){
 			vms.var[x]=vms.b2;
 			break;
 		case 0x7: // 7XKK   ADD VX,KK  ; VX := VX + KK
+		    n=(vms.var[x]+vms.var[y])>255;
 			vms.var[x]+=vms.b2;
+			vms.var[15]=n;
 			break;
 		case 0x8: 
 			switch(vms.b2&0xf){

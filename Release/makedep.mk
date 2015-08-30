@@ -26,6 +26,8 @@ joystick.c
 
 lem.c
 
+octopac.c
+
 partition.c
 
 piper.c

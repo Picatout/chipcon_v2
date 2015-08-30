@@ -269,7 +269,7 @@ namespace ccemul
 						text.set_cursor(var[x],var[y]);
 						n=code[ix++];
 						while (n>0){
-							if (n-32>=Text.FONT_SIZE){
+							if ((n-32)>=Text.FONT_SIZE){
 								return vm_error.INVALID_CHAR_VALUE;
 							}
 							text.put_char(n);
