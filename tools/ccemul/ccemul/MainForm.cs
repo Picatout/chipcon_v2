@@ -224,13 +224,13 @@ namespace ccemul
 			textBox1.AppendText(string.Format("DT={0}, ",vm.dt));
 			textBox1.AppendText(string.Format("ST={0}\r\n",vm.st));
 			for (int i=0;i<16;i++){
-				textBox1.AppendText(string.Format("var[{0:X}]={1:X2}, ",i,vm.var[i]));
-				if (i==9) textBox1.AppendText("\r\n");
+				textBox1.AppendText(string.Format("V{0:X}={1:X2}, ",i,vm.var[i]));
+				//if (i==9) textBox1.AppendText("\r\n");
 			}
 			textBox1.AppendText("\r\n");
 			for (int i=0;i<16;i++){
-				textBox1.AppendText(string.Format("rpl[{0:X}]={0:X2}, ",i,vm.rpl[i]));
-				if (i==9) textBox1.AppendText("\r\n");
+				textBox1.AppendText(string.Format("R{0:X}={0:X2}, ",i,vm.rpl[i]));
+				//if (i==9) textBox1.AppendText("\r\n");
 			}
 			textBox1.Invalidate();
 			

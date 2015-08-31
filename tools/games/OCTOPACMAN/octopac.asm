@@ -27,10 +27,10 @@ DEFN CYCLES V9  ; compte les boucle du jeux
 EQU STRUC_SIZE   6 ; dimension de la structure bijou
 EQU JEWEL_SIZE   8 ; nombre d'octets sprite bijou
 ; identifiant bijou
-EQU BIG_DIAMOND 3 ; 20 points
-EQU DIAMOND     2 ; 10 points
-EQU RUBY        1 ; opale 5 points
-EQU PERL        0 ; perle 1 point
+EQU BIG_DIAMOND 3 ; gros diamant
+EQU DIAMOND     2 ; diamant
+EQU RUBY        1 ; rubis
+EQU PERL        0 ; perle
 ; valeur bijou
 EQU BD_VAL		15 ; gros diamant
 EQU D_VAL		10 ; petit diamant
@@ -50,7 +50,7 @@ play_again:
 	LD SCORE, 8 ; valeur initiale ligne de vie
     LD COUNT, 0 ; nombre de bijou à l'écran
 	LD MAXBIJ, 4 ; nombre maximum de bijoux
-	LD SPEED, 4 ; vitesse du jeux 4 lent, 1 rapide
+	LD SPEED, 5 ; vitesse du jeux 5 lent, 1 rapide
 	LD CYCLES, 0 
 	CALL free_jtable
 	CALL draw_hexapacm
@@ -404,6 +404,8 @@ collision:
 	SE V6, ANGLE
 	JP loose_points
 win_points:	
+	LD V8, 4
+	LD ST, V8
 	SNE V1, PERL
 	ADD SCORE, P_VAL
     SNE V1, RUBY
@@ -418,6 +420,7 @@ win_points:
 	LD SCORE, 127
  	JP coll_exit
 loose_points:
+    NOISE 4
 	SNE V1, PERL
 	ADD SCORE, -P_VAL
     SNE V1, RUBY
@@ -494,6 +497,7 @@ inc_time:
 display_time:
    LD I, TIME
    LD V0, [I]
+   LD I, BCD
    LD B, V0
    LD V2, [I]
    LD F, V0

@@ -8,6 +8,4 @@
 
 extern const uint8_t worm[WORM_SIZE];
 
-extern const uint8_t worm_info[];
-
 #endif

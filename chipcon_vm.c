@@ -91,7 +91,7 @@ uint8_t schipp(){
 	vms.sp=0;
 	vms.ix=0;
  	while (1){
-		if (joystick_break()) return CHIP_EXIT_OK;
+		//if (joystick_break()) return CHIP_EXIT_OK;
 		vms.opcode=sram_read_word(vms.pc);
 		vms.pc+=2;
 		x=rx(vms.b1);
@@ -152,7 +152,7 @@ uint8_t schipp(){
 			vms.var[x]=vms.b2;
 			break;
 		case 0x7: // 7XKK   ADD VX,KK  ; VX := VX + KK
-		    n=(vms.var[x]+vms.var[y])>255;
+		    n=(vms.var[x]+vms.b2)>255;
 			vms.var[x]+=vms.b2;
 			vms.var[15]=n;
 			break;

@@ -9,8 +9,9 @@ EQU LEFT 8
 EQU RIGHT 16     
 EQU SELECT 32    
 EQU NO_KEY 255
-
-
+EQU RIGHT_EDGE 122
+EQU LEFT_EDGE 5
+EQU BOTTOM_EDGE 71
 	JP start
 
 bcd:
@@ -18,7 +19,7 @@ bcd:
 data_006:
 	DB #00, #52, #42, #39, #32
 data_00B: ; initialized data
-	DB #00, #00, #00, #3E, #05, #00, #2B, #7C
+	DB #00, #00, #00, BOTTOM_EDGE, LEFT_EDGE, #00, #2B, #7C
 	DB #00, #00, #06, #1E, #01, #00, #04
 
 start:
@@ -39,7 +40,7 @@ code_032: ; draw top and bottom edge
 	DRW V4, V2, 1
 	DRW V4, V3, 1
 	ADD V4, 3
-	SE V4, 122
+	SE V4, RIGHT_EDGE
 	JP code_032
 	LD I, data_15F ; 
 	LD V3, 4
@@ -47,7 +48,7 @@ code_040: ; draw left and right edge
 	DRW V3, V2, 9
 	DRW V4, V2, 9
 	ADD V2, 9
-	SE V2, 63
+	SE V2, BOTTOM_EDGE+1
 	JP code_040
 	LD I, data_006  ; max score
 	LD V0, [I]		
@@ -195,7 +196,7 @@ code_12E:
 code_132:
 	LD I, worm_food
 code_134:
-	RND VC, #7C
+	RND VC, #70
 	ADD VC, 2
 	RND VD, #3C
 	ADD VD, 2
