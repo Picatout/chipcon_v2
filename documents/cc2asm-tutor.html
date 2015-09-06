@@ -1,7 +1,7 @@
 ﻿<!doctype html>
 <html>
 <header>
-<title>SCHIP+ assembler</title>
+<title>SCHIP+ assembler tutorial</title>
 <meta charset="UTF-8">
 <meta name="Author" content="Jacques Deschênes">
 <meta name="copiright" content="2015, Jacques Deschênes">
@@ -11,7 +11,7 @@
 <body>
 <h4>introduction</h4>
 <p>
-  Ce document fait partie du projet <a href="CHIPcon_v2.html">CHIPcon_v2</a> et décris l'assembleur pour la machine virtuelle utilisée dans ce projet.
+  Ce document fait partie du projet <a href="CHIPcon_v2.html">CHIPcon_v2</a> et est un tutoriel pour l'assembleur de la machine virtuelle utilisée dans ce projet.
   L'ensemble du projet logiciel ainsi que la documentation est sous licence <a href="http://www.gnu.org/licenses/gpl-3.0.fr.html">GPLv3</a>. La partie matériel est <a href="https://en.wikipedia.org/wiki/Open-source_hardware">OSH</a>.
 </p>
 <h2>Tutoriel cc2asm</h2>
@@ -21,88 +21,414 @@
   <a href="vm-opcodes.html">SCHIP+</a> possède 42 mots clés et 6 directives d'assembleur ainsi que 5 constantes et 2 alias de 
   registres préfinis. 
 </p>
+<h4>pré-requis</h4>
+<p>
+   Avant de lire ce document il faut lire les 2 suivants:
+   <ol>
+   <li><a href="vm-opcodes.html">vm-opcodes.html</a></li>
+   <li><a href="cc2asm.html">cc2asm.html</a></li>
+   </ol>
+</p>
 <p>
   J'ai trouvé un jeu appellé <a href="HTTP://WWW.JDROID.CH/INDEX.PHP?INHALT_LINKS=NAVIGATION.INC.PHP&INHALT_MITTE=PIXELGAMES/HEXAPAC.INC.PHP">hexa Packman</a>
   et je vais utiliser ce jeux comme démonstration pour ce tutoriel. 
 </p>
-<h4>Hexa Pacman</h4>
+<h4>Octopacman</h4>
 <p>
-   Hexa Pacman se tiens au centre de l'écran et ne fait que pivoter sur lui-même pour avaler les bijoux qui se déplacent
-   dans sa direction. Chaque bijou avalé donne des points et rallonge la ligne de vie qui apparaît en bas de l'écran. Par
-   contre si un bijou frappe Hexa Pacman ailleurs que dans la bouche des points sont perdus et la ligne de vie racourcie.
-   La jeu s'arrête lorsque la ligne de vie tombe à zéro.
+   J'ai baptisé ma version de ce jeux <b>Octopacman</b> plutôt que Hexapacman car dans ma version pacman est un octogone pour 
+   simplifier le dessin des sprites. Octopacman se tiens au centre de l'écran et ne fait que pivoter sur lui-même pour avaler 
+   les bijoux qui se déplacent dans sa direction. Chaque bijou avalé donne des points et rallonge la ligne de vie qui apparaît 
+   en bas de l'écran. Par contre si un bijou frappe Octopacman venant d'un angle différent de l'orientation d'Octopacman les points sont perdus et la ligne 
+   de vie racourcie.  Le jeu s'arrête lorsque la ligne de vie tombe à zéro.  Le niveau de difficulté augmente avec la longueur
+   de ligne de vie en augmentant la vitesse des bijoux. La difficulté augmente aussi avec la durée du jeux en augmentant le nombre maximum 
+   de bijoux qui peut apparaître à l'écran. Au début de la partie il y en a 4 et ça peut augmenter jusqu'à 8.
 </p>
 <p>
-  Il y a 3 types de bijou:
+  Il y a 4 catégories de bijoux:
   <ol>
-  <li>Gros losange: <b>10</b> points.</li>
-  <li>Petit losange: <b>5</b> points.</li>
-  <li>petit carré: <b>1</b> point.</li>
+  <li>Gros diamant: <b>15</b> points.</li>
+  <li>Diamant: <b>10</b> points.</li>
+  <li>Rubis: <b>5</b> points.</li>
+  <li>Perle: <b>1</b> point.</li>
   </ol>
-  Pour chaque point gagné la ligne rallonge d'un pixel et racourci d'autant pour chaque point perdu. À chaque <b>20</b> 
-  points gagné la vitesse de bijoux augmente.
+  Pour chaque point gagné la ligne rallonge d'un pixel et racourci d'autant pour chaque point perdu. Cepedant la valeur
+maximale de <b>LLEN</b> est de 255.</p>
+<p> L'objectif est de durer le plus longtemps possible. A la fin de la partie la durée 
+est indiquée au bas de l'écran.
 </p>
 <h4>Analyse de la mise en oeuvre</h4>
 <p>
-  La première étape d'une mise en oeuvre logicielle consiste à analyser le problème pour comprendre quels sont les besoins
-  en terme de données ainsi que la structure générale du programme. 
+  Le code source complet se trouve <a href="https://github.com/Picatout/chipcon_v2/blob/master/tools/games/OCTOPACMAN/octopac.asm">ici</a>.
+</p>
+<p>
+	On a donc un écran de 128x72 pixels en noir et blanc et un joystick Atari 2600 pour le contrôle du jeu. Il s'agit 
+	de faire pivoter Octopacman vers la gauche en poussant le levier vers la gauche (45&deg;) ou le haut (90&deg;) et vers 
+	la droite en poussant le levier vers la droite (45&deg;) ou le bas (90&deg;). Pour simplifier le jeu, au lieu de
+	 vérifier où la collision du bijou se produit on va simplement comparer la direction de la trajectoire du bijou 
+	 avec l'angle de pacman. Si les 2 coïncident on a un gain sinon une perte. IL y a 8 directions possible correspondant
+	  à la rose des vents. Cette simplification ne requiert que 8 <i>sprites</i> pour représenter Octopacman.
 </p>
 <h4>Les données</h4>
 <p>
-  Il y a d'abord les figures qui apparaissent à l'écran. Il y a Hexa Pacman en centre de l'écran et qui pivote sur lui-même. 
-  sont On va limiter la rotation de Hexa Pacman par angle de 45 degrés. Donc il y aura 8 positions. A chaque changement de
-  d'angle on pourrait redessiner Hexa Pacman en utilsant l'instruction <b>PIXI</b> et un algorithme différent pour chaque 
-  angle.  Mais la façon la plus simple est d'avoir 8 <b>sprite</b> prédéfinis et de choisir lequel va à l'écran en fonction 
-  de l'angle de la bouche d'Hexa Pacman.  Voilà donc une donnée à conserver. On va donc nommée une variable ainsi 
-  <b>ANGLE</b> pour cette information.
+  Il y a d'abord les figures qui apparaissent à l'écran. Il y a Octopacman en centre de l'écran et qui pivote sur 
+  lui-même par angle de 45&deg; donc comme mentionné plus haut on a besoin de 8 figures différentes pour le représenter. 
+  A chaque instant on doit connaître l'orientation de Octopacman, voilà donc une donnée à conserver. On va donc nommée une 
+  variable ainsi <b>ANGLE</b> pour cette information.
 </p>
 <p>
-   Les bijoux sont générer au hasard. Pour chaque bijou créé il faut garder les informations suivantes:
+  On va limiter le jeu de sorte qu'il n'y est qu'un seul bijou par orientation à l'écran. On va donc créer une table de
+   8 éléments, 1 élément pour chaque direction. Le nombre de bijoux à l'écran peut varier de 4 à 8. Il y aura donc des 
+   éléments de la table qui seront vides.
+</p>
+<p>
+   Les bijoux sont générés au hasard. Pour chaque bijou créé il faut garder les informations suivantes:
    <ul>
-   <li><b>type</b>, le type de bijou. Un octet suffit <b>TYPE</b>.</li>
+   <li><b>occupé</b>, indique si cet élément de la table est présentement occupé. Un octet suffit.</li>
+   <li><b>catégorie</b>, le type de bijou. Un octet suffit.</li>
    <li><b>position</b>, sa position à chaque cycle du jeu. Deux octets <b>X</b>, <b>Y</b>.</li>
-   <li><b>delta</b>, les valeurs à ajouter à chaque coordonnée pour faire avancer le bijou vers Hexa Pacman.
+   <li><b>delta</b>, les valeurs à ajouter à chaque coordonnée pour faire avancer le bijou vers Octopacman.
     Deux octets <b>DX</b>, <b>DY</b>.</li>
    </ul>
-   On a donc une structure de donnée de 5 octets. IL y aura plusieurs bijoux présent à l'écran à chaque instant.
-   Il faut donc une instance de cette structure pour chaque bijou. On a donc un tableau de donnée. On va déterminer
-    une grandeur pour ce tableau à 10. 
+   On a donc une structure de donnée de 6 octets. Donc chaque élément de la table occupe 6 octets dans la RAM pour un 
+   total de 48 octets.
 </p>
 <p>
-  Est-ce qu'Il y aura toujours 10 bijoux en jeu à chaque instant. Si ce n'est pas le cas il faut garder le nombre 
-  en jeu dans une variable <b>JEWELS</b>.
+  Comme le nombre de bijoux à l'écran va varier d'un instant à l'autre il nous faut une variable pour cette information.
+  On va la  nommer <b>COUNT</b>.
 </p>
 <p>
-  Il ne faut pas oublier le pointage qu'il faut aussi garder dans une variable <b>SCORE</b>.
+  Il ne faut pas oublier la longueur de la ligne de vie <b>LLEN</b>.
 </p>
 <p>
-  D'autres variables seront nécessaires en cours d'exécution mais se seront des variables locales conservées dans les
-   regitres VX.
+  On va conserver 2 autres variables, <b>SPEED</b> qui sera un délais qui contrôle la vitesse du jeu et <b>MAXJWL</b> 
+  qui détermine le nombre maximum de bijoux apparaissant à l'écran à chaque instant. Dans cette version Octopacman 
+  <b>SPEED</b> et <b>MAXJWL</b> sont initialisées à 5 et 4 respectivement.  On a aussi besoin de calculer la durée 
+  de la partie. La variable <b>CYCLES</b> de 16 bits est incrémentée à chaque bouclage du cycle jeu. Cette variable 
+  est divisée en 2 parties <b>CYCLEL</b> conservée dans un registre <b>V</b> et <b>CYCLEH</b> conservée dans la RAM. 
+  <b>CYCLEH</b> est incrémentée à chaque débordement de <b>CYCLEL</b>. À la fin de la partie la valeur de
+  <b>CYCLEH</b> est affichée suivie de celle de <b>CYCLEL</b>. Aucune tentative n'est faite d'unifier ces 2 valeurs 
+   en un seul nombre décimal qui serait  <b>CYCLEH*256+CYCLEL</b>.  
 </p>
-<h4>L'algorithme</h4>
 <p>
-  <b>Algorithme</b> est le nom qu'on donne en informatique à la séquence d'instructions qui exécute une tâche. Un programme 
-  se compose d'un algorithme global qui est lui-même constituer de sous-algorithmes aussi  nommés sous-programmes.
+  Pour résumer on a donc 6 variables globales qu'on va conserver pour la durée du jeu dans des registres <b>V</b>.
+  Le programme source commence donc avec les définitions suivantes qui attribuent des alias aux registres utilisés 
+  pour ces variables. Puisque ces variables ne seront jamais transférées en RAM ont les conserve dans les registres 
+  d'ordre le plus élevé, <b>V9</b> à <b>VE</b>. On n'utilise jamais <b>VF</b> comme variable puisqu'il est utisisé 
+  comme <b>C</b> bit par les opérations arithmétiques.
+<pre style="color:gray;font-size:11px;"><code>
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; assignation de registres
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DEFN ANGLE  VE  ; angle d'hexa packman
+DEFN LLEN   VD  ; longueur ligne de vie
+DEFN COUNT  VC  ; nombre de bijoux à l'écran
+DEFN MAXJWL VB  ; nombre maximum de bijoux
+DEFN SPEED  VA  ; vitesse du jeux
+DEFN CYCLEL V9  ; compte les boucles du jeux partie faible
+</code></pre>  
 </p>
 <p>
-  Globalement les étapes seront les suivantes:
+  En mémoire RAM on a les variables suivantes:
+<pre style="color:gray;font-size:11px;"><code>
+CYCLEH: ; octet fort de CYCLES.
+    DB 0
+BCD: ; 3 octets utilisés pour la conversion binaire à BCD.
+    DB 0,0, 0	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; chaque élément de la table
+; est une direction
+; les données d'une direction sont
+; 1 libre {0,1}  
+; 2 type de bijou {0,1,2} 
+; 3 x  {0..120}
+; 4 y  {0..56}
+; 5 dx {-2,0,2}  
+; 6 dy {-1,0,1}  
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; 
+JTABLE: ; tableau des bijoux
+    DB 0,0,120,28,-2,0 ; est
+    DB 0,0,120,0,-2,1 ; nord-est
+    DB 0,0,60,0,0,1 ; nord
+    DB 0,0,0,0,2,1 ; nord-ouest
+    DB 0,0,0,28,2,0 ; ouest
+    DB 0,0,0,56,2,-1 ; sud-ouest
+    DB 0,0,60,56,0,-1 ; sud
+    DB 0,0,120,56,-2,-1 ; sud-est
+</code></pre>  
+ En plus de ces données il y a bien sur tous les <i>sprites</i> et les messages <i>ASCII</i> qui sont conservés dans la 
+ RAM.
+</p>
+<p>
+  D'autres variables seront nécessaires en cours d'exécution mais se seront des variables locales conservées temporairement
+  dans les regitres <b>V</b>.
+</p>
+<h4>Organisation du programme</h4>
+<p>
+  Le programme se compose d'un programme principal qui est lui-même constitué de sous-programmes. 
+  Mais avant de poursuivre il est préférable décider de la façon d'utiliser les registres <b>V</b> puisque c'est 
+  une ressource limitée et que les sous-programmes devront se la partager. <b>V9</b> à <b>VE</b> sont 
+  utilisés pour les variables globales donc les sous-programmes doivent éviter de les écraser. Ils disposent pour 
+  leur usage de <b>V0</b> à <b>V8</b>. l'Assembleur défini l'alias <b>W</b> pour <b>V0</b> car celui-ci est très 
+  utile lorsqu'on veut transférer 1 seul octet vers la mémoire RAM ou l'inverse. On le garde donc comme registre de 
+  travail (<b>W</b>orking register) ou accumulateur. Mais on peut aussi l'utiliser comme variable locale. Qui doit 
+  préserver les registres <b>V</b> lors de l'appel d'une sous-routine? La procédure appelante ou la sous-routine? 
+  Je crois qu'il est préférable que ce sois la procédure appelante car lorsqu'on écris le code à ce niveau on sait 
+  quel sont les registres utilisés alors que lorsqu'on écris le code d'une sous-routine on ne sais pas quels 
+  registres doivent-être préservés pour le niveau supérieur ce qui oblige à préserver tous ceux qu'on utilisent, 
+  ce qui peut occasionner des transfers inutiles.  
+</p>
+<p>
+  Il y a 3 façons de préserver les registres <b>V</b>. On peut faire une copie dans les registres <b>R</b>, on peut
+  faire une copie vers la RAM ou on peut empiler avec l'instruction <b>PUSH</b>.
+</p>
+<p>
+  La copie vers les registres <b>R</b> semble très pratique car avec une seule instruction on peut copier tous les 
+  registres <b>V</b> et plus tard les restaurer avec une seule instruction. Le problème est qu'une sous-routine 
+  ne sais pas d'emblé si les registres <b>R</b> sont déjà utilisés. Il faut donc procéder minutieusement lors de l'écriture
+  du programme.
+</p>
+<p>
+  La copie vers la RAM demande moins de précaution si on réserve un espace dans la RAM pour chaque sous-routine qui 
+  à besoin de faire une sauvegarde RAM.  Cette méthode demande cependant plus de mémoire RAM. De plus elle exige 2
+  instructions par transfert. Une Pour initialiser le pointeur <b>I</b> et l'autre pour le transfert proprement dit.
+</p>
+<p>
+  Finalement la pile. La pile est une des plus belle invention de l'histoire de l'informatique. Elle permet de
+  stocker des informations, quelque soit le niveau d'appel de sous-routine, sans se demander si on va écraser 
+  quelques variables. C'est pour cette raison que j'ai ajouter les instructions <b>PUSH</b> et <b>POP</b> à la 
+  machine virtuelle. A moins d'utiliser des procédures récursives, dans un petit système comme CHIPcon
+   la probabilité est faible que la pile d'appels dépassse 8 niveaux. On dispose donc de 24 espaces pour stocker 
+   des variables temporaires.  Dans le cas ou on doit sauvegarder temporairement 1 ou 2 registres cette méthode 
+   est la plus pratique. Il faut équilibrer les <b>PUSH</b> avec autant de <b>POP</b> avant de quitter la sous-routine.
+   Avec cette méthode il est donc préférable de n'avoir qu'un seul point de sortie dans la sous-routine.  
+</p>
+<p>
+  Dans ce tutoriel on va utiliser ces 3 méthodes pour en montrer l'usage.
+</p>
+<a id="algo_princ"><h4>Algorithme principal</h4></a>
+<p>
+  Au niveau du programme principal les étapes seront les suivantes:
  <ol>
  <li>Affichier l'écran de présentation.</li>
  <li>Initialiser les variables globales.</li>
- <li>Desssiner Hexa Pacman au centre de l'écran.</li>
+ <li>Desssiner Octopacman au centre de l'écran.</li>
  <li>Dessiner la ligne de vie en bas de l'écran.</li>
- <li>Généer des bijoux au hazard et les placer à l'écran.</li>
  <li>Entrer dans la boucle du jeu.</li>
  <ol>
- <li>Lire le joystick et positionner Hexa Pacman dans le bon angle.</li>
- <li>Faire avancer chaque bijou d'un pas.
+ <li>Incrémenter le compteur durée de vie <b>CYCLEH:CYCLEL</b></li>
+ <li>Lire le joystick.</li>
+ <li>Si <b>ANGLE</b> a changé de valeur repositionner Octopacman.</li>
+ <li>Faire avancer chaque bijou d'un pas.<br>Pour chaque bijou:
  <ol>
- <li>Collision? Si oui vérifier si c'est dans la bouche ou non. Ajouter ou soustraire les points et supprimer le bijou.</li>
- <li>Mettre à jour la ligne de vie. Si à zéro fin du jeu sortir de la boucle.</li>
- <li>Fin de la boucle on retourne au début de celle-ci.</li>
+ <li>Calculer la nouvelle position et déplacer le bijou.</li>
+ <li>Vérifier collision: Si Collision vérifier l'angle et ajouter ou soustraire les points et supprimer le bijou.</li>
+ <li>Mettre à jour la ligne de vie.</li>
+ </ol>
+ </ol>
+ <li>Si <b>LLEN==0</b> fin de la partie. Sortir de la boucle jeu. Saut vers point 9.</li>
+ <li>À tous les 3 cycles si <b>COUNT</b> &lt; <b>MAXJWL</b> Générer un bijou au hazard et le placer à l'écran.</li>
+ <li>Recommencer la boucle jeux, saut à point 5.</li>
+ <li> Fin de la partie:
+ <ol>
+ <li>Afficher message fin de partie</li>
+ <li>Afficher durée de vie</li>
+ <li>attendre bouton pour recommencer.</li>
+ <li>Saut vers point 2 principal.</li>
  </ol>
  </li>
  </ol>
- <li>Indiquer fin du jeu et attendre bouton pour recommencer.</li>
- </ol>
 </p>
+<h4>Analyse du code source.</h4>
+<h5>constantes utiles</h5>
+<p>
+  Il est toujours utile de donner un nom symbolique aux constantes utilisées dans un programme. Ça sert à autodocumenter 
+  et aussi si la constante apparaît plusieurs fois dans le code et qu'on doit la modifier il suffit alors de remplacer
+  sa valeur à 1 seul endroit plutôt que parcourir le code à la recherche des endroits où on l'a utilisée au risque 
+  d'en oublier. Les constantes sont donc définies au début du fichier source.
+  <pre style="color:gray;font-size:11px;"><code>
+  ;;;;;;;;;;;;;;;;;;;;;;;;;;
+; constantes utiles
+;;;;;;;;;;;;;;;;;;;;;;;;;;
+EQU STRUC_SIZE   6 ; dimension de la structure bijou
+EQU JEWEL_SIZE   8 ; nombre d'octets sprite bijou
+; identifiant bijou
+EQU BIG_DIAMOND 3 ; gros diamant
+EQU DIAMOND     2 ; diamant
+EQU RUBY        1 ; rubis
+EQU PERL        0 ; perle
+; valeur bijou
+EQU BD_VAL		15 ; gros diamant
+EQU D_VAL		10 ; petit diamant
+EQU R_VAL		 5 ; rubis
+EQU P_VAL		 1 ; perle
+  </code></pre>
+</p>
+<h5>Présentation</h5>
+<p>
+  Au lancement d'un programme on peut offrir des informations à l'utilisateur concernant sa provenance et peut-être 
+aussi des explications sur son utilisation.  Ça peut se faire de différente façons: animation, texte déroulant, <i>splash 
+screen</i>... Pour ce tutoriel on va se contenter d'un simple texte donnant le nom du programme et de son auteur. Le 
+texte est affiché au bas de l'écran et déroule vers le haut jusqu'à sa disparition. Comme on ne veut pas ennuyer le 
+joueur avec ça chaque fois qu'il démarre le jeu on lui donne la possibilité d'annuler la présentation en pressant le bouton
+du joystick. Voici les premières lignes du programme qui apparaissent après les définitions:
+  <pre style="color:gray;font-size:11px;"><code>
+	JP start
+credits:
+	ASCII "Octopacman\nby Jacques Deschenes\nCopyright 2015" 
+	DB 26
+ORG #40
+start:	
+	CALL show_credits
+  </code></pre>
+La directive <b>ASCII</b> permet de créer une chaîne de caractère terminée par un zéro. Le seul caractère d'échappement
+reconnu le est <b>\n</b> qui permet de séparer le texte en plusieurs lignes. La machine virtuelle commence à éxécuter 
+le code à l'adresse zéro donc on doit y mettre une instruction valide ici <b>JP start</b> qui permet sauter par dessus 
+le texte que j'ai placé au début du fichier. J'aurais pu placer ce texte à la fin du fichier après la dernière ligne de
+code avec les autres données mais je l'ai mis là pour  qu'il sois visible avec une commande <b>type octopac.bin</b> ou
+au début dans un visualiseur de fichier binaire. La directive <b>DB 26</b> est une astuce pour arrêter la commande 
+<b>type</b> dans le shell <b>cmd.exe</b> de Windows. En effet pour cette commande le caractère ASCII 26 signifi fin de
+fichier. Le résultat est qu'au lieu de voir un paquet de caractères bizarre à l'écran on ne voie que ceci <img src="tutoriel-type.png" alt="capture ecran">  
+<br>Autre astuce la directire <b>ORG #40</b> qui place la cible du <b>start:</b> à l'adresse hexadécimal 0x40 (64). Ce qui
+a pour résultat que <b>JP start</b> est encodé dans le fichier binaire par <b>#10 #20</b>. Si vous regardez la capture 
+d'éccran ci-haut vous voyez une flèche qui pointe vers le texte suivi d'un blanc. La flèche c'est le <b>#10</b> et le 
+blanc c'est le <b>#20</b> (32) qui en ASCII est l'espace. 
+</p>
+<p>
+  Ces petits trucs ne se sont que des détails superflus qui relève plus du <i>hacking</i> que de la programmation. Juste 
+  un petit <i>hack</i> pour s'amuser.
+</p>
+<p>
+  Fin de la parenthèse. voici le code de la sous-routine <b>show_credits</b>:
+  <pre style="color:gray;font-size:11px;"><code>
+;;;;;;;;;;;;;;;;;;
+; affiche message
+; d'information
+; du jeu
+; utilise V0-V2
+;;;;;;;;;;;;;;;;;;
+show_credits:
+    CLS
+	LD I, credits
+	LD V0, 0
+	SCRY V1
+	LD V2, V1
+	ADD V1, -8
+	PRT V0,V1
+	LD V1, FIRE_BTN
+cred_loop:
+	LD V0, 2
+	CALL delay
+	SCU 1
+	ADD V2, -1
+	SNE V2, 0
+	JP cred_exit
+	SKP V1
+	JP cred_loop
+cred_exit:
+	LD V1, FIRE_BTN
+	SKNP V1
+	JP .-1
+	RET
+
+;;;;;;;;;;;;;;;;;;;;
+; boucle qui tue le temps
+; en tournant dans une 
+; boucle vide jusqu'à 
+; expiration de la minuterie
+; DT
+; argument V0=durée.
+; La durée est en multiple de 16,67msec.
+;;;;;;;;;;;;;;;;;;;;	
+delay:
+	LD DT, V0
+	LD V0, DT
+	SE V0, 0
+	JP .-2
+	RET
+
+  </code></pre>
+  On commence par nettoyer l'écran avec l'instruction <b>CLS</b> ensuite on charge le registre pointeur <b>I</b> avec 
+l'adresse du texte qu'on veut imprimer. Cette adresse est indiquée par l'étiquette <b>credits</b>. <b>LD V0, 0</b> met 
+la valeur <b>0</b> dans ce registre. <b>SCRY V1</b> met la résolution verticale de l'affichage dans <b>V1</b> et <b>LD V2,V1</b> copie 
+cette valeur de <b>V1</b> vers <b>V2</b> qui va nous servir de compteur.  <b>ADD V1, -8</b> sert à soustraire 8 à 
+<b>V1</b>. <b>PRT V0,V1</b> imprime le texte pointé par <b>I</b> à l'écran. L'argument <b>V0</b> indique la position 
+<b>x</b> du début du texte et <b>V1</b> indique la position <b>y</b> du début du texte. L'impression commence donc au
+début de la dernière ligne texte de l'écran. Ce qui est bien est que lorsque <b>PRT</b> rencontre le caractère <b>\n</b> 
+inséré dans le texte il passe à la ligne suivante mais comme il est déjà sur la dernière ligne il défile l'écran vers
+le haut d'une ligne texte avant d'imprimer la suivante. A la fin de l'instruction <b>PRT</b> on a donc le texte qui apparaît 
+au bas de l'écran.  <b>LD V1, FIRE_BTN</b> met l'identifiant du bouton du joystick dans <b>V1</b>.
+C'est alors qu'on entre dans la boucle de défilement <b>cred_loop</b>. La boucle commence par un 
+appel à la sous-routine <b>delay</b> avec un argument de valeur <b>2</b> chargé dans <b>V0</b>. <b>SCU 1</b> remonte 
+l'écran d'un pixel vers le haut. <b>ADD V2, -1</b> décrémente le compteur de ligne on va sortir de la boucle lorsque
+<b>V2</b> sera égal à zéro. <b>SNE V2, 0</b> signifi saute l'instruction suivante si <b>V2</b> n'est pas à zéro.
+L'instruction <b>JP cred_exit</b> est le saut qui permet de sortir de la boucle. L'instruction <b>SKP V1</b> vérifi
+que le bouton dont l'identifiant est dans <b>V1</b> est enfoncé et dans ce cas sort de la boucle en sautant par dessus 
+l'instruction <b>JP cred_loop</b>. Donc la boucle se répète tantque <b>V2&gt;0</b> et que <b>FIRE_BTN</b> 
+n'est pas enfoncé. Le joueur peut donc interrompe la présentation en enfoncant le bouton. Avant de sortir de la sous-routine
+on attend que le bouton du joystick sois relâché <b>SKNP V1</b>. 
+</p>
+<h5>Initialisation des variables</h5>
+<p>
+  À l'étiquette <b>play_again</b> débute la séquence d'instructions d'initialisation des variables globales.
+  <pre style="color:gray;font-size:11px;"><code>
+ play_again:
+	CLS
+	; initialize variables
+	LD ANGLE, 0 ; orientation bouche pacman
+	LD LLEN, 8 ; valeur initiale ligne de vie
+    LD COUNT, 0 ; nombre de bijou à l'écran
+	LD MAXJWL, 4 ; nombre maximum de bijoux
+	LD SPEED, 5 ; vitesse du jeux 5 lent, 1 rapide
+	LD CYCLEL, 0 ; durée de la partie en cycles jeu. 
+	CALL free_jtable ; JTABLE ne contient aucun bijou à ce point ci.
+	CALL draw_octopacman ; dessine Octopacman au centre de l'écran
+	CALL update_life ; dessine la ligne de vie au bas de l'écran
+  </code></pre>
+   On initalise <b>ANGLE</b> à zéro de sorte que Octopacman pointe vers l'est au début de la partie. La variable 
+   <b>CYCLEL</b> est l'octet faible de la variable 16 bits <b>CYCLES</b>.  La partie forte <b>CYCLEH</b> est conservée
+   en mémoire RAM puisqu'elle est modifiée moins souvent. <b>LD LLEN, 8</b> donne une longueur initiale à la ligne de vie 
+   sinon la partie ne démarerais pas. l'appel à la sous-routine <b>free_jtable</b> met à zéro le premier octet de 
+   chaque élément de la table <b>JTABLE</b> pour indiquer qu'il n'y a aucun bijou à l'écran au début de la partie. 
+   On dessine ensuite Octopacman au centre de l'écran et la ligne de vie en bas.    
+ </p>
+ <h5>La boucle du jeu</h5>
+ <p>
+<pre style="color:gray;font-size:11px;"><code>
+;;;;;;;;;;;;;;;;;;;;	
+; boucle du jeux
+;;;;;;;;;;;;;;;;;;;;	
+game_loop:
+	ADD CYCLEL, 1
+	SE VF, 0
+	CALL inc_cycleh
+	PUSH ANGLE
+	CALL read_joystick
+	POP V0
+	SNE V0, ANGLE
+	JP game_lp1f
+	CALL draw_octopacman ; efface pacman
+	LD V0, ANGLE
+	CALL draw_octopacman ; remet pacman
+game_lp1f:
+	CALL move_jewel
+	SNE LLEN, 0
+	JP game_over
+	SNE COUNT, MAXJWL
+	JP speed_delay
+	LD V0, 3
+	AND V0, CYCLEL
+	SNE V0, 0
+	CALL new_jewel
+speed_delay:	
+	LD V0, SPEED
+	CALL delay
+	JP game_loop
+</code></pre>
+ Cette boucle reproduit la description qu'on a faite dans la section <a href="#algo_princ">algorithme principal.</a> Ici on utilise l'instruction <b>PUSH ANGLE</b>
+ car on veut préservé cette valeur temporairement pour voir si à l'appel <b>CALL read_joystick</b> elle aura changée. <b>POP V0</b> rappelle cette valeur dans 
+ <b>V0</b> après l'appel pour permettre la comparaison. Le but de cette manoeuvre est d'éviter de redessiner <b>Octopacman</b> s'il n'a pas changer d'orientation.
+ Si on redessais <b>Octopacman</b> à chaque bouclage ça produirais un scintillement du <i>sprite</i>. Notez la façon dont on utilise l'instruction <b>AND V0, CYCLEL</b>
+ pour ne garder que les 2 bits les moins significatifs. Si ces 2 bits sont à zéro ce qui ce produit à tous les 4 cycles jeu, on crée un nouveau bijou. Notez aussi
+ que cette partie du code n'est exécutée qui si <b>COUNT</b>&lt;<b>MAXJWL</b>. On termine la boucle avec un délais pour contrôler la vitesse du jeux.
+ </p>
+ 

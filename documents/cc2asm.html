@@ -93,6 +93,8 @@ de cette directive. les données peuvent-être en décimal, hexadécimal (#HHHH)
  des symboles précédemment définis par <b>EQU</b>. Lorsque le pré-processeur rencontre un symbole défini par cette directive 
  il le substitue dans le texte par la valeur de  la constante.</td></tr>
 <tr><td>END</td><td>END</td><td>Indique la fin du programme source. S'il y a du texte après cette directive il sera ignoré par l'assembleur.</td></tr>
+<tr><td>ORG</td><td>ORG adresse</td><td>Avance le compteur ordinal jusqu'à l'adresse spécifiée. Cette adresse doit-être 
+une adresse paire et plus grande que l'adresse actuelle. L'espace entre l'adresse actuelle et la nouvelle est rempli de NOP.</td></tr>
 </table>
 </p>
 <h4>Constantes prédéfinies</h4>

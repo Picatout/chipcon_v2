@@ -86,19 +86,21 @@ unsigned char binary[MEM_SIZE];
 int inp; // pointeur d'analyse ligne d'entrée
 char line[256]; // contient la ligne à analyser
 
-#define KW_COUNT (42)
+#define KW_COUNT (43)
 
-const char *mnemonics[KW_COUNT]={"CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
+const char *mnemonics[KW_COUNT]={"NOP","CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SCD","JP","CALL",
 						 "SHR","SHL","SKP","SKNP","SE","SNE","ADD","SUB","SUBN","OR","AND","XOR",
 						 "RND","TONE","PRT","PIXI","LD","DRW","NOISE","PUSH","POP","SCRX","SCRY",
 						 "SCU","BSET","BCLR","BINV","BTSS","BTSC","SAVE","RSTR","GPIX"};
 
-typedef enum Mnemo {eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
+typedef enum Mnemo {eNOP,eCLS,eRET,eSCR,eSCL,eEXIT,eLOW,eHIGH,eSCD,eJP,eCALL,eSHR,eSHL,eSKP,eSKNP,eSE,eSNE,eADD,
                     eSUB,eSUBN,eOR,eAND,eXOR,eRND,eTONE,ePRT,ePIXI,eLD,eDRW,eNOISE,ePUSH,ePOP,eSCRX,eSCRY,
 					eSCU,eBSET,eBCLR,eBINV,eBTSS,eBTSC,eSAVE,eRSTR,eGPIX} mnemo_t;
 						 
-#define DIR_COUNT (6)						 
-const char *directives[]={"DB","DW","ASCII","EQU","DEFN","END"};
+#define DIR_COUNT (7)						 
+const char *directives[]={"DB","DW","ASCII","EQU","DEFN","END","ORG"};
+
+typedef enum dir_id {eDB,eDW,eASCII,eEQU,eDEFN,eEND,eORG} directive_t;
 
 // search word in a list 
 int search_word(char *target, const char *list[], int list_count){
@@ -159,7 +161,7 @@ unsigned expression();
 
 
 typedef enum ERROR_CODE {eSYNTAX, eALIGN, eMEMORY,eUNKNOWN,eEXPRESSION,eBADARG,
-    eRANGE,eBADMNEMO,eNOTREF, eERRNONE} error_code_t;
+    eRANGE,eBADMNEMO,eNOTREF,eORIGIN, ePCIMPAIR, eERRNONE} error_code_t;
 
 const char *error_msg[eERRNONE]={
 "syntax error",
@@ -170,7 +172,9 @@ const char *error_msg[eERRNONE]={
 "bad argument",
 "out of range",
 "bad mnemonic",
-"undefined reference"
+"undefined reference",
+"origin can't regress",
+"origin address must be even",
 };
 
 void error(error_code_t error_code){
@@ -256,12 +260,15 @@ int parse_vx(){
 }
 
 // codes sans arguments
-// "CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SAVE","RSTR"
+// "NOP","CLS","RET","SCR","SCL","EXIT","LOW","HIGH","SAVE","RSTR"
 void op0(mnemo_t code){
 	unsigned b1,b2;
 	
 	b1=0;
 	switch (code){
+	case eNOP:
+	    b2=0;
+		break;
 	case eCLS: // CLS
 		b2=0xe0;
 		break;
@@ -996,6 +1003,16 @@ void data_word(){
 	}while((pc<MEM_SIZE-1) && tok_id);
 }
 
+void set_origin(){
+	unsigned n;
+	
+	next_token();
+	if (tok_id!=eNUMBER) error(eBADARG);
+	n=token_to_i();
+	if (n<pc) error(eORIGIN);
+	if (n&1) error(ePCIMPAIR);
+	for (;pc<n;pc++) binary[pc]=0;
+}
 
 void data_ascii(){
 	unsigned i=0;
@@ -1151,6 +1168,7 @@ void assemble_line(){
 			if ((i=search_word(tok_value,mnemonics,KW_COUNT))<KW_COUNT){
 				//operation code
 				switch(i){
+				case eNOP:
 				case eCLS:
 				case eSAVE:
 				case eRSTR:
@@ -1275,7 +1293,7 @@ bool preprocess(){
 		i=search_word(tok_value,directives,DIR_COUNT);
 		if ((i<DIR_COUNT) && (i>1)){
 			switch(i){
-			case 2: // ASCII
+			case eASCII:
 				strcpy(ppline,"ASCII \"");
 				pos=strlen(ppline);
 				next_token();
@@ -1286,19 +1304,23 @@ bool preprocess(){
 				strcpy(line,ppline);
 				if (ppf) fprintf(ppf,"%d\t\t%s\n",line_no,line);
 				break;
-			case 3:	 // EQU
+			case eEQU:
 				equate();
 				completed=true;
 				break;
-			case 4: // DEFN
+			case eDEFN:
 				define();
 				completed=true;
 				break;
-		    case 5: // END
+		    case eEND:
 				if (ppf) fprintf(ppf,"\nEND\n");
 				completed=true;
 				file_done=true;
 				break;
+			case eORG:
+                set_origin();
+				completed=true;
+                break;				
 			}//switch
 		}else{
 			if (ppf) fprintf(ppf,"%d",line_no);

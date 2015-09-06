@@ -144,7 +144,8 @@ namespace ccemul
 				switch (opCode){
 					case 0x000:
 						opCode=(ushort)(b2&0xf0);
-						if (opCode>0xd0) opCode=(ushort)b2;
+						if ((b1|b2)==0)opCode=0;
+						else if (opCode>0xd0) opCode=(ushort)b2;
 						break;
 					case 0xe00:
 					case 0xf00:
@@ -157,6 +158,8 @@ namespace ccemul
 				}
 				// exécution de l'instruction
 				switch(opCode){
+					case 0: //NOP
+						break;
 					case 0xc0: // 00CN, (mode schip seulement) glisse l'affichage N lignes vers le bas
 						tv.scrollDown(b2&0xf);
 						break;

@@ -1,6 +1,6 @@
 /*
 * Copyright 2014, 2015, Jacques Deschênes
-* This file is part of CHIPcon.
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 *     GNU General Public License for more details.
 *
 *     You should have received a copy of the GNU General Public License
-*     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
+*     along with CHIPcon v2.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*

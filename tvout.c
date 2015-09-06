@@ -1,6 +1,6 @@
 /*
-* Copyright 2014, Jacques Deschênes
-* This file is part of CHIPcon.
+* Copyright 2014, 2015, Jacques Deschênes
+* This file is part of CHIPcon v2.
 *
 *     CHIPcon is free software: you can redistribute it and/or modify
 *     it under the terms of the GNU General Public License as published by
@@ -13,7 +13,7 @@
 *     GNU General Public License for more details.
 *
 *     You should have received a copy of the GNU General Public License
-*     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
+*     along with CHIPcon v2.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -73,7 +73,7 @@ void plot(int8_t x, int8_t y, optype op){
 	
 	if ((x<0)||(x>=HRES)||(y<0)||(y>=VRES)) return;
 	xbyte= x>>3;
-	xbit = 7-x&7;
+	xbit = 7-(x&7);
 	switch (op){
 		case WHITE:
 		video_buffer[y*HBYTES+xbyte] |= (1<<xbit);
@@ -92,7 +92,7 @@ int8_t get_pixel(int8_t x, int8_t y){
 	int8_t xbyte,xbit;
 	if ((x<0)||(x>=HRES)||(y<0)||(y>=VRES)) return 0;
 	xbyte= x>>3;
-	xbit = 7-x&7;
+	xbit = 7-(x&7);
 	return video_buffer[y*HBYTES+xbyte] & (1<<xbit);
 }
 

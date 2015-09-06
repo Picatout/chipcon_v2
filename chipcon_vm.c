@@ -13,7 +13,7 @@
 *     GNU General Public License for more details.
 *
 *     You should have received a copy of the GNU General Public License
-*     along with CHIPcon.  If not, see <http://www.gnu.org/licenses/>.
+*     along with CHIPcon v2.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 /*
@@ -99,7 +99,9 @@ uint8_t schipp(){
 #if VM_DECODER==1
 	    switch (vms.b1>>4){ //décodeur d'instruction modèle 1
 		case 0:
-			if ((vms.b2&0xf0)==0xc0){
+		    if ((vms.b1|vms.b2)==0){
+				//NOP
+			}else if ((vms.b2&0xf0)==0xc0){
 				scroll_down(vms.b2&0xf);
 			}else if ((vms.b2&0xf0)==0xd0){
 				scroll_up(vms.b2&0xf);				

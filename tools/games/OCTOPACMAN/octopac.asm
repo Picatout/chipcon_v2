@@ -12,15 +12,6 @@
 ;   * Gros losange 10 points
 ;   * petit losange 5 points
 ;   * petit carré   1 point
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; assignation de registres
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-DEFN ANGLE  VE  ; angle d'hexa packman
-DEFN SCORE  VD  ; pointage
-DEFN COUNT  VC  ; nombre de bijou à l'écran
-DEFN MAXBIJ VB  ; nombre maximum de bijou
-DEFN SPEED  VA  ; vitesse du jeux
-DEFN CYCLES V9  ; compte les boucle du jeux
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; constantes utiles
 ;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -36,46 +27,58 @@ EQU BD_VAL		15 ; gros diamant
 EQU D_VAL		10 ; petit diamant
 EQU R_VAL		 5 ; rubis
 EQU P_VAL		 1 ; perle
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; assignation de registres
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+DEFN ANGLE  VE  ; angle d'hexa packman
+DEFN LLEN  VD   ; pointage
+DEFN COUNT  VC  ; nombre de bijou à l'écran
+DEFN MAXJWL VB  ; nombre maximum de bijou
+DEFN SPEED  VA  ; vitesse du jeux
+DEFN CYCLEL V9  ; compte les boucle du jeux
 
 	JP start
 credits:
-	ASCII "Octopacman\nby Jacques Deschenes\nCopyright 2015" 
+	ASCII "Octo pacman\nby Jacques Deschenes\nCopyright 2015" 
 	DB 26
+ORG #40
 start:	
 	CALL show_credits
 play_again:
 	CLS
 	; initialize variables
 	LD ANGLE, 0 ; orientation bouche pacman
-	LD SCORE, 8 ; valeur initiale ligne de vie
+	LD LLEN, 8 ; valeur initiale ligne de vie
     LD COUNT, 0 ; nombre de bijou à l'écran
-	LD MAXBIJ, 4 ; nombre maximum de bijoux
+	LD MAXJWL, 4 ; nombre maximum de bijoux
 	LD SPEED, 5 ; vitesse du jeux 5 lent, 1 rapide
-	LD CYCLES, 0 
+	LD CYCLEL, 0 
 	CALL free_jtable
-	CALL draw_hexapacm
-	CALL update_life
-	; boucle du jeux
+	CALL draw_octopacman
+	CALL update_line
+;;;;;;;;;;;;;;;;;;;;	
+; boucle du jeux
+;;;;;;;;;;;;;;;;;;;;	
 game_loop:
-    ADD CYCLES, 1
+    ADD CYCLEL, 1
 	SE VF, 0
-	CALL inc_time
+	CALL inc_cycleh
 	PUSH ANGLE
 	CALL read_joystick
 	POP V0
 	SNE V0, ANGLE
 	JP game_lp1f
-	CALL draw_hexapacm ; efface pacman
+	CALL draw_octopacman ; efface pacman
 	LD V0, ANGLE
-	CALL draw_hexapacm ; remet pacman
+	CALL draw_octopacman ; remet pacman
 game_lp1f:
 	CALL move_jewel
-	SNE SCORE, 0
+	SNE LLEN, 0
     JP game_over
-	SNE COUNT, MAXBIJ
+	SNE COUNT, MAXJWL
 	JP speed_delay
-	LD V0, 7
-	AND V0, CYCLES
+	LD V0, 3
+	AND V0, CYCLEL
 	SNE V0, 0
 	CALL new_jewel
 speed_delay:	
@@ -100,23 +103,37 @@ game_over:	; jeu terminé
 ; mise à jour de la barre
 ; de vie
 ;;;;;;;;;;;;;;;;;;;;;
-update_life:
-    SNE SCORE, 0
+update_line:
+    SCD 8
+	SCU 8
+    SNE LLEN, 0
 	RET
-    LD R, V3
-	LD V0, SCORE
-	LD V1, #7F
-	AND V0, V1
+    LD R, V4
+	LD V0, LLEN
+	SHR V0
 	LD V2, 0
 	SCRY V3
 	ADD V3,-6
-	LD I, LIFE
+	LD I, LINE
+	LD V4,V0
+	SHR V4
+	SHR V4
+	SHR V4
+	SHR V4
+	PUSH V4
+	ADD I, V4
+	ADD I, V4
+	ADD V4, 1
 	DRW V2, V3, 2
-	ADD V2,1
-	ADD V0, -1
-	SE V0, 0
+	ADD V2,V4
+	SUB V0, V4
+	SE VF, 0
 	JP .-4
-    LD V3, R
+	POP V4
+	LD V0, 7
+	SUB V0, V4
+	LD SPEED, V0
+    LD V4, R
     RET
 	
 ;;;;;;;;;;;;;;;;;
@@ -168,30 +185,31 @@ wait_button:
    LD V1, 4
    LD ST, V1
    SKNP V0
-   JP .-2
+   JP .-1
    RET
 
 ;;;;;;;;;;;;;;;;;;
 ; affiche message
 ; d'information
 ; du jeu
+; utilise V0-V2
 ;;;;;;;;;;;;;;;;;;
 show_credits:
     CLS
 	LD I, credits
 	LD V0, 0
     SCRY V1
-    LD V3, V1
+    LD V2, V1
 	ADD V1, -8
 	PRT V0,V1
+	LD V1, FIRE_BTN
 cred_loop:
 	LD V0, 2
 	CALL delay
 	SCU 1
-	ADD V3, -1
-	SNE V3, 0
+	ADD V2, -1
+	SNE V2, 0
 	JP cred_exit
-	LD V1, FIRE_BTN
 	SKP V1
 	JP cred_loop
 cred_exit:
@@ -199,7 +217,16 @@ cred_exit:
 	SKNP V1
 	JP .-1
 	RET
-	
+
+;;;;;;;;;;;;;;;;;;;;
+; boucle qui tue le temps
+; en tournant dans une 
+; boucle vide jusqu'à 
+; expiration de la minuterie
+; DT
+; argument V0=durée.
+; La durée est en multiple de 16,67msec.
+;;;;;;;;;;;;;;;;;;;;	
 delay:
     LD DT, V0
 	LD V0, DT
@@ -212,7 +239,7 @@ delay:
 ; argument: V0=angle
 ; utilise V0, V1,V2,V3,I
 ;;;;;;;;;;;;;;;;;;;;;;	
-draw_hexapacm:
+draw_octopacman:
 	LD V1, 56
     LD V2, 22
 	LD V3, 32
@@ -259,7 +286,7 @@ draw_j1f:
 ; recherche position libre dans JTABLE
 ; génère nouveau bijou si 
 ; il y en a une
-; utilise V0-V4, I
+; utilise V0-V5, I
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;	
 new_jewel:
 	RND V4, 7 ; index table
@@ -274,14 +301,20 @@ new_jewel:
 	JP .-3
 nj_1f:
     POP V4	
+    LD V5, 0
 try_next:	
 	LD V1,[I]
     SNE V0, 0
 	JP free_slot
-	ADD V4, 1
-	SNE V4, 8 ; tous visité
-	RET
 	ADD I, V3
+	ADD V4, 1
+	SE V4, 8 ; boucle début table
+	JP .+3
+	LD I, JTABLE
+	LD V4, 0
+	ADD V5, 1
+	SNE V5, 8
+	RET
 	JP try_next
 free_slot:
     RND V1, 3
@@ -407,34 +440,30 @@ win_points:
 	LD V8, 4
 	LD ST, V8
 	SNE V1, PERL
-	ADD SCORE, P_VAL
+	ADD LLEN, P_VAL
     SNE V1, RUBY
-    ADD SCORE, R_VAL
+    ADD LLEN, R_VAL
     SNE V1, DIAMOND
-    ADD SCORE, D_VAL
+    ADD LLEN, D_VAL
 	SNE V1, BIG_DIAMOND
-	ADD SCORE, BD_VAL
-	LD V8, 127
-	SUB V8, SCORE
-	SE VF, 1
-	LD SCORE, 127
+	ADD LLEN, BD_VAL
+	SE VF, 0
+	LD LLEN, 255
  	JP coll_exit
 loose_points:
     NOISE 4
 	SNE V1, PERL
-	ADD SCORE, -P_VAL
+	ADD LLEN, -P_VAL
     SNE V1, RUBY
-    ADD SCORE, -R_VAL
+    ADD LLEN, -R_VAL
     SNE V1, DIAMOND
-    ADD SCORE, -D_VAL
+    ADD LLEN, -D_VAL
 	SNE V1, BIG_DIAMOND
-	ADD SCORE, -BD_VAL
+	ADD LLEN, -BD_VAL
 	SE  VF, 1
-	LD SCORE, 0
+	LD LLEN, 0
 coll_exit:
-    SCD 8
-	SCU 8
-	CALL update_life
+	CALL update_line
 	LD V7, 0
     RET	 
 	
@@ -478,14 +507,18 @@ sjp_1f:
 
 ;;;;;;;;;;;;;;;;;
 ; incrémente la variable
-; TIME
+; CYCLEH
 ; utilise: V0, V1,I
 ;;;;;;;;;;;;;;;;;;;;   
-inc_time:
-	LD I, TIME
+inc_cycleh:
+	LD I, CYCLEH
 	LD V0, [I]
 	ADD V0,1
 	LD [I], V0
+	LD V0, 8
+	SUB V0, MAXJWL
+	SE V0, 0
+	ADD MAXJWL, 1
 	RET
 	
 ;;;;;;;;;;;;;;;;;;;;;;;
@@ -495,7 +528,7 @@ inc_time:
 ; utilise: V0,V1,V2,V5,I
 ;;;;;;;;;;;;;;;;;;;;;;;
 display_time:
-   LD I, TIME
+   LD I, CYCLEH
    LD V0, [I]
    LD I, BCD
    LD B, V0
@@ -509,7 +542,7 @@ display_time:
    LD F, V2
    DRW V3,V4,5
    ADD V3,5   
-   LD B, CYCLES
+   LD B, CYCLEL
    LD V2,[I]
    LD F, V0
    DRW V3,V4,5
@@ -532,7 +565,7 @@ delay:
     JP .-2
     RET	
 
-TIME:
+CYCLEH:
     DB 0
 	
 MSG_OVER:
@@ -683,8 +716,8 @@ PACM315:
 	
 JEWEL0: ; perle 1 points
     DB $........, $........
-    DB $........, $...11...	
-    DB $...11..., $........	
+    DB $...11..., $..1111..	
+    DB $..1111.., $...11...	
     DB $........, $........
 	
 JEWEL1: ; rubis 5 point 
@@ -705,7 +738,7 @@ JEWEL3: ; gros diamant 20 points
     DB #99, #66
     DB #24, #18
 	
-LIFE:
+LINE:
     DB #80, #80
 	DB #C0, #C0
 	DB #E0, #E0

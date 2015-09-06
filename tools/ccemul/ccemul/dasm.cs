@@ -54,6 +54,13 @@ namespace ccemul
 				    s=string.Format("{0:S}SCU {1:D} ",s,b2&0xf);		
 				}else{
 					switch (b2){
+					case 0:
+						if (code==0){
+							s=string.Format("NOP");
+						}else{
+							s=string.Format("{0:S}??? ",s);
+						}
+						break;
 					case 0xE0:  // 00E0, efface l'écran
 						s=string.Format("{0:S}CLS ",s);
 						break;
