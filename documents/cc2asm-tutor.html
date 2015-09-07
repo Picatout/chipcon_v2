@@ -429,6 +429,272 @@ speed_delay:
  <b>V0</b> après l'appel pour permettre la comparaison. Le but de cette manoeuvre est d'éviter de redessiner <b>Octopacman</b> s'il n'a pas changer d'orientation.
  Si on redessais <b>Octopacman</b> à chaque bouclage ça produirais un scintillement du <i>sprite</i>. Notez la façon dont on utilise l'instruction <b>AND V0, CYCLEL</b>
  pour ne garder que les 2 bits les moins significatifs. Si ces 2 bits sont à zéro ce qui ce produit à tous les 4 cycles jeu, on crée un nouveau bijou. Notez aussi
- que cette partie du code n'est exécutée qui si <b>COUNT</b>&lt;<b>MAXJWL</b>. On termine la boucle avec un délais pour contrôler la vitesse du jeux.
+ que cette partie du code n'est exécutée qui si <b>COUNT</b>&lt;<b>MAXJWL</b>. On termine la boucle avec un délais pour contrôler la vitesse du jeux. Je ne crois pas
+ qu'il soit nécessaire d'analyser plus que ça partie du code. Notez simplement que le contrôle de flux se fait toujours par un saut conditionnel d'une seule 
+ instruction. Le plus souvent l'instruction qui est sautée est un <b>JP</b> qui renvoie à une autre partie du programme si la condition de test est rencontrée.
+ par exemple <b>SNE COUNT, MAXJWL</b> est suivit d'un <b>JP speed_delay</b>. Donc ici le <b>JP speed_delay</b> sera sautée si la condition COUNT est différent de
+<b>MAXJWL</b>. Mais arrive aussi que le test soit suivi d'une autre instruction que <b>JP</b>. 
  </p>
- 
+ <p>
+   On n'analysera pas chacune de sous-routines car la majoritée d'entre elles sont simple à comprendre par contre <b>new_jewel</b> est plus complexe.
+<pre style="color:gray;font-size:11px;"><code>
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; recherche position libre dans JTABLE
+; génère nouveau bijou si 
+; il y en a une
+; utilise V0-V5, I
+;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+new_jewel:
+	RND V4, 7 ; index table
+	PUSH V4
+	LD V3, STRUC_SIZE
+    LD I, JTABLE
+	SNE V4, 0
+	JP nj_1f
+    ADD I, V3
+	ADD V4, -1
+	SE V4, 0
+	JP .-3
+nj_1f:
+    POP V4	
+    LD V5, 0
+try_next:	
+	LD V1,[I]
+    SNE V0, 0
+	JP free_slot
+	ADD I, V3
+	ADD V4, 1
+	SE V4, 8 ; boucle début table
+	JP .+3
+	LD I, JTABLE
+	LD V4, 0
+	ADD V5, 1
+	SNE V5, 8
+	RET
+	JP try_next
+free_slot:
+    RND V1, 3
+	SNE V4, 0
+	JP E
+	SNE V4, 1
+	JP NE
+	SNE V4, 2
+	JP N
+	SNE V4, 3
+	JP NW
+	SNE V4, 4
+	JP WEST
+	SNE V4, 5
+	JP SW
+	SNE V4, 6
+	JP S
+SE: ; sud est
+	LD V2, 120
+	LD V3, 56
+    JP store_it
+S: ; sud
+	LD V2, 60
+	LD V3, 56
+    JP store_it
+SW: ; sud-ouet
+	LD V2, 0
+	LD V3, 56
+    JP store_it
+WEST:  ; ouest
+	LD V2, 0
+	LD V3, 28
+    JP store_it
+NW: ; nord-ouest
+    LD V2, 0
+	LD V3, 0 
+    JP store_it
+N:  ; nord
+	LD V2, 56
+	LD V3, 0
+    JP store_it
+NE: ; nord-est
+	LD V2, 120
+	LD V3, 0
+    JP store_it
+E:	; est
+	LD V2, 120
+	LD V3, 28
+store_it:	
+    LD V0, 1  ; occupée
+    LD [I], V3
+	LD V0, V4
+	CALL draw_jewel
+	ADD COUNT, 1
+    RET
+</code></pre>
+   On doit d'abord rechercher une position libre dans <b>JTABLE</b>. Pour éviter que le jeu soit trop prévisible plutôt que de commencer la recherche au début
+de la table on choisi une position de départ au hasard <b>RND V4, 7</b> met dans <b>V4</b> une valeur entre 0 et 7.  Le <b>7</b> est utilisé comme un masque 
+<b>AND</b> pour ne garder que les 3 premiers bits du nombre retourné par <b>RND</b> ce qui signifit que si on veut obtenir un nombre entre 0 et 5 on n'obtiendrais
+pas le résultat désiré en écrivant <b>RND V4, 5</b> car dans ce cas les nombres <b>2</b> et <b>3</b> serait exclus car la fonction <b>AND</b> élimine le bit d'ordre 1.
+Heureusement dans ce cas si on a besoin de 8 valeurs donc avec un masque de valeur <b>7</b> on obtient le réultat désiré soit un nombre aléatoire entre 0 et 7.   
+</p>
+<p>
+  Donc <b>V4</b> contient maintenant notre index dans la table <b>JTABLE</b> on va vérifier si cette position est libre. On charge le registre d'index <b>I</b>
+  avec l'adresse de la table et on doit maintenant additionner à cette valeur le déplacement correspondant au numéro d'entré indiqué par <b>V4</b>. Chaque 
+  position dans la table occupe 6 octets donc pour connaître la postion d'un élément on a position = I+STRUC_SIZE*V4. Plutôt que de faire une multiplication
+on additionne à <b>I</b> la valeur de <b>STRUC_SIZE</b> qui est dans <b>V3</b> autant de fois que la grandeur dans <b>V4</b>. L'indicateur <i>entrée libre</i>
+est le premier octet de l'enregistrement donc <b>LD V0, [I]</b> copie cet octet dans <b>V0</b>. <b>SNE V0, 0</b> va sauter l'instruction <b>JP free_slot</b> si
+cette entrée n'est pas libre. Maintenant on augmente <b>I</b> de la valeur <b>STRUC_SIZE</b> pour vérifier l'enregistrement suivant. On incrémente <b>V4</b> qui
+contient l'index dans la table puisqu'on avait sauvegarder une copie sur la pile par <b>PUSH V4</b> et récupérer après le calcul du déplacement initial avec 
+<b>POP V4</b>. Si <b>V4</b> a atteint la valeur <b>8</b> il faut réinitialiser <b>I</b> sur le premier élément de la table. <b>V5</b> sert à compter le nombre
+d'éléments qu'on a vérifier car on doit quitter cette sous-routine sans créer de bijou si tous les emplacements sont occupés.
+</p>
+<p>
+  Normalement il doit y avoir au moins une position libre. Lorsque le programme saute à l'étiquette <b>free_slot:</b> on génère une catégorie de bijou au hasard
+  avec l'instruction <b>RND V1, 3</b>. Comme il y a 4 catégories de bijoux le masque <b>AND</b> de valeur <b>3</b> permet bien d'obtenir un nombre entre 0 et 3.
+  En fait ces valeurs de masque <b>7</b> et <b>3</b> font partis de la planification faite lors de l'analyse de la mise en oeuvre. Choisir une puissance de 2
+pour les nombres générer au hasard simplifie la génération du nombre par l'utilisation d'un simple masque. Par exemple au départ je n'avais choisi que 3 catégories
+de bijou. Mais je n'arrivais pas a trouver la façon de généner une plage de 0 à 2 avec une probabilitée identique pour chacun des nombres qui me satisfasse. 
+Si on fait <b>RND V1,3</b> on a un nombre de trop le <b>3</b> que fait-on avec? On peut toujours rappeller <b>RND V1,3</b> tant qu'on obtient un nombre <b>3</b>
+mais la distribution ne sera pas normale. L'autre possibilitée est celle que j'ai choisi. Avec 4 catégories le problème se résous de lui-même. Ce genre de problème
+fait parti de l'analyse qui doit-être faite lors de la mise en oeuvre d'un programme. Il s'agit d'une contrainte spécifique à la plateforme choisie, 
+i.e. la VM de CHIPcon.  Cette analyse avait pour but de vous faire comprendre qu'en programmation il faut s'adapter au contrainte du système sur lequel on travaille.
+</p>
+<p>
+  Maintenant qu'on a une catégorie pour le bijou on doit initialiser sa position qui dépend sa position dans la table puisque chaque élément de la table
+  correspond à une direction. La série de <b>SNE V4, n</b> est un <i>switch</i> qui détermine le code à exécuter pour chacune des 8 valeurs possibles de
+  <b>V4</b>.  Les noms des étiquettes correspondes aux points cardinaux sur la rose des vents (en anglais). Une fois la bonne initialisation faite il ne 
+  reste qu'à sauvegarder les valeurs dans la table. Seul les 4 premiers champs de la structures sont modifiés et ces valeurs sont dans l'ordre avec <b>V0</b>
+  correspondant à l'indicateur <i>entrée libre</i> qui est mis à 1 puisque maintenant cette entrée ne sera plus libre. <b>V1</b> contient la catérogie de 
+  bijou. <b>V2</b> est la position <b>x</b> de départ et finalement <b>V3</b> est la position <b>y</b> de départ.  <b>LD [I], V3</b> met ces 4 valeurs 
+  dans la table.
+</p>
+<p>
+  La sous-routine <b>move_jewel</b> est elle aussi complexe car il n'y a qu'un seul registre d'index <b>I</b> et qu'on l'utilise pour vérifier chaque position
+  de <b>JTABLE</b> en séquence et si une position contient un bijou il faut modifier <b>I</b> pour pointer vers le <i>sprite</i> correspondant à ce bijou. Pour 
+  ajuster correctement la valeur de <b>I</b> pour un élément donné de table <b>JTABLE</b> j'ai créé un sous-routine appellée <b>set_jewel_ptr</b>. Ainsi pour
+  ajuster la valeur de <b>I</b> sur le bon <i>sprite</i> correspondant à la catégorie j'ai créer la sous-routine <b>set_sprite_ptr</b>. A chacune de ces 
+  sous-routine reçois un argument dans <b>V0</b> et ajuste la valeur de <b>I</b> à partir de cet argument.  Pour chaque bijou déplacer on doit vérifier s'il y 
+  a eu collision. Lorsqu'un <i>sprite</i> est dessiné une collision est indiquée par une valeur de <b>VF</b> égale à <b>1</b>. en cas de collision la 
+  sous-routine <b>collision</b> est appellée pour ajuster la valeur de <b>LLEN</b>. En cas de collision le bijou est supprimé de l'écran et son entrée 
+  dans la table <b>JTABLE</b> est marquée comme libre.
+<pre style="color:gray;font-size:11px;"><code>
+;;;;;;;;;;;;;;;;;;;;;;;;
+; déplace les bijoux
+; vérifie pour collision
+;;;;;;;;;;;;;;;;;;;;;;;;
+move_jewel:
+	LD V6, 0 ;index
+    JP mj_get_record
+mj_next:	
+	ADD V6,1
+	SNE V6, 8
+	RET	
+mj_get_record:	
+	LD V0, V6
+	CALL set_jewel_ptr
+	LD V5, [I]
+	SE V0, 1
+	JP mj_next
+mj_move_it:	
+	LD V0, V1
+	CALL set_sprite_ptr
+	DRW V2,V3, JEWEL_SIZE
+	ADD V2, V4
+	ADD V3, V5
+	LD V0, 1
+	LD R, V5
+	DRW V2, V3, JEWEL_SIZE
+    LD V5, R
+	LD V7, 1
+	SNE VF, 1 ; collision?
+	CALL collision
+	LD V0, V6
+	CALL set_jewel_ptr
+	LD V0, V7
+	LD [I], V5
+	SE V7, 0
+	JP mj_next
+	LD V0, V1
+	CALL set_sprite_ptr
+	DRW V2,V3,JEWEL_SIZE
+	ADD COUNT, -1
+	JP mj_next
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;  une collision a eu lieu
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;	
+collision:	
+	SE V6, ANGLE
+	JP loose_points
+win_points:	
+	LD V8, 4
+	LD ST, V8
+	SNE V1, PERL
+	ADD LLEN, P_VAL
+    SNE V1, RUBY
+    ADD LLEN, R_VAL
+    SNE V1, DIAMOND
+    ADD LLEN, D_VAL
+	SNE V1, BIG_DIAMOND
+	ADD LLEN, BD_VAL
+	SE VF, 0
+	LD LLEN, 255
+ 	JP coll_exit
+loose_points:
+    NOISE 4
+	SNE V1, PERL
+	ADD LLEN, -P_VAL
+    SNE V1, RUBY
+    ADD LLEN, -R_VAL
+    SNE V1, DIAMOND
+    ADD LLEN, -D_VAL
+	SNE V1, BIG_DIAMOND
+	ADD LLEN, -BD_VAL
+	SE  VF, 1
+	LD LLEN, 0
+coll_exit:
+	CALL update_line
+	LD V7, 0
+    RET	 
+	
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ajuste I sur le bon sprite
+; argument: V0=index sprite
+; modifie: V0, I
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+set_sprite_ptr:
+   PUSH V1
+   LD I, JEWEL0
+   LD V1, JEWEL_SIZE
+   SNE V0, 0
+   JP set_sp1f
+   ADD I, V1
+   add V0, -1
+   SE V0, 0
+   JP .-3
+set_sp1f:   
+   POP V1   
+   RET	
+;;;;;;;;;;;;;;;;;;;;
+; ajuste I sur l'entrée
+; de la table JTABLE
+; argument: V0 = index
+; modifie: V0, I
+;;;;;;;;;;;;;;;;;;;;;;
+set_jewel_ptr:
+   PUSH V1
+   LD I, JTABLE
+   LD V1, STRUC_SIZE
+   SNE V0, 0
+   JP sjp_1f
+   ADD I, V1
+   ADD V0, -1
+   SE  V0, 0
+   JP .-3
+sjp_1f:
+   POP V1
+   RET
+</code></pre>  
+</p>
+<h4>conclusion</h4>
+<p>
+ La lecture des documents mentionnés en pré-requis ainsi que celle du code source complet devraient vous permettre de comprendre le fonctionnement de ce programme
+ , du moins je l'espère, et de passer à l'étape suivante soit créer vos propre jeux.  N'oubliez pas que <a href="cc2emul.html">cc2emul.exe</a> peut faciliter grandement le développement
+ des programmes grâce à l'exécution pas à pas et l'insertion de points d'arrêts.
+</p>
