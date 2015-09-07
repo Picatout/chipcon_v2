@@ -29,11 +29,18 @@
 ; CRÉATION: 2014-10-30
 ; MISE à JOUR: 2015-08-19
 ;--------------------------------------------------------------------------
+;;;;;;;;;;;;;;;;;
+;; constantes  ;;
+;;;;;;;;;;;;;;;;;
+equ PAD_WIDTH	16 ; largeur de la plateforme d'alunissage
+equ LEM_WIDTH	16 ; largeur du LEM
+equ K_RIGHT_JET	8 ; touche de contrôle du jet de droite
+equ K_LEFT_JET	16 ; touche de contrôle du jet de gauche
+equ K_UP_JET	32 ; touche de contrôle du jet vertical
 
 ;;;;;;;;;;;;;;;
 ;; variables ;;
 ;;;;;;;;;;;;;;;
-defn carry VF   ; utilisé comme indicateur booléen par plusieurs codes opérationnels.
 defn xpos VE	; coordonnée x du LEM
 defn ypos VD    ; coordonnée y du LEM
 defn hspeed VC  ; vitesse horizontale du LEM
@@ -42,23 +49,14 @@ defn fuel VA    ; niveau de carburant
 defn score V9   ; nombre d'alunissage réussis
 defn set V8     ; nombre de tentative d'alunissage
 defn pad V7    ; position du pad d'alunissage
-defn w  V0     ; registre de travail temporaire
 
-;;;;;;;;;;;;;;;;;
-;; constantes  ;;
-;;;;;;;;;;;;;;;;;
-equ PAD_WIDTH  16    ; largeur de la plateforme d'alunissage
-equ LEM_WIDTH 16     ; largeur du LEM
-equ K_RIGHT_JET 8    ; touche de contrôle du jet de droite
-equ K_LEFT_JET  16   ; touche de contrôle du jet de gauche
-equ K_UP_JET    32   ; touche de contrôle du jet vertical
-equ FIRE_BTN    32
 
 ;;;;;;;;;;;;;;;;;;;;
 ;;  code segment  ;;
 ;;;;;;;;;;;;;;;;;;;;
 	cls
 	call show_credit
+	cls
 	ld score, 0
 	ld set, 0
 next_set:
@@ -66,7 +64,7 @@ next_set:
 ;position initiale du LEM
 ;centre haut de l'écran
     scrx xpos
-	ld w, PAD_WIDTH
+    ld w, pad_width
 	sub xpos, w
 	shr xpos
 	ld ypos,0  
@@ -127,7 +125,7 @@ move_lem:
 	add ypos, vspeed 
 	add vspeed, 1  ; gravitée
 	call drw_lem
-	sne carry, 1
+	sne C, 1
 	jp collision
 ; affiche le niveau de carburant
 	call prt_fuel_level
@@ -169,11 +167,11 @@ collision:
 	call prt_fuel_level
 	ld w,2
 	sub w, vspeed
-	se carry, 1
+	se C, 1
 	jp crash  ; vitesse verticale trop grande
 	ld w,2
 	sub w, hspeed
-	se carry, 1
+	se C, 1
 	jp crash  ; vitesse horizontale trop grande
 	se xpos, pad
 	jp crash    ; hors du pad
@@ -267,7 +265,7 @@ moonscape:
 	push w
 	sub w, pad
 	pop w
-	se carry, 1
+	se C, 1
     ld pad, w
     ld v4, pad
     add v4, PAD_WIDTH
@@ -277,22 +275,22 @@ moonscape:
 scape_loop:
 	ld v3,v5
 	sub v3,pad 
-	se carry,1
+	se C,1
 	jp rand_y  ; à gauche du pad
 	ld v3,v5
 	sub v3,v4
-	se carry,1  ; à droite du pad
+	se C,1  ; à droite du pad
 	jp put_pixel ; sur le pad
 rand_y:
 	scry w
 	shr w
 	sub w, v1
-	se carry, 0
+	se C, 0
 	add v1, 1
     scry w
 	add w, -1
 	subn w, v1
-	se carry, 0
+	se C, 0
 	add v1,-1
 	rnd v3,3
 	shr v3

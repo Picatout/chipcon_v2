@@ -39,7 +39,7 @@
 #define FW_DEBUG  0
 // pour inclure du code test pendant le développement
 // mettre à 0 autrement
-#define TEST 1
+#define TEST 0
 
 // en diminiuant la résolution
 // verticale on augmente la vitesse

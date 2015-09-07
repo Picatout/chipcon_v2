@@ -1034,9 +1034,13 @@ void equate(){
 	next_token();
 	if (tok_id==eSYMBOL){
 		symbol=search_symbol(tok_value);
-		if (!symbol){ symbol = add_symbol(tok_value,0);}
-		symbol->value=expression();
-		symbol_list=symbol;
+		if (!symbol){ 
+			symbol = add_symbol(tok_value,0);
+			symbol->value=expression();
+			symbol_list=symbol;
+		}else{
+			symbol->value=expression();
+		}
 	}else{
 		error(eSYNTAX);
 	}
@@ -1326,7 +1330,6 @@ bool preprocess(){
 			if (ppf) fprintf(ppf,"%d",line_no);
 			double_tab=true;
 			while (tok_id){
-				//printf("%d\t%s\n",tok_id,tok_value);
 				if (tok_id==eSYMBOL && (n=search_define(tok_value))){
 					strcpy(&ppline[pos],n->defn);
 				}else if (tok_id==eSYMBOL && (n=search_symbol(tok_value))){
